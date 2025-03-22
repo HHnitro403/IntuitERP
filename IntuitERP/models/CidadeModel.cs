@@ -10,6 +10,6 @@ namespace IntuitERP.models
     {
         public int CodCidade { get; set; }
         public string Cidade { get; set; }
-        public string UD { get; set; }
+        public string UF { get; set; }
     }
 }
