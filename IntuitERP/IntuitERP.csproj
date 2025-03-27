@@ -60,19 +60,23 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Config\AccessDB.accdb" />
+	  <None Remove="Config\ConfigDB.db" />
+	  <None Remove="Config\ConfigsDB.db" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.1.66" />
 		<PackageReference Include="Dapper.Contrib" Version="2.0.78" />
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
+		<PackageReference Include="LiteDB" Version="5.0.21" />
+		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.3" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
 		<PackageReference Include="MySql.Data" Version="9.2.0" />
 		<PackageReference Include="MySqlConnector" Version="2.4.0" />
-		<PackageReference Include="System.Data.OleDb" Version="9.0.3" />
+		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.11" />
+		<PackageReference Include="System.Data.SQLite.EF6" Version="1.0.119" />
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
 	</ItemGroup>
 
@@ -81,7 +85,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiAsset Include="Config\AccessDB.accdb" />
+	  <MauiAsset Include="Config\ConfigsDB.db" />
 	</ItemGroup>
 
 </Project>

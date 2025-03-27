@@ -1,13 +1,9 @@
-﻿using IntuitERP.DataBase;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.OleDb;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
-using System.IO;  // Added for Path.Combine
+using System.IO;
+using System.Data.SQLite;
+using IntuitERP.DataBase;
+using Microsoft.Data.Sqlite;
 
 namespace IntuitERP.Config
 {
@@ -17,69 +13,116 @@ namespace IntuitERP.Config
         private string database;
         private string user;
         private string password;
+        private string dbPath;
         private string connectionString;
         MySqlConnect mySqlConnect;
 
         public Configurator()
         {
-            string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config\\AccessDB.accdb");
-            GetAccessDatabaseInfo(fullPath).Wait();  // Call the configuration loader
-
+            dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ConfigDB.sqlite");
+            connectionString = $"Data Source={dbPath};Version=3;";
+            GetSQLiteDatabaseInfo();
         }
 
-        private async Task GetAccessDatabaseInfo(string dbPath)
+        private void GetSQLiteDatabaseInfo()
         {
-            connectionString = $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={dbPath};";
-            await GetData("Connection");
+            GetData("Connection");
         }
 
-        private async Task GetData(string tableName)
+        private void GetData(string tableName)
         {
-            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            if (!File.Exists(dbPath))
             {
-                string query = $"SELECT * FROM [{tableName}]";
-                OleDbCommand command = new OleDbCommand(query, connection);
+                InitializeDatabase();
+            }
 
-                try
+            try
+            {
+                using (var connection = new SqliteConnection(connectionString))
                 {
-                    await connection.OpenAsync();
-                    using (OleDbDataReader reader = (OleDbDataReader)await command.ExecuteReaderAsync())
+                    connection.Open();
+                    string query = $"SELECT * FROM {tableName} WHERE ID = 1";
+                    using (var command = new SqliteCommand(query, connection))
                     {
-                        while (await reader.ReadAsync())
+                        using (var reader = command.ExecuteReader())
                         {
-                            server = reader["Server"].ToString();
-                            database = reader["Database"].ToString();
-                            user = reader["User"].ToString();
-                            password = reader["Password"].ToString();
+                            if (reader.Read())
+                            {
+                                server = reader["Server"].ToString();
+                                database = reader["Database"].ToString();
+                                user = reader["User"].ToString();
+                                password = reader["Password"].ToString();
 
-                            // If you only need the first row, you can break here
-                            break;
+                                try
+                                {
+                                    string mysqlConnectionString = MySqlConnect.GetConnectionString(server, database, user, password);
+                                    MySqlConnect mySqlConnect = new MySqlConnect(mysqlConnectionString);
+
+                                    mySqlConnect.OpenConnection();
+                                    Console.WriteLine("Connection opened successfully.");
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"An error occurred when connecting to MySQL: {ex.Message}");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("No connection configuration found in the database.");
+                            }
                         }
                     }
-
-                    try
-                    {
-                        string connectionString = MySqlConnect.GetConnectionString(server, database, user, password);
-                        MySqlConnect mySqlConnect = new MySqlConnect(connectionString);
-
-                        mySqlConnect.OpenConnection();
-                        Console.WriteLine("Connection opened successfully.");
-                        
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"An error occurred: {ex.Message}");
-                    }
-
-
-                    await connection.CloseAsync();
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SQLite Error: {ex.Message}");
             }
         }
 
+        private void InitializeDatabase()
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(dbPath));
+
+                using (var connection = new SqliteConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string createTableQuery = @"
+                        CREATE TABLE Connection (
+                            ID INTEGER PRIMARY KEY,
+                            Server TEXT,
+                            Database TEXT,
+                            User TEXT,
+                            Password TEXT
+                        )"
+                    ;
+
+                    using (var command = new SqliteCommand(createTableQuery, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
+                    string insertDefaultConfigQuery = @"
+                        INSERT INTO Connection (ID, Server, Database, User, Password)
+                        VALUES (1, 'localhost', 'default_db', 'root', 'password')"
+                    ;
+
+                    using (var command = new SqliteCommand(insertDefaultConfigQuery, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                Console.WriteLine("Database initialized successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error initializing database: {ex.Message}");
+                throw;
+            }
+        }
     }
 }
