@@ -2,7 +2,8 @@
 using System.Data;
 using System.IO;
 using Dapper;
-using Microsoft.Data.Sqlite; // Use Microsoft.Data.Sqlite for SQLite connections
+using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient; // Use Microsoft.Data.Sqlite for SQLite connections
 
 namespace IntuitERP.Config
 {
@@ -13,13 +14,34 @@ namespace IntuitERP.Config
         private string user;
         private string password;
         private readonly string dbPath;
+        private MySqlConnect mySqlConnect;
 
         public Configurator()
         {
             dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ConfigsDB.db");
             InitializeDatabase(); // Ensure the database and table exist
-            GetSQLiteDatabaseInfo(); // Load configuration
+            CreateMySqlConnection(); // Load configuration
         }
+
+        // Add this method to your Configurator class
+        public IDbConnection GetMySqlConnection()
+        {
+            try
+            {
+                // Use the class-level variables already loaded by GetSQLiteDatabaseInfo()
+                string connectionString = MySqlConnect.GetConnectionString(server, database, user, password);
+
+                // Create and return the connection
+                return new MySqlConnection(connectionString);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating MySQL connection: {ex.Message}");
+                return null;
+            }
+        }
+
+
 
         private void InitializeDatabase()
         {
@@ -71,46 +93,39 @@ namespace IntuitERP.Config
             }
         }
 
-        private void GetSQLiteDatabaseInfo()
+        private IDbConnection CreateMySqlConnection()
         {
             try
             {
-                using (var connection = CreateConnection())
+                // First, get the connection info from SQLite
+                using (var sqliteConnection = CreateConnection())
                 {
                     var query = "SELECT * FROM Connection WHERE ID = @ID";
-                    var config = connection.QuerySingleOrDefault<ConnectionConfig>(query, new { ID = 1 });
+                    var config = sqliteConnection.QuerySingleOrDefault<ConnectionConfig>(query, new { ID = 1 });
 
                     if (config != null)
                     {
-                        server = config.Server;
-                        database = config.DataBase;
-                        user = config.User;
-                        password = config.Password;
+                        string connectionString = MySqlConnect.GetConnectionString(
+                            config.Server,
+                            config.DataBase,
+                            config.User,
+                            config.Password
+                        );
 
-                        Console.WriteLine($"Loaded configuration: Server={server}, Database={database}, User={user}");
-
-                        try
-                        {
-                            string mysqlConnectionString = MySqlConnect.GetConnectionString(server, database, user, password);
-                            MySqlConnect mySqlConnect = new MySqlConnect(mysqlConnectionString);
-
-                            mySqlConnect.OpenConnection();
-                            Console.WriteLine("MySQL connection opened successfully.");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"An error occurred when connecting to MySQL: {ex.Message}");
-                        }
+                        // Assuming you have MySql.Data.MySqlClient imported
+                        return new MySqlConnection(connectionString);
                     }
                     else
                     {
                         Console.WriteLine("No connection configuration found in the database.");
+                        return null;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"SQLite Error: {ex.Message}");
+                Console.WriteLine($"Error creating MySQL connection: {ex.Message}");
+                return null;
             }
         }
 

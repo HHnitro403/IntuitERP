@@ -63,19 +63,13 @@
                            FontSize="12" />
                 </VerticalStackLayout>
 
-                <!-- Remember Me -->
-                <HorizontalStackLayout>
-                    <CheckBox Grid.Column="0" 
-                              x:Name="RememberMeCheckbox" 
-                              VerticalOptions="Center" />
-                    <Label Text="Remember Me" 
-                           VerticalOptions="Center" />
-                </HorizontalStackLayout>
+               
 
                 <!-- Login Button -->
                 <Button Text="LOGIN"
                         x:Name="LoginButton"
-                        Clicked="OnLoginButtonClicked"
+                        Clicked="LoginButton_Clicked"
+                        
                         IsEnabled="False"
                         HeightRequest="50"
                         Margin="0,20,0,0"

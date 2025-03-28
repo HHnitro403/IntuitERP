@@ -1,5 +1,8 @@
 ﻿using IntuitERP.Config;
+using IntuitERP.Services;
+using System.Data;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace IntuitERP
 {
@@ -8,13 +11,35 @@ namespace IntuitERP
         // Track validation state
         private bool _isUserValid = false;
         private bool _isPasswordValid = false;
+        private IDbConnection _connection;
+        private UsuarioService _usuarioService;
 
 
         public MainPage()
         {
             InitializeComponent();
 
-            Configurator config = new Configurator();
+            var configurator = new Configurator();
+            _connection = configurator.GetMySqlConnection();
+
+            // Initialize services that need the connection
+            _usuarioService = new UsuarioService(_connection);
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            // Only initialize if it hasn't been done already
+            if (_usuarioService == null)
+            {
+                // Get the existing connection from Configurator
+                var configurator = new Configurator();
+                _connection = configurator.GetMySqlConnection();
+
+                // Initialize services that need the connection
+                _usuarioService = new UsuarioService(_connection);
+            }
         }
 
 
@@ -74,9 +99,9 @@ namespace IntuitERP
             }
 
             // Only check for minimum length of 4 characters
-            if (password.Length < 4)
+            if (password.Length < 6)
             {
-                ShowPasswordError("Password must be at least 4 characters");
+                ShowPasswordError("Password must be at least  characters");
                 _isPasswordValid = false;
                 return;
             }
@@ -117,15 +142,24 @@ namespace IntuitERP
             LoginButton.IsEnabled = _isUserValid && _isPasswordValid;
         }
 
-        private void OnLoginButtonClicked(object sender, EventArgs e)
-        {
-            // Here you would typically add the actual login logic
-            // Since we're not implementing that, we'll just display a confirmation message
+       
 
-            DisplayAlert("Login Attempted",
-                $"Username: {UserEntry.Text}\nPassword: {PasswordEntry.Text}\nRemember Me: {RememberMeCheckbox.IsChecked}",
-                "OK");
+        private void LoginButton_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var usuario = _usuarioService.AuthenticateAsync(UserEntry.Text, PasswordEntry.Text).GetAwaiter().GetResult();
+                DisplayAlert("Login Successful", "You have successfully logged in.", "OK");
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Login Failed", "Username or password is incorrect.", "OK");
+            }
+            
         }
+
+
+        // The method containing this code needs to be async
 
 
     }

@@ -111,7 +111,7 @@ namespace IntuitERP.Services
         // Authenticate user
         public async Task<UsuarioModel> AuthenticateAsync(string username, string password)
         {
-            const string sql = "SELECT * FROM Usuarios WHERE Usuario = @Usuario AND Senha = @Senha";
+            const string sql = "SELECT * FROM usuarios WHERE Usuario = @Usuario AND Senha = @Senha";
             return await _connection.QuerySingleOrDefaultAsync<UsuarioModel>(sql, new { Usuario = username, Senha = password });
         }
 
