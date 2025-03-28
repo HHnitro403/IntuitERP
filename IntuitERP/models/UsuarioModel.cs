@@ -8,42 +8,41 @@ namespace IntuitERP.models
 {
     public class UsuarioModel
     {
-        public int CodUsuarios { get; set; } // Primary key, auto-incremented
-        public string Usuario { get; set; } // Username
-        public string Senha { get; set; } // Password (should be hashed in practice)
+        public static int CodUsuarios { get; set; } // Primary key, auto-incremented
+        public static string Senha { get; set; } // Password (should be hashed in practice)
 
         // Permissions for Produtos
-        public bool PermissaoProdutosCreate { get; set; }
-        public bool PermissaoProdutosRead { get; set; }
-        public bool PermissaoProdutosUpdate { get; set; }
-        public bool PermissaoProdutosDelete { get; set; }
+        public static bool PermissaoProdutosCreate { get; set; }
+        public static bool PermissaoProdutosRead { get; set; }
+        public static bool PermissaoProdutosUpdate { get; set; }
+        public static bool PermissaoProdutosDelete { get; set; }
 
         // Permissions for Vendas
-        public bool PermissaoVendasCreate { get; set; }
-        public bool PermissaoVendasRead { get; set; }
-        public bool PermissaoVendasUpdate { get; set; }
-        public bool PermissaoVendasDelete { get; set; }
+        public static bool PermissaoVendasCreate { get; set; }
+        public static bool PermissaoVendasRead { get; set; }
+        public static bool PermissaoVendasUpdate { get; set; }
+        public static bool PermissaoVendasDelete { get; set; }
 
         // Permissions for Relatorios (only generate)
-        public bool PermissaoRelatoriosGenerate { get; set; }
+        public static bool PermissaoRelatoriosGenerate { get; set; }
 
         // Permissions for Vendedores
-        public bool PermissaoVendedoresCreate { get; set; }
-        public bool PermissaoVendedoresRead { get; set; }
-        public bool PermissaoVendedoresUpdate { get; set; }
-        public bool PermissaoVendedoresDelete { get; set; }
+        public static bool PermissaoVendedoresCreate { get; set; }
+        public static bool PermissaoVendedoresRead { get; set; }
+        public static bool PermissaoVendedoresUpdate { get; set; }
+        public static bool PermissaoVendedoresDelete { get; set; }
 
         // Permissions for Fornecedores
-        public bool PermissaoFornecedoresCreate { get; set; }
-        public bool PermissaoFornecedoresRead { get; set; }
-        public bool PermissaoFornecedoresUpdate { get; set; }
-        public bool PermissaoFornecedoresDelete { get; set; }
+        public static bool PermissaoFornecedoresCreate { get; set; }
+        public static bool PermissaoFornecedoresRead { get; set; }
+        public static bool PermissaoFornecedoresUpdate { get; set; }
+        public static bool PermissaoFornecedoresDelete { get; set; }
 
         // Permissions for Clientes
-        public bool PermissaoClientesCreate { get; set; }
-        public bool PermissaoClientesRead { get; set; }
-        public bool PermissaoClientesUpdate { get; set; }
-        public bool PermissaoClientesDelete { get; set; }
+        public static bool PermissaoClientesCreate { get; set; }
+        public static bool PermissaoClientesRead { get; set; }
+        public static bool PermissaoClientesUpdate { get; set; }
+        public static bool PermissaoClientesDelete { get; set; }
 
         // Constructor (optional)
         public UsuarioModel()
@@ -79,4 +78,4 @@ namespace IntuitERP.models
     }
 
 }
-    
+

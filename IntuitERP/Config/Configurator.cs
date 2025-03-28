@@ -83,7 +83,7 @@ namespace IntuitERP.Config
                     if (config != null)
                     {
                         server = config.Server;
-                        database = config.Database;
+                        database = config.DataBase;
                         user = config.User;
                         password = config.Password;
 
@@ -125,7 +125,7 @@ namespace IntuitERP.Config
     {
         public int ID { get; set; }
         public string Server { get; set; }
-        public string Database { get; set; }
+        public string DataBase { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
     }
