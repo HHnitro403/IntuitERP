@@ -1,11 +1,9 @@
 ﻿using Dapper;
+using IntuitERP.models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using IntuitERP.models;
 
 namespace IntuitERP.Services
 {
@@ -32,13 +30,22 @@ namespace IntuitERP.Services
 
         public async Task<int> InsertAsync(CidadeModel cidade)
         {
-            const string query = "INSERT INTO cidade (Cidade, UD) VALUES (@Cidade, @UD)";
-            return await _connection.ExecuteAsync(query, cidade);
+            const string query =
+                @"INSERT INTO cidade 
+                (Cidade, UF) 
+                VALUES 
+                (@Cidade, @UF);
+                SELECT LAST_INSERT_ID();";
+            return await _connection.ExecuteScalarAsync<int>(query, cidade);
         }
 
         public async Task<int> UpdateAsync(CidadeModel cidade)
         {
-            const string query = "UPDATE cidade SET Cidade = @Cidade, UD = @UD WHERE CodCIdade = @CodCIdade";
+            const string query =
+                @"UPDATE cidade SET 
+                Cidade = @Cidade, 
+                UF = @UF 
+                WHERE CodCIdade = @CodCIdade";
             return await _connection.ExecuteAsync(query, cidade);
         }
 

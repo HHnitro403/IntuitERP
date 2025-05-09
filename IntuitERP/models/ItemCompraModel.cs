@@ -22,16 +22,16 @@ namespace IntuitERP.models
         public string? Descricao { get; set; }
 
         [Column("quantidade")]
-        public int? Quantidade { get; set; }
+        public int? quantidade { get; set; }
 
         [Column("valor_unitario", TypeName = "decimal(10,2)")]
-        public decimal? ValorUnitario { get; set; }
+        public decimal? valor_unitario { get; set; }
 
         [Column("valor_total", TypeName = "decimal(10,2)")]
-        public decimal? ValorTotal { get; set; }
+        public decimal? valor_total { get; set; }
 
         [Column("desconto", TypeName = "decimal(10,2)")]
-        public decimal? Desconto { get; set; }
+        public decimal? desconto { get; set; }
 
         // Navigation properties
         [ForeignKey("CodCompra")]

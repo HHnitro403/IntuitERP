@@ -18,13 +18,13 @@ namespace IntuitERP.models
         public string NomeVendedor { get; set; }
 
         [Column("totalvendas")]
-        public int? TotalVendas { get; set; } = 0;
+        public int? totalvendas { get; set; } = 0;
 
         [Column("vendasfinalizadas")]
-        public int? VendasFinalizadas { get; set; } = 0;
+        public int? vendasfinalizadas { get; set; } = 0;
 
         [Column("vendascanceladas")]
-        public int? VendasCanceladas { get; set; } = 0;
+        public int? vendascanceladas { get; set; } = 0;
 
         // Navigation properties
         public virtual ICollection<VendaModel>? Vendas { get; set; }

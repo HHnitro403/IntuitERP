@@ -1,10 +1,7 @@
 ﻿using Dapper;
 using IntuitERP.models;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace IntuitERP.Services
@@ -13,115 +10,98 @@ namespace IntuitERP.Services
     {
         private readonly IDbConnection _connection;
 
-        // Constructor that receives the database connection
         public UsuarioService(IDbConnection connection)
         {
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _connection = connection;
         }
 
-        // Get all users
-        public async Task<IEnumerable<UsuarioModel>> GetAllUsuariosAsync()
+        public async Task<IEnumerable<UsuarioModel>> GetAllAsync()
         {
-            const string sql = "SELECT * FROM Usuarios";
-            return await _connection.QueryAsync<UsuarioModel>(sql);
+            const string query = "SELECT * FROM usuarios";
+            return await _connection.QueryAsync<UsuarioModel>(query);
         }
 
-        // Get user by ID
-        public async Task<UsuarioModel> GetUsuarioByIdAsync(int codUsuario)
+        public async Task<UsuarioModel> GetByIdAsync(int id)
         {
-            const string sql = "SELECT * FROM Usuarios WHERE CodUsuarios = @CodUsuarios";
-            return await _connection.QuerySingleOrDefaultAsync<UsuarioModel>(sql, new { CodUsuarios = codUsuario });
+            const string query = "SELECT * FROM usuarios WHERE CodUsuarios = @Id";
+            return await _connection.QueryFirstOrDefaultAsync<UsuarioModel>(query, new { Id = id });
         }
 
-        // Get user by username
-        public async Task<UsuarioModel> GetUsuarioByUsernameAsync(string username)
+        public async Task<UsuarioModel> GetByUsuarioAsync(string usuario)
         {
-            const string sql = "SELECT * FROM Usuarios WHERE Usuario = @Usuario";
-            return await _connection.QuerySingleOrDefaultAsync<UsuarioModel>(sql, new { Usuario = username });
+            const string query = "SELECT * FROM usuarios WHERE Usuario = @Usuario";
+            return await _connection.QueryFirstOrDefaultAsync<UsuarioModel>(query, new { Usuario = usuario });
         }
 
-        // Create new user
-        public async Task<int> CreateUsuarioAsync(UsuarioModel usuario)
+        public async Task<int> InsertAsync(UsuarioModel usuario)
         {
-            const string sql = @"
-            INSERT INTO Usuarios (
-                Usuario, Senha, 
-                PermissaoProdutosCreate, PermissaoProdutosRead, PermissaoProdutosUpdate, PermissaoProdutosDelete,
-                PermissaoVendasCreate, PermissaoVendasRead, PermissaoVendasUpdate, PermissaoVendasDelete,
-                PermissaoRelatoriosGenerate,
-                PermissaoVendedoresCreate, PermissaoVendedoresRead, PermissaoVendedoresUpdate, PermissaoVendedoresDelete,
-                PermissaoFornecedoresCreate, PermissaoFornecedoresRead, PermissaoFornecedoresUpdate, PermissaoFornecedoresDelete,
-                PermissaoClientesCreate, PermissaoClientesRead, PermissaoClientesUpdate, PermissaoClientesDelete
-            ) VALUES (
-                @Usuario, @Senha, 
-                @PermissaoProdutosCreate, @PermissaoProdutosRead, @PermissaoProdutosUpdate, @PermissaoProdutosDelete,
-                @PermissaoVendasCreate, @PermissaoVendasRead, @PermissaoVendasUpdate, @PermissaoVendasDelete,
-                @PermissaoRelatoriosGenerate,
-                @PermissaoVendedoresCreate, @PermissaoVendedoresRead, @PermissaoVendedoresUpdate, @PermissaoVendedoresDelete,
-                @PermissaoFornecedoresCreate, @PermissaoFornecedoresRead, @PermissaoFornecedoresUpdate, @PermissaoFornecedoresDelete,
-                @PermissaoClientesCreate, @PermissaoClientesRead, @PermissaoClientesUpdate, @PermissaoClientesDelete
-            );
-            SELECT LAST_INSERT_ID();";
+            const string query =
+                @"INSERT INTO usuarios 
+                (Usuario, Senha, PermissaoProdutosCreate, PermissaoProdutosRead, 
+                PermissaoProdutosUpdate, PermissaoProdutosDelete, PermissaoVendasCreate, 
+                PermissaoVendasRead, PermissaoVendasUpdate, PermissaoVendasDelete, 
+                PermissaoRelatoriosGenerate, PermissaoVendedoresCreate, PermissaoVendedoresRead, 
+                PermissaoVendedoresUpdate, PermissaoVendedoresDelete, PermissaoFornecedoresCreate, 
+                PermissaoFornecedoresRead, PermissaoFornecedoresUpdate, PermissaoFornecedoresDelete, 
+                PermissaoClientesCreate, PermissaoClientesRead, PermissaoClientesUpdate, 
+                PermissaoClientesDelete) 
+                VALUES 
+                (@Usuario, @Senha, @PermissaoProdutosCreate, @PermissaoProdutosRead, 
+                @PermissaoProdutosUpdate, @PermissaoProdutosDelete, @PermissaoVendasCreate, 
+                @PermissaoVendasRead, @PermissaoVendasUpdate, @PermissaoVendasDelete, 
+                @PermissaoRelatoriosGenerate, @PermissaoVendedoresCreate, @PermissaoVendedoresRead, 
+                @PermissaoVendedoresUpdate, @PermissaoVendedoresDelete, @PermissaoFornecedoresCreate, 
+                @PermissaoFornecedoresRead, @PermissaoFornecedoresUpdate, @PermissaoFornecedoresDelete, 
+                @PermissaoClientesCreate, @PermissaoClientesRead, @PermissaoClientesUpdate, 
+                @PermissaoClientesDelete);
+                SELECT LAST_INSERT_ID();";
 
-            return await _connection.ExecuteScalarAsync<int>(sql, usuario);
+            return await _connection.ExecuteScalarAsync<int>(query, usuario);
         }
 
-        // Update existing user
-        public async Task<bool> UpdateUsuarioAsync(UsuarioModel usuario)
+        public async Task<int> UpdateAsync(UsuarioModel usuario)
         {
-            const string sql = @"
-            UPDATE Usuarios SET 
+            const string query =
+                @"UPDATE usuarios SET 
                 Usuario = @Usuario, 
-                Senha = @Senha,
-                PermissaoProdutosCreate = @PermissaoProdutosCreate,
-                PermissaoProdutosRead = @PermissaoProdutosRead,
-                PermissaoProdutosUpdate = @PermissaoProdutosUpdate,
-                PermissaoProdutosDelete = @PermissaoProdutosDelete,
-                PermissaoVendasCreate = @PermissaoVendasCreate,
-                PermissaoVendasRead = @PermissaoVendasRead,
-                PermissaoVendasUpdate = @PermissaoVendasUpdate,
-                PermissaoVendasDelete = @PermissaoVendasDelete,
-                PermissaoRelatoriosGenerate = @PermissaoRelatoriosGenerate,
-                PermissaoVendedoresCreate = @PermissaoVendedoresCreate,
-                PermissaoVendedoresRead = @PermissaoVendedoresRead,
-                PermissaoVendedoresUpdate = @PermissaoVendedoresUpdate,
-                PermissaoVendedoresDelete = @PermissaoVendedoresDelete,
-                PermissaoFornecedoresCreate = @PermissaoFornecedoresCreate,
-                PermissaoFornecedoresRead = @PermissaoFornecedoresRead,
-                PermissaoFornecedoresUpdate = @PermissaoFornecedoresUpdate,
-                PermissaoFornecedoresDelete = @PermissaoFornecedoresDelete,
-                PermissaoClientesCreate = @PermissaoClientesCreate,
-                PermissaoClientesRead = @PermissaoClientesRead,
-                PermissaoClientesUpdate = @PermissaoClientesUpdate,
-                PermissaoClientesDelete = @PermissaoClientesDelete
-            WHERE CodUsuarios = @CodUsuarios";
+                Senha = @Senha, 
+                PermissaoProdutosCreate = @PermissaoProdutosCreate, 
+                PermissaoProdutosRead = @PermissaoProdutosRead, 
+                PermissaoProdutosUpdate = @PermissaoProdutosUpdate, 
+                PermissaoProdutosDelete = @PermissaoProdutosDelete, 
+                PermissaoVendasCreate = @PermissaoVendasCreate, 
+                PermissaoVendasRead = @PermissaoVendasRead, 
+                PermissaoVendasUpdate = @PermissaoVendasUpdate, 
+                PermissaoVendasDelete = @PermissaoVendasDelete, 
+                PermissaoRelatoriosGenerate = @PermissaoRelatoriosGenerate, 
+                PermissaoVendedoresCreate = @PermissaoVendedoresCreate, 
+                PermissaoVendedoresRead = @PermissaoVendedoresRead, 
+                PermissaoVendedoresUpdate = @PermissaoVendedoresUpdate, 
+                PermissaoVendedoresDelete = @PermissaoVendedoresDelete, 
+                PermissaoFornecedoresCreate = @PermissaoFornecedoresCreate, 
+                PermissaoFornecedoresRead = @PermissaoFornecedoresRead, 
+                PermissaoFornecedoresUpdate = @PermissaoFornecedoresUpdate, 
+                PermissaoFornecedoresDelete = @PermissaoFornecedoresDelete, 
+                PermissaoClientesCreate = @PermissaoClientesCreate, 
+                PermissaoClientesRead = @PermissaoClientesRead, 
+                PermissaoClientesUpdate = @PermissaoClientesUpdate, 
+                PermissaoClientesDelete = @PermissaoClientesDelete 
+                WHERE CodUsuarios = @CodUsuarios";
 
-            int rowsAffected = await _connection.ExecuteAsync(sql, usuario);
-            return rowsAffected > 0;
+            return await _connection.ExecuteAsync(query, usuario);
         }
 
-        // Delete user
-        public async Task<bool> DeleteUsuarioAsync(int codUsuario)
+        public async Task<int> DeleteAsync(int id)
         {
-            const string sql = "DELETE FROM Usuarios WHERE CodUsuarios = @CodUsuarios";
-            int rowsAffected = await _connection.ExecuteAsync(sql, new { CodUsuarios = codUsuario });
-            return rowsAffected > 0;
+            const string query = "DELETE FROM usuarios WHERE CodUsuarios = @Id";
+            return await _connection.ExecuteAsync(query, new { Id = id });
         }
 
-        // Authenticate user
-        public async Task<UsuarioModel> AuthenticateAsync(string username, string password)
+        public async Task<UsuarioModel> AuthenticateAsync(string usuario, string senha)
         {
-            const string sql = "SELECT * FROM usuarios WHERE Usuario = @Usuario AND Senha = @Senha";
-            var result = await _connection.QuerySingleOrDefaultAsync<UsuarioModel>(sql, new { Usuario = username, Senha = password });
-            return result;
-        }
-
-        // Update specific permission
-        public async Task<bool> UpdatePermissionAsync(int codUsuario, string permissionName, bool value)
-        {
-            string sql = $"UPDATE Usuarios SET {permissionName} = @Value WHERE CodUsuarios = @CodUsuarios";
-            int rowsAffected = await _connection.ExecuteAsync(sql, new { Value = value, CodUsuarios = codUsuario });
-            return rowsAffected > 0;
+            const string query = "SELECT * FROM usuarios WHERE Usuario = @Usuario AND Senha = @Senha";
+            return await _connection.QueryFirstOrDefaultAsync<UsuarioModel>(query,
+                new { Usuario = usuario, Senha = senha });
         }
     }
 }

@@ -14,10 +14,10 @@ namespace IntuitERP.models
         public int CodVenda { get; set; }
 
         [Column("data_venda")]
-        public DateTime? DataVenda { get; set; }
+        public DateTime? data_venda { get; set; }
 
         [Column("hora_venda")]
-        public TimeSpan? HoraVenda { get; set; }
+        public TimeSpan? hora_venda { get; set; }
 
         [Column("CodCliente")]
         [Required]
