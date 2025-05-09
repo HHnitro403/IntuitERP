@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IntuitERP.Viwes.Components.NavBar">
+    <Frame Padding="5" BackgroundColor="#f0f0f0" Margin="0,0,0,10">
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+            <Button x:Name="DashboardBtn" Text="Dashboard" Clicked="OnNavButtonClicked" 
+                    BackgroundColor="LightGray" TextColor="White"/>
+            <Button x:Name="ClientsBtn" Text="Clients" Clicked="OnNavButtonClicked" 
+                    BackgroundColor="LightGray" TextColor="White"/>
+            <Button x:Name="SuppliersBtn" Text="Suppliers" Clicked="OnNavButtonClicked" 
+                    BackgroundColor="LightGray" TextColor="White"/>
+            <Button x:Name="ProductsBtn" Text="Products" Clicked="OnNavButtonClicked" 
+                    BackgroundColor="LightGray" TextColor="White"/>
+            <Button x:Name="ReportsBtn" Text="Reports" Clicked="OnNavButtonClicked" 
+                    BackgroundColor="LightGray" TextColor="White"/>
+        </HorizontalStackLayout>
+    </Frame>
+</ContentView>

@@ -112,7 +112,8 @@ namespace IntuitERP.Services
         public async Task<UsuarioModel> AuthenticateAsync(string username, string password)
         {
             const string sql = "SELECT * FROM usuarios WHERE Usuario = @Usuario AND Senha = @Senha";
-            return await _connection.QuerySingleOrDefaultAsync<UsuarioModel>(sql, new { Usuario = username, Senha = password });
+            var result = await _connection.QuerySingleOrDefaultAsync<UsuarioModel>(sql, new { Usuario = username, Senha = password });
+            return result;
         }
 
         // Update specific permission

@@ -1,17 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IntuitERP.models
 {
+
+    [Table("estoque")]
     public class EstoqueModel
     {
+        [Key]
+        [Column("CodEst")]
         public int CodEst { get; set; }
-        public int CodProd { get; set; }
+
+        [Column("CodProduto")]
+        [Required]
+        public int CodProduto { get; set; }
+
+        [Column("Tipo")]
         public char? Tipo { get; set; }
+
+        [Column("Qtd")]
         public decimal? Qtd { get; set; }
+
+        [Column("Data")]
+        [Required]
         public DateTime Data { get; set; }
+
+        // Navigation properties
+        [ForeignKey("CodProduto")]
+        public virtual ProdutoModel? Produto { get; set; }
     }
 }

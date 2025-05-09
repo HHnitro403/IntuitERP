@@ -1,5 +1,6 @@
 ﻿using IntuitERP.Config;
 using IntuitERP.Services;
+using IntuitERP.Viwes;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -18,6 +19,12 @@ namespace IntuitERP
         public MainPage()
         {
             InitializeComponent();
+
+            // Force light theme regardless of system settings
+            Application.Current.UserAppTheme = AppTheme.Light;
+
+            // Force dark theme
+            //Application.Current.UserAppTheme = AppTheme.Dark;
 
             var configurator = new Configurator();
             _connection = configurator.GetMySqlConnection();
@@ -142,21 +149,48 @@ namespace IntuitERP
             LoginButton.IsEnabled = _isUserValid && _isPasswordValid;
         }
 
-       
 
-        private void LoginButton_Clicked(object sender, EventArgs e)
+
+
+
+        private async void LoginButton_Clicked(object sender, EventArgs e)
+        {
+            // var result =  await LoginAsync();
+            //    if (result)
+            //    {
+
+            //    }
+
+            await Navigation.PushAsync(new MaenuPage());
+
+        }
+
+
+        public async Task<bool> LoginAsync()
         {
             try
             {
-                var usuario = _usuarioService.AuthenticateAsync(UserEntry.Text, PasswordEntry.Text).GetAwaiter().GetResult();
-                DisplayAlert("Login Successful", "You have successfully logged in.", "OK");
+                var usuario = await _usuarioService.AuthenticateAsync(UserEntry.Text, PasswordEntry.Text);
+                if (usuario != null)
+                {
+                    // Authentication successful
+                    return true;
+                }
+                else
+                {
+                    // User not found or invalid credentials
+                    await DisplayAlert("Login Failed", "Username or password is incorrect.", "OK");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                DisplayAlert("Login Failed", "Username or password is incorrect.", "OK");
+                await DisplayAlert("Login Failed", "Username or password is incorrect.", "OK");
+                return false;
             }
-            
         }
+
+
 
 
         // The method containing this code needs to be async

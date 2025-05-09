@@ -3,135 +3,160 @@ using System.Data;
 using System.IO;
 using Dapper;
 using Microsoft.Data.Sqlite;
-using MySql.Data.MySqlClient; // Use Microsoft.Data.Sqlite for SQLite connections
+using MySql.Data.MySqlClient;
 
 namespace IntuitERP.Config
 {
     public class Configurator
     {
-        private string server;
-        private string database;
-        private string user;
-        private string password;
-        private readonly string dbPath;
-        private MySqlConnect mySqlConnect;
+        private string dbPath;
+        private ConnectionConfig currentConfig;
 
         public Configurator()
         {
             dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ConfigsDB.db");
             InitializeDatabase(); // Ensure the database and table exist
-            CreateMySqlConnection(); // Load configuration
+            LoadConfiguration(); // Load configuration from SQLite
         }
 
-        // Add this method to your Configurator class
         public IDbConnection GetMySqlConnection()
         {
             try
             {
-                // Use the class-level variables already loaded by GetSQLiteDatabaseInfo()
-                string connectionString = MySqlConnect.GetConnectionString(server, database, user, password);
+                if (currentConfig == null)
+                {
+                    LoadConfiguration();
+                }
 
-                // Create and return the connection
+                if (currentConfig == null)
+                {
+                    throw new InvalidOperationException("MySQL connection configuration not found.");
+                }
+
+                string connectionString = MySqlConnect.GetConnectionString(
+                    currentConfig.Server,
+                    currentConfig.Database,
+                    currentConfig.User,
+                    currentConfig.Password);
+
                 return new MySqlConnection(connectionString);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error creating MySQL connection: {ex.Message}");
-                return null;
+                throw; // Rethrow to let caller handle the error
             }
         }
-
-
 
         private void InitializeDatabase()
         {
-            if (!File.Exists(dbPath))
+            try
             {
-                try
-                {
-                    // Ensure the directory exists
-                    Directory.CreateDirectory(Path.GetDirectoryName(dbPath));
+                // Ensure the directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(dbPath));
 
-                    using (var connection = CreateConnection())
+                bool databaseExists = File.Exists(dbPath);
+
+                using (var connection = CreateSqliteConnection())
+                {
+                    connection.Open();
+
+                    // Create the Connection table if it doesn't exist
+                    var createTableQuery = @"
+                    CREATE TABLE IF NOT EXISTS Connection (
+                        ID INTEGER PRIMARY KEY,
+                        Server TEXT,
+                        Database TEXT,
+                        User TEXT,
+                        Password TEXT
+                    )";
+                    connection.Execute(createTableQuery);
+
+                    // Insert default configuration if no data exists
+                    var count = connection.QuerySingle<int>("SELECT COUNT(*) FROM Connection");
+                    if (count == 0)
                     {
-                        // Create the Connection table if it doesn't exist
-                        var createTableQuery = @"
-                        CREATE TABLE IF NOT EXISTS Connection (
-                            ID INTEGER PRIMARY KEY,
-                            Server TEXT,
-                            Database TEXT,
-                            User TEXT,
-                            Password TEXT
-                        )";
-                        connection.Execute(createTableQuery);
-
-                        // Insert default configuration if no data exists
-                        var count = connection.QuerySingle<int>("SELECT COUNT(*) FROM Connection");
-                        if (count == 0)
+                        var insertQuery = @"
+                        INSERT INTO Connection (ID, Server, Database, User, Password)
+                        VALUES (@ID, @Server, @Database, @User, @Password)";
+                        connection.Execute(insertQuery, new
                         {
-                            var insertQuery = @"
-                            INSERT INTO Connection (ID, Server, Database, User, Password)
-                            VALUES (@ID, @Server, @Database, @User, @Password)";
-                            connection.Execute(insertQuery, new
-                            {
-                                ID = 1,
-                                Server = "localhost",
-                                Database = "default_db",
-                                User = "root",
-                                Password = "password"
-                            });
-                        }
+                            ID = 1,
+                            Server = "localhost",
+                            Database = "default_db",
+                            User = "root",
+                            Password = "password"
+                        });
                     }
+                }
 
-                    Console.WriteLine("Database initialized successfully.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error initializing database: {ex.Message}");
-                    throw;
-                }
+                Console.WriteLine("Database initialized successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error initializing database: {ex.Message}");
+                throw;
             }
         }
 
-        private IDbConnection CreateMySqlConnection()
+        private void LoadConfiguration()
         {
             try
             {
-                // First, get the connection info from SQLite
-                using (var sqliteConnection = CreateConnection())
+                using (var connection = CreateSqliteConnection())
                 {
+                    connection.Open();
                     var query = "SELECT * FROM Connection WHERE ID = @ID";
-                    var config = sqliteConnection.QuerySingleOrDefault<ConnectionConfig>(query, new { ID = 1 });
+                    currentConfig = connection.QuerySingleOrDefault<ConnectionConfig>(query, new { ID = 1 });
 
-                    if (config != null)
-                    {
-                        string connectionString = MySqlConnect.GetConnectionString(
-                            config.Server,
-                            config.DataBase,
-                            config.User,
-                            config.Password
-                        );
-
-                        // Assuming you have MySql.Data.MySqlClient imported
-                        return new MySqlConnection(connectionString);
-                    }
-                    else
+                    if (currentConfig == null)
                     {
                         Console.WriteLine("No connection configuration found in the database.");
-                        return null;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating MySQL connection: {ex.Message}");
-                return null;
+                Console.WriteLine($"Error loading configuration: {ex.Message}");
+                throw;
             }
         }
 
-        private IDbConnection CreateConnection()
+        private IDbConnection CreateSqliteConnection()
         {
             return new SqliteConnection($"Data Source={dbPath}");
+        }
+
+        // Added method to update configuration
+        public void SaveConfiguration(ConnectionConfig config)
+        {
+            try
+            {
+                using (var connection = CreateSqliteConnection())
+                {
+                    connection.Open();
+                    var updateQuery = @"
+                    UPDATE Connection 
+                    SET Server = @Server, Database = @Database, User = @User, Password = @Password
+                    WHERE ID = @ID";
+
+                    connection.Execute(updateQuery, new
+                    {
+                        ID = 1,
+                        config.Server,
+                        config.Database,
+                        config.User,
+                        config.Password
+                    });
+
+                    currentConfig = config;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving configuration: {ex.Message}");
+                throw;
+            }
         }
     }
 
@@ -140,12 +165,12 @@ namespace IntuitERP.Config
     {
         public int ID { get; set; }
         public string Server { get; set; }
-        public string DataBase { get; set; }
+        public string Database { get; set; } // Changed from DataBase to match DB column
         public string User { get; set; }
         public string Password { get; set; }
     }
 
-    // Example MySQL connection class for demonstration purposes
+    // Helper class for MySQL connections
     public class MySqlConnect
     {
         private readonly string connectionString;

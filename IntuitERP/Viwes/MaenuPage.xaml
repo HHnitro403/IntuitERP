@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IntuitERP.Viwes.MaenuPage"
+             Title="">
+    
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top header with user info -->
+        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, 
+                                        Dark=#1A1C20}" Padding="10,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackLayout Grid.Column="0" Orientation="Vertical" Spacing="2">
+                <Label Text="ERP System" TextColor="White" FontSize="22" FontAttributes="Bold"/>
+                <Label Text="Welcome, User" TextColor="White" FontSize="14"/>
+            </StackLayout>
+
+            <Label Grid.Column="1" 
+                   Text="24/04/2025" 
+                   TextColor="White" 
+                   HorizontalOptions="End"
+                   VerticalOptions="Center"/>
+        </Grid>
+
+        <!-- Main content area with navigation -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <!-- Changed from fixed 240 to proportional width -->
+                <ColumnDefinition Width="0.11*"/>
+                <ColumnDefinition Width="0.75*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Side navigation menu -->
+            <ScrollView Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#E6F2F5, 
+                                        Dark=#4682B4}" MaximumWidthRequest="250">
+                <Grid>
+                    <StackLayout Spacing="0">
+                        <!-- Dashboard -->
+                        <Border Padding="10,12" Stroke="Transparent">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer />
+                            </Border.GestureRecognizers>
+                            <Label Text="Dashboard" FontSize="16" LineBreakMode="TailTruncation"/>
+                        </Border>
+
+                        <!-- Other menu items follow the same pattern -->
+                        <Border Padding="10,12" Stroke="Transparent">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer />
+                            </Border.GestureRecognizers>
+                            <Label Text="Clientes" FontSize="16" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light={StaticResource lightTextColor}, Dark={StaticResource darkTextColor}}"/>
+                        </Border>
+
+                        <Border Padding="10,12" Stroke="Transparent">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer />
+                            </Border.GestureRecognizers>
+                            <Label Text="Produtos" FontSize="16" LineBreakMode="TailTruncation"/>
+                        </Border>
+
+                        <Border Padding="10,12" Stroke="Transparent">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer />
+                            </Border.GestureRecognizers>
+                            <Label Text="Fornecedores" FontSize="16" LineBreakMode="TailTruncation"/>
+                        </Border>
+
+                        <Border Padding="10,12" Stroke="Transparent">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer />
+                            </Border.GestureRecognizers>
+                            <Label Text="Atendimentos" FontSize="16" LineBreakMode="TailTruncation"/>
+                        </Border>
+
+                        <!-- Additional menu items... -->
+                    </StackLayout>
+                </Grid>
+            </ScrollView>
+
+            <!-- Content area with scrolling for responsiveness -->
+            <Grid Grid.Column="1" BackgroundColor="{AppThemeBinding Light= White,
+                                        Dark=#909EAE}">
+                <ScrollView>
+                    <Grid Padding="15" RowSpacing="20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Dashboard Header -->
+                        <Label Grid.Row="0" Text="Dashboard" FontSize="24" FontAttributes="Bold"/>
+
+                        <!-- Dashboard Cards - Responsive grid -->
+                        <Grid Grid.Row="1" ColumnSpacing="15" RowSpacing="15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Sales Summary Card -->
+                            <Border Grid.Column="0" 
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="#DDDDDD"
+                                    BackgroundColor="#FFFFFF">
+                                <Grid Padding="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Text="Sales" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Grid.Row="1" Text="R$ 85,241.00" FontSize="20" FontAttributes="Bold" TextColor="#0078D7"/>
+                                    <Label Grid.Row="2" Text="+12% from last month" FontSize="12" TextColor="#5AAD5A"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Expenses Card -->
+                            <Border Grid.Column="1" 
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="#DDDDDD"
+                                    BackgroundColor="#FFFFFF">
+                                <Grid Padding="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Text="Expenses" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Grid.Row="1" Text="R$ 42,158.00" FontSize="20" FontAttributes="Bold" TextColor="#0078D7"/>
+                                    <Label Grid.Row="2" Text="-5% from last month" FontSize="12" TextColor="#5AAD5A"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Inventory Card -->
+                            <Border Grid.Column="2" 
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="#DDDDDD"
+                                    BackgroundColor="#FFFFFF">
+                                <Grid Padding="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Text="Inventory" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Grid.Row="1" Text="1,245 items" FontSize="20" FontAttributes="Bold" TextColor="#0078D7"/>
+                                    <Label Grid.Row="2" Text="8 low stock items" FontSize="12" TextColor="#D32F2F"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!-- Recent Orders Card -->
+                        <Border Grid.Row="2"
+                                StrokeShape="RoundRectangle 10"
+                                Stroke="#DDDDDD"
+                                BackgroundColor="#FFFFFF">
+                            <Grid Padding="15">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Row="0" Text="Recent Orders" FontAttributes="Bold" FontSize="16" Margin="0,0,0,10"/>
+
+                                <Grid Grid.Row="1" RowSpacing="8">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Order entries using responsive Grids -->
+                                    <Border Grid.Row="0" StrokeShape="Rectangle" Padding="10" BackgroundColor="#F8F8F8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Text="ORD-2584" FontAttributes="Bold"/>
+                                            <Label Grid.Column="1" Text="Customer XYZ Ltd" Margin="15,0,0,0"/>
+                                            <Label Grid.Column="2" Text="R$ 3,450.00" Margin="15,0,0,0"/>
+                                            <Label Grid.Column="3" Text="In Progress" TextColor="#FF9800" Margin="15,0,0,0"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Similar pattern for other order entries -->
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollView>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

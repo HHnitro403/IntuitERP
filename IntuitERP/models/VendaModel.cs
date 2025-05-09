@@ -1,22 +1,55 @@
-﻿using System;
+﻿using MySqlX.XDevAPI;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IntuitERP.models
 {
+    [Table("venda")]
     public class VendaModel
     {
+        [Key]
+        [Column("CodVenda")]
         public int CodVenda { get; set; }
-        public DateTime? data_venda { get; set; }
-        public TimeSpan? hora_venda { get; set; }
-        public int? CodCliente { get; set; }
+
+        [Column("data_venda")]
+        public DateTime? DataVenda { get; set; }
+
+        [Column("hora_venda")]
+        public TimeSpan? HoraVenda { get; set; }
+
+        [Column("CodCliente")]
+        [Required]
+        public int CodCliente { get; set; }
+
+        [Column("Desconto", TypeName = "decimal(10,2)")]
         public decimal? Desconto { get; set; }
+
+        [Column("CodVendedor")]
         public int? CodVendedor { get; set; }
-        public string OBS { get; set; }
-        public decimal? valor_total { get; set; }
-        public string forma_pagamento { get; set; }
-        public bool? status_venda { get; set; }
+
+        [Column("OBS")]
+        public string? OBS { get; set; }
+
+        [Column("valor_total", TypeName = "decimal(10,2)")]
+        [Required]
+        public decimal ValorTotal { get; set; }
+
+        [Column("forma_pagamento")]
+        [StringLength(50)]
+        public string? FormaPagamento { get; set; }
+
+        [Column("status_venda")]
+        public byte? StatusVenda { get; set; }
+
+        // Navigation properties
+        [ForeignKey("CodCliente")]
+        public virtual ClienteModel? Cliente { get; set; }
+
+        [ForeignKey("CodVendedor")]
+        public virtual VendedorModel? Vendedor { get; set; }
+
+        public virtual ICollection<ItemVendaModel>? ItensVenda { get; set; }
     }
 }

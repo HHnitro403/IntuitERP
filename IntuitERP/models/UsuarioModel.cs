@@ -1,80 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IntuitERP.models
 {
+    [Table("usuarios")]
     public class UsuarioModel
     {
-        public static int CodUsuarios { get; set; } // Primary key, auto-incremented
-        public static string Senha { get; set; } // Password (should be hashed in practice)
+        [Key]
+        [Column("CodUsuarios")]
+        public int CodUsuarios { get; set; }
 
-        // Permissions for Produtos
-        public static bool PermissaoProdutosCreate { get; set; }
-        public static bool PermissaoProdutosRead { get; set; }
-        public static bool PermissaoProdutosUpdate { get; set; }
-        public static bool PermissaoProdutosDelete { get; set; }
+        [Column("Usuario")]
+        [Required]
+        [StringLength(255)]
+        public string UsuarioNome { get; set; }
 
-        // Permissions for Vendas
-        public static bool PermissaoVendasCreate { get; set; }
-        public static bool PermissaoVendasRead { get; set; }
-        public static bool PermissaoVendasUpdate { get; set; }
-        public static bool PermissaoVendasDelete { get; set; }
+        [Column("Senha")]
+        [Required]
+        [StringLength(255)]
+        public string Senha { get; set; }
 
-        // Permissions for Relatorios (only generate)
-        public static bool PermissaoRelatoriosGenerate { get; set; }
+        [Column("PermissaoProdutosCreate")]
+        public bool PermissaoProdutosCreate { get; set; } = false;
 
-        // Permissions for Vendedores
-        public static bool PermissaoVendedoresCreate { get; set; }
-        public static bool PermissaoVendedoresRead { get; set; }
-        public static bool PermissaoVendedoresUpdate { get; set; }
-        public static bool PermissaoVendedoresDelete { get; set; }
+        [Column("PermissaoProdutosRead")]
+        public bool PermissaoProdutosRead { get; set; } = false;
 
-        // Permissions for Fornecedores
-        public static bool PermissaoFornecedoresCreate { get; set; }
-        public static bool PermissaoFornecedoresRead { get; set; }
-        public static bool PermissaoFornecedoresUpdate { get; set; }
-        public static bool PermissaoFornecedoresDelete { get; set; }
+        [Column("PermissaoProdutosUpdate")]
+        public bool PermissaoProdutosUpdate { get; set; } = false;
 
-        // Permissions for Clientes
-        public static bool PermissaoClientesCreate { get; set; }
-        public static bool PermissaoClientesRead { get; set; }
-        public static bool PermissaoClientesUpdate { get; set; }
-        public static bool PermissaoClientesDelete { get; set; }
+        [Column("PermissaoProdutosDelete")]
+        public bool PermissaoProdutosDelete { get; set; } = false;
 
-        // Constructor (optional)
-        public UsuarioModel()
-        {
-            // Initialize permissions to false by default
-            PermissaoProdutosCreate = false;
-            PermissaoProdutosRead = false;
-            PermissaoProdutosUpdate = false;
-            PermissaoProdutosDelete = false;
+        [Column("PermissaoVendasCreate")]
+        public bool PermissaoVendasCreate { get; set; } = false;
 
-            PermissaoVendasCreate = false;
-            PermissaoVendasRead = false;
-            PermissaoVendasUpdate = false;
-            PermissaoVendasDelete = false;
+        [Column("PermissaoVendasRead")]
+        public bool PermissaoVendasRead { get; set; } = false;
 
-            PermissaoRelatoriosGenerate = false;
+        [Column("PermissaoVendasUpdate")]
+        public bool PermissaoVendasUpdate { get; set; } = false;
 
-            PermissaoVendedoresCreate = false;
-            PermissaoVendedoresRead = false;
-            PermissaoVendedoresUpdate = false;
-            PermissaoVendedoresDelete = false;
+        [Column("PermissaoVendasDelete")]
+        public bool PermissaoVendasDelete { get; set; } = false;
 
-            PermissaoFornecedoresCreate = false;
-            PermissaoFornecedoresRead = false;
-            PermissaoFornecedoresUpdate = false;
-            PermissaoFornecedoresDelete = false;
+        [Column("PermissaoRelatoriosGenerate")]
+        public bool PermissaoRelatoriosGenerate { get; set; } = false;
 
-            PermissaoClientesCreate = false;
-            PermissaoClientesRead = false;
-            PermissaoClientesUpdate = false;
-            PermissaoClientesDelete = false;
-        }
+        [Column("PermissaoVendedoresCreate")]
+        public bool PermissaoVendedoresCreate { get; set; } = false;
+
+        [Column("PermissaoVendedoresRead")]
+        public bool PermissaoVendedoresRead { get; set; } = false;
+
+        [Column("PermissaoVendedoresUpdate")]
+        public bool PermissaoVendedoresUpdate { get; set; } = false;
+
+        [Column("PermissaoVendedoresDelete")]
+        public bool PermissaoVendedoresDelete { get; set; } = false;
+
+        [Column("PermissaoFornecedoresCreate")]
+        public bool PermissaoFornecedoresCreate { get; set; } = false;
+
+        [Column("PermissaoFornecedoresRead")]
+        public bool PermissaoFornecedoresRead { get; set; } = false;
+
+        [Column("PermissaoFornecedoresUpdate")]
+        public bool PermissaoFornecedoresUpdate { get; set; } = false;
+
+        [Column("PermissaoFornecedoresDelete")]
+        public bool PermissaoFornecedoresDelete { get; set; } = false;
+
+        [Column("PermissaoClientesCreate")]
+        public bool PermissaoClientesCreate { get; set; } = false;
+
+        [Column("PermissaoClientesRead")]
+        public bool PermissaoClientesRead { get; set; } = false;
+
+        [Column("PermissaoClientesUpdate")]
+        public bool PermissaoClientesUpdate { get; set; } = false;
+
+        [Column("PermissaoClientesDelete")]
+        public bool PermissaoClientesDelete { get; set; } = false;
     }
 
 }

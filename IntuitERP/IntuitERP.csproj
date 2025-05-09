@@ -65,6 +65,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
 		<PackageReference Include="Dapper" Version="2.1.66" />
 		<PackageReference Include="Dapper.Contrib" Version="2.0.78" />
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
@@ -78,14 +79,24 @@
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.11" />
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Viwes\" />
+		<PackageReference Include="UraniumUI" Version="2.11.0" />
+		<PackageReference Include="UraniumUI.Material" Version="2.11.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiAsset Include="Config\ConfigsDB.db" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Viwes\Components\NavBar.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\MaenuPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\MenuPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

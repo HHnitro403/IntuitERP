@@ -1,15 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IntuitERP.models
 {
+    [Table("cidade")]
     public class CidadeModel
     {
-        public int CodCidade { get; set; }
-        public string Cidade { get; set; }
-        public string UF { get; set; }
+        [Key]
+        [Column("CodCIdade")]
+        public int CodCIdade { get; set; }
+
+        [Column("Cidade")]
+        [StringLength(255)]
+        public string? Cidade { get; set; }
+
+        [Column("UF")]
+        [StringLength(2)]
+        public string? UF { get; set; }
+
+        // Navigation properties
+        public virtual ICollection<ClienteModel>? Clientes { get; set; }
+        public virtual ICollection<FornecedorModel>? Fornecedores { get; set; }
     }
 }
