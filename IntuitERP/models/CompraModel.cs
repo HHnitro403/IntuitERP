@@ -31,14 +31,14 @@ namespace IntuitERP.models
         public string? OBS { get; set; }
 
         [Column("valor_total")]
-        public decimal? ValorTotal { get; set; }
+        public decimal? valor_total { get; set; }
 
         [Column("forma_pagamento")]
         [StringLength(50)]
-        public string? FormaPagamento { get; set; }
+        public string? forma_pagamento { get; set; }
 
         [Column("status_compra")]
-        public byte? StatusCompra { get; set; }
+        public byte? status_compra { get; set; }
 
         // Navigation properties
         [ForeignKey("CodFornec")]

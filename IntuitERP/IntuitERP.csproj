@@ -99,4 +99,8 @@
 	  </MauiXaml>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="BCK\" />
+	</ItemGroup>
+
 </Project>

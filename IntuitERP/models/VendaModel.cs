@@ -34,14 +34,14 @@ namespace IntuitERP.models
 
         [Column("valor_total", TypeName = "decimal(10,2)")]
         [Required]
-        public decimal ValorTotal { get; set; }
+        public decimal valor_total { get; set; }
 
         [Column("forma_pagamento")]
         [StringLength(50)]
-        public string? FormaPagamento { get; set; }
+        public string? forma_pagamento { get; set; }
 
         [Column("status_venda")]
-        public byte? StatusVenda { get; set; }
+        public byte? status_venda { get; set; }
 
         // Navigation properties
         [ForeignKey("CodCliente")]
