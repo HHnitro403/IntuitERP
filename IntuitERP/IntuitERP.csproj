@@ -88,7 +88,31 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Viwes\Components\NavBar.xaml">
+	  <MauiXaml Update="Viwes\CadastrodeCidade.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\CadastrodeCliente.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\CadastrodeCompra.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\CadastrodeFornecedor.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\CadastrodeUsuario.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\CadastrodeVenda.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\CadastrodeVendedor.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\CadastroProduto.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\CadstroEstoque.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Viwes\MaenuPage.xaml">
@@ -97,10 +121,6 @@
 	  <MauiXaml Update="Viwes\MenuPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="BCK\" />
 	</ItemGroup>
 
 </Project>

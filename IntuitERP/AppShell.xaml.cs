@@ -9,6 +9,7 @@ namespace IntuitERP
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(MaenuPage), typeof(MaenuPage));
+            Routing.RegisterRoute(nameof(CadastrodeCidade), typeof(CadastrodeCidade));
         }
     }
 }

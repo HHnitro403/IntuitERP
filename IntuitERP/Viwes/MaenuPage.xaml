@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.MaenuPage"
              Title="">
-    
+
     <Grid RowSpacing="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -56,7 +56,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer />
                             </Border.GestureRecognizers>
-                            <Label Text="Clientes" FontSize="16" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light={StaticResource lightTextColor}, Dark={StaticResource darkTextColor}}"/>
+                            <Button x:Name="ClientesBnt" Text="Clientes" FontSize="16" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light='#000000', Dark='#777777'}" BackgroundColor="Transparent" Clicked="ClientesBntClicked"/>
                         </Border>
 
                         <Border Padding="10,12" Stroke="Transparent">

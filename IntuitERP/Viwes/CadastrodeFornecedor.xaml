@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IntuitERP.Viwes.CadastrodeFornecedor"
+             Title="CadastrodeFornecedor">
+    <!-- Main Grid for the page layout -->
+    <Grid RowSpacing="0" Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Form Content -->
+            <RowDefinition Height="Auto"/>
+            <!-- Footer with Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- Top header -->
+        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
+            <Label Text="Novo Fornecedor" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Scrollable Form Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="15" Padding="20">
+
+                <!-- Razão Social -->
+                <Label Text="Razão Social:" FontSize="16"/>
+                <Entry x:Name="RazaoSocialEntry" Placeholder="Digite a razão social" FontSize="16"/>
+
+                <!-- Nome Fantasia -->
+                <Label Text="Nome Fantasia:" FontSize="16"/>
+                <Entry x:Name="NomeFantasiaEntry" Placeholder="Digite o nome fantasia" FontSize="16"/>
+
+                <!-- CNPJ -->
+                <Label Text="CNPJ:" FontSize="16"/>
+                <Entry x:Name="CnpjEntry" Placeholder="00.000.000/0000-00" MaxLength="18" FontSize="16"/>
+
+                <!-- Email -->
+                <Label Text="Email:" FontSize="16"/>
+                <Entry x:Name="EmailEntry" Placeholder="contato@fornecedor.com" Keyboard="Email" FontSize="16"/>
+
+                <!-- Telefone -->
+                <Label Text="Telefone:" FontSize="16"/>
+                <Entry x:Name="TelefoneEntry" Placeholder="(XX) XXXXX-XXXX" Keyboard="Telephone" FontSize="16"/>
+
+                <!-- Endereço -->
+                <Label Text="Endereço:" FontSize="16"/>
+                <Entry x:Name="EnderecoEntry" Placeholder="Rua, Avenida, etc." FontSize="16"/>
+
+                <!-- Código da Cidade (FK) -->
+                <Label Text="Cidade:" FontSize="16"/>
+                <Picker x:Name="CidadePicker" Title="Selecione a Cidade" FontSize="16">
+                    <!-- Items would be populated from your 'cidade' table in C# -->
+                    <!-- Example placeholder items: -->
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Cidade Exemplo A (Cód: 1)</x:String>
+                            <x:String>Cidade Exemplo B (Cód: 2)</x:String>
+                            <x:String>Cidade Exemplo C (Cód: 3)</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <!-- Data de Cadastro -->
+                <!-- This is often set automatically by the system upon saving. -->
+                <!-- It can be hidden or made read-only if displayed. -->
+                <Label Text="Data de Cadastro:" FontSize="16"/>
+                <DatePicker x:Name="DataCadastroPicker" IsEnabled="False" FontSize="16" Format="dd/MM/yyyy"/>
+                <!-- Typically, IsEnabled would be false as it's auto-set, or you might not show it on a new record form -->
+
+                <!-- Ativo -->
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="Ativo:" FontSize="16" VerticalOptions="Center"/>
+                    <Switch x:Name="AtivoSwitch" IsToggled="True" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Footer with Action Buttons -->
+        <Grid Grid.Row="2" Padding="20" ColumnSpacing="10" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2C}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="SalvarFornecedorButton" Grid.Column="0" Text="Salvar Fornecedor" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <Button x:Name="CancelarButton" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <!-- Add Clicked event handlers in C# for functionality -->
+            <!-- e.g., Clicked="SalvarFornecedorButton_Clicked" -->
+        </Grid>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IntuitERP.Viwes.CadstroEstoque"
+             Title="CadstroEstoque">
+    <!-- Main Grid for the page layout -->
+    <Grid RowSpacing="0" Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Form Content -->
+            <RowDefinition Height="Auto"/>
+            <!-- Footer with Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- Top header -->
+        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
+            <Label Text="Nova Movimentação de Estoque" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Scrollable Form Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="20" Padding="20">
+
+                <!-- Seção de Informações da Movimentação -->
+                <Frame BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Detalhes da Movimentação" FontSize="18" FontAttributes="Bold"/>
+
+                        <!-- Código do Produto (CodProduto) -->
+                        <Label Text="Produto:" FontSize="16"/>
+                        <Picker x:Name="ProdutoPicker" Title="Selecione o Produto" FontSize="16">
+                            <!-- Items would be populated from your 'produto' table in C# -->
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Produto Alpha (Cód: 101)</x:String>
+                                    <x:String>Produto Beta (Cód: 102)</x:String>
+                                    <x:String>Produto Gamma (Cód: 103)</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <!-- Tipo de Movimentação (Tipo) -->
+                        <Label Text="Tipo de Movimentação:" FontSize="16"/>
+                        <Picker x:Name="TipoMovimentacaoPicker" Title="Selecione o Tipo" FontSize="16">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>E - Entrada</x:String>
+                                    <x:String>S - Saída</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <!-- Quantidade (Qtd) -->
+                        <Label Text="Quantidade:" FontSize="16"/>
+                        <Entry x:Name="QuantidadeEntry" Placeholder="0.00" Keyboard="Numeric" FontSize="16"/>
+
+                        <!-- Data da Movimentação -->
+                        <Label Text="Data da Movimentação:" FontSize="16"/>
+                        <DatePicker x:Name="DataMovimentacaoPicker" FontSize="16" Format="dd/MM/yyyy"/>
+
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Footer with Action Buttons -->
+        <Grid Grid.Row="2" Padding="20" ColumnSpacing="10" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2C}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="SalvarMovimentacaoButton" Grid.Column="0" Text="Salvar Movimentação" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <Button x:Name="CancelarMovimentacaoButton" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <!-- Add Clicked event handlers in C# for functionality -->
+        </Grid>
+    </Grid>
+</ContentPage>

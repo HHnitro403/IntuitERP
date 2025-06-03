@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IntuitERP.Viwes.CadastrodeCompra"
+             Title="CadastrodeCompra">
+    <!-- Main Grid for the page layout -->
+    <Grid RowSpacing="0" Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Form Content -->
+            <RowDefinition Height="Auto"/>
+            <!-- Footer with Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- Top header -->
+        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
+            <Label Text="Nova Compra" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Scrollable Form Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="20" Padding="20">
+
+                <!-- Seção de Informações da Compra Principal -->
+                <Frame BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Detalhes da Compra" FontSize="18" FontAttributes="Bold"/>
+
+                        <!-- Data da Compra -->
+                        <Label Text="Data da Compra:" FontSize="16"/>
+                        <DatePicker x:Name="DataCompraPicker" FontSize="16" Format="dd/MM/yyyy"/>
+
+                        <!-- Hora da Compra -->
+                        <Label Text="Hora da Compra:" FontSize="16"/>
+                        <TimePicker x:Name="HoraCompraPicker" FontSize="16" Format="HH:mm"/>
+
+                        <!-- Código do Fornecedor (CodFornec) -->
+                        <Label Text="Fornecedor:" FontSize="16"/>
+                        <Picker x:Name="FornecedorPicker" Title="Selecione o Fornecedor" FontSize="16">
+                            <!-- Items would be populated from database -->
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Fornecedor A (Cód: 1)</x:String>
+                                    <x:String>Fornecedor B (Cód: 2)</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <!-- Código do Vendedor (CodVendedor) -->
+                        <Label Text="Vendedor:" FontSize="16"/>
+                        <Picker x:Name="VendedorPicker" Title="Selecione o Vendedor" FontSize="16">
+                            <!-- Items would be populated from database -->
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Vendedor 1 (Cód: 101)</x:String>
+                                    <x:String>Vendedor 2 (Cód: 102)</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <!-- Desconto Geral da Compra -->
+                        <Label Text="Desconto Geral (R$):" FontSize="16"/>
+                        <Entry x:Name="DescontoCompraEntry" Placeholder="0.00" Keyboard="Numeric" FontSize="16"/>
+
+                        <!-- Observações (OBS) -->
+                        <Label Text="Observações:" FontSize="16"/>
+                        <Editor x:Name="ObservacoesEditor" Placeholder="Digite observações sobre a compra" HeightRequest="100" AutoSize="TextChanges" FontSize="16"/>
+
+                        <!-- Forma de Pagamento -->
+                        <Label Text="Forma de Pagamento:" FontSize="16"/>
+                        <Picker x:Name="FormaPagamentoPicker" Title="Selecione a forma de pagamento" FontSize="16">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Dinheiro</x:String>
+                                    <x:String>Cartão de Crédito</x:String>
+                                    <x:String>Cartão de Débito</x:String>
+                                    <x:String>PIX</x:String>
+                                    <x:String>Boleto Bancário</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <!-- Status da Compra -->
+                        <Label Text="Status da Compra:" FontSize="16"/>
+                        <Picker x:Name="StatusCompraPicker" Title="Selecione o status" FontSize="16">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Pendente</x:String>
+                                    <x:String>Em Processamento</x:String>
+                                    <x:String>Concluída</x:String>
+                                    <x:String>Cancelada</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <!-- Valor Total da Compra (Calculado) -->
+                        <Label Text="Valor Total da Compra (R$):" FontSize="16" FontAttributes="Bold"/>
+                        <Label x:Name="ValorTotalCompraLabel" Text="0.00" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light=DarkGreen, Dark=LightGreen}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Seção de Itens da Compra -->
+                <Frame BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Text="Itens da Compra" FontSize="18" FontAttributes="Bold" VerticalOptions="Center"/>
+                            <Button Grid.Column="1" x:Name="AdicionarItemButton" Text="Adicionar Item" BackgroundColor="DodgerBlue" TextColor="White" CornerRadius="5" Padding="10,5"/>
+                        </Grid>
+
+                        <!-- Lista de Itens (CollectionView) -->
+                        <!-- In a real app, ItemsSource would be bound to an ObservableCollection in C# -->
+                        <CollectionView x:Name="ItensCompraCollectionView" HeightRequest="200" EmptyView="Nenhum item adicionado.">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame BorderColor="{AppThemeBinding Light=#DDDDDD, Dark=#444444}" Padding="10" Margin="0,5" CornerRadius="5">
+                                        <Grid RowSpacing="5" ColumnSpacing="10">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Produto (CodProduto) -->
+                                            <Picker Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Title="Selecione o Produto" FontSize="14"
+                                                    ItemsSource="{Binding ItensCompra}"
+                                                    ItemDisplayBinding="{Binding NomeProduto}" SelectedItem="{Binding SelectedProduto}">
+                                                <!-- Placeholder if not using complex binding from a ViewModel -->
+                                                <!-- <Picker.ItemsSource>
+                                                    <x:Array Type="{x:Type x:String}">
+                                                        <x:String>Produto X (Cód: 10)</x:String>
+                                                        <x:String>Produto Y (Cód: 20)</x:String>
+                                                    </x:Array>
+                                                </Picker.ItemsSource> -->
+                                            </Picker>
+
+                                            <!-- Descrição (ReadOnly, ideally auto-filled from Produto) -->
+                                            <!-- <Label Grid.Row="0" Grid.Column="1" Text="{Binding DescricaoProduto}" FontSize="14" VerticalOptions="Center"/> -->
+
+
+                                            <!-- Quantidade -->
+                                            <Entry Grid.Row="1" Grid.Column="0" Placeholder="Qtde." Keyboard="Numeric" FontSize="14" Text="{Binding Quantidade}"/>
+
+                                            <!-- Valor Unitário (ReadOnly, ideally auto-filled from Produto) -->
+                                            <Entry Grid.Row="1" Grid.Column="1" Placeholder="Val. Unit." Keyboard="Numeric" FontSize="14" Text="{Binding ValorUnitario}" IsEnabled="False"/>
+
+                                            <!-- Desconto do Item -->
+                                            <Entry Grid.Row="2" Grid.Column="0" Placeholder="Desc. Item" Keyboard="Numeric" FontSize="14" Text="{Binding DescontoItem}"/>
+
+                                            <!-- Valor Total do Item (Calculado) -->
+                                            <Label Grid.Row="2" Grid.Column="1" FontSize="14" FontAttributes="Bold" VerticalOptions="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="Total: R$ "/>
+                                                        <Span Text="{Binding ValorTotalItem, StringFormat='{0:N2}'}"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+
+                                            <!-- Botão Remover Item -->
+                                            <Button Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Text="Remover" BackgroundColor="IndianRed" TextColor="White" FontSize="12" CornerRadius="5" VerticalOptions="Center"
+                                                    Command="{Binding Source={x:Reference ItensCompraCollectionView}, Path=BindingContext.RemoverItemCommand}" CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Footer with Action Buttons -->
+        <Grid Grid.Row="2" Padding="20" ColumnSpacing="10" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2C}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="SalvarCompraButton" Grid.Column="0" Text="Salvar Compra" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <Button x:Name="CancelarCompraButton" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <!-- Add Clicked event handlers in C# for functionality -->
+        </Grid>
+    </Grid>
+</ContentPage>
