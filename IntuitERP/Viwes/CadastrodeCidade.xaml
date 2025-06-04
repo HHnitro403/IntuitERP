@@ -163,7 +163,8 @@
                                         BackgroundColor="#6c757d" 
                                         TextColor="White"/>
                                     <Button x:Name="BtnSave" 
-                                        Text="Salvar" 
+                                        Text="Salvar"
+                                            Clicked="BtnSave_Clicked"
                                         BackgroundColor="#0078D7" 
                                         TextColor="White"/>
                                 </StackLayout>
@@ -199,6 +200,7 @@
                                     <Button Grid.Column="1" 
                                         x:Name="BtnSearch" 
                                         Text="Buscar" 
+                                        Clicked="BtnSearch_Clicked"
                                         BackgroundColor="#0078D7" 
                                         TextColor="White"/>
                                 </Grid>
@@ -259,7 +261,7 @@
                                                             WidthRequest="60" 
                                                             FontSize="12" 
                                                             Padding="0" 
-                                                            CommandParameter="{Binding .}"
+                                                            Clicked="BtnEdit_Clicked"
                                                             x:Name="BtnEdit"/>
                                                         <Button Text="Excluir" 
                                                             BackgroundColor="#D32F2F" 
@@ -268,7 +270,7 @@
                                                             WidthRequest="60" 
                                                             FontSize="12" 
                                                             Padding="0" 
-                                                            CommandParameter="{Binding .}"
+                                                            Clicked="BtnDelete_Clicked"
                                                             x:Name="BtnDelete"/>
                                                     </StackLayout>
                                                 </Grid>
