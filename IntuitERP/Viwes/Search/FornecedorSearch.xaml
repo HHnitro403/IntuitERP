@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:IntuitERP.models" 
+             xmlns:converters="clr-namespace:IntuitERP.Helpers"
+             x:Class="IntuitERP.Viwes.Search.FornecedorSearch"
+             Title="FornecedorSearch">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Actions -->
+            <RowDefinition Height="*"/>
+            <!-- List -->
+        </Grid.RowDefinitions>
+
+        <!-- Top header -->
+        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
+            <Label Text="Fornecedores Cadastrados" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Actions: Search Bar and Action Buttons -->
+        <VerticalStackLayout Grid.Row="1" Padding="10" Spacing="10">
+            <SearchBar x:Name="FornecedorSearchBar" Placeholder="Buscar por Razão Social, Nome Fantasia ou CNPJ..." TextChanged="FornecedorSearchBar_TextChanged"/>
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" x:Name="NovoFornecedorButton" Text="Novo" Clicked="NovoFornecedorButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
+                <Button Grid.Column="1" x:Name="EditarFornecedorButton" Text="Editar Selecionado" Clicked="EditarFornecedorSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Orange" TextColor="White"/>
+                <Button Grid.Column="2" x:Name="ExcluirFornecedorButton" Text="Excluir Selecionado" Clicked="ExcluirFornecedorSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Red" TextColor="White"/>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Suppliers List -->
+        <CollectionView x:Name="FornecedoresCollectionView"
+                        Grid.Row="2"
+                        SelectionMode="Single"
+                        SelectionChanged="FornecedoresCollectionView_SelectionChanged"
+                        EmptyView="Nenhum fornecedor encontrado.">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:FornecedorModel">
+                    <Frame Padding="10" Margin="5" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="5">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                                <VisualState Name="Normal" />
+                                <VisualState Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkSlateBlue}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid RowSpacing="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Row="0" FontSize="Medium" FontAttributes="Bold">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding CodFornecedor, StringFormat='Cód: {0} - '}"/>
+                                        <Span Text="{Binding NomeFantasia}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="1" FontSize="Small" Text="{Binding RazaoSocial, StringFormat='Razão Social: {0}'}"/>
+                            <Label Grid.Row="2" FontSize="Small" Text="{Binding CNPJ, StringFormat='CNPJ: {0}'}"/>
+                            <Label Grid.Row="3" FontSize="Small">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Status: "/>
+                                        <Span Text="{Binding Ativo, Converter={StaticResource BoolToStatusConverter}}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

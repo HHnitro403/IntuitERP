@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:IntuitERP.models"
+             x:Class="IntuitERP.Viwes.Search.VendaSearch"
+             Title="VendaSearch">
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Actions -->
+            <RowDefinition Height="*"/>
+            <!-- List -->
+        </Grid.RowDefinitions>
+
+        <!-- Top header -->
+        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
+            <Label Text="Vendas Registradas" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Actions: Search Bar and Action Buttons -->
+        <VerticalStackLayout Grid.Row="1" Padding="10" Spacing="10">
+            <SearchBar x:Name="VendaSearchBar" Placeholder="Buscar por cód. venda, cliente ou vendedor..." TextChanged="VendaSearchBar_TextChanged"/>
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" x:Name="NovaVendaButton" Text="Nova" Clicked="NovaVendaButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
+                <Button Grid.Column="1" x:Name="EditarVendaButton" Text="Editar Selecionada" Clicked="EditarVendaSelecionadaButton_Clicked" IsEnabled="False" BackgroundColor="Orange" TextColor="White"/>
+                <Button Grid.Column="2" x:Name="ExcluirVendaButton" Text="Excluir Selecionada" Clicked="ExcluirVendaSelecionadaButton_Clicked" IsEnabled="False" BackgroundColor="Red" TextColor="White"/>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Vendas List -->
+        <CollectionView x:Name="VendasCollectionView"
+                        Grid.Row="2"
+                        SelectionMode="Single"
+                        SelectionChanged="VendasCollectionView_SelectionChanged"
+                        EmptyView="Nenhuma venda encontrada.">
+            <CollectionView.ItemTemplate>
+                <!-- Using a local "DisplayModel" as the DataType -->
+                <DataTemplate>
+                    <Frame Padding="10" Margin="5" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="5">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                                <VisualState Name="Normal" />
+                                <VisualState Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkSlateBlue}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid RowSpacing="5" ColumnDefinitions="*,*">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="Medium" FontAttributes="Bold" Text="{Binding CodVenda, StringFormat='Venda Cód: {0}'}"/>
+
+                            <Label Grid.Row="1" Grid.Column="0" FontSize="Small" Text="{Binding DataVenda, StringFormat='{0:dd/MM/yyyy}'}"/>
+                            <Label Grid.Row="1" Grid.Column="1" FontSize="Small" FontAttributes="Bold" HorizontalTextAlignment="End" Text="{Binding ValorTotal, StringFormat='R$ {0:N2}'}"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" FontSize="Small" Text="{Binding NomeCliente, StringFormat='Cliente: {0}'}"/>
+                            <Label Grid.Row="3" Grid.Column="0" FontSize="Small" Text="{Binding NomeVendedor, StringFormat='Vendedor: {0}'}"/>
+                            <Label Grid.Row="3" Grid.Column="1" FontSize="Small" HorizontalTextAlignment="End" Text="{Binding Status, StringFormat='Status: {0}'}"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

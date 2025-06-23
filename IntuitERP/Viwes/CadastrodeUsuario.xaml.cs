@@ -7,7 +7,7 @@ public partial class CadastrodeUsuario : ContentPage
 {
 
     private readonly UsuarioService _usuarioService;
-    public CadastrodeUsuario(UsuarioService usuarioService)
+    public CadastrodeUsuario(UsuarioService usuarioService, int id = 0)
     {
         InitializeComponent();
         _usuarioService = usuarioService;

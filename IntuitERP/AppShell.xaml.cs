@@ -1,4 +1,5 @@
 ﻿using IntuitERP.Viwes;
+using IntuitERP.Viwes.Search;
 
 namespace IntuitERP
 {
@@ -19,6 +20,13 @@ namespace IntuitERP
             Routing.RegisterRoute(nameof(CadastrodeVenda), typeof(CadastrodeVenda));
             Routing.RegisterRoute(nameof(CadastrodeCompra), typeof(CadastrodeCompra));
             Routing.RegisterRoute(nameof(CadastrodeUsuario), typeof(CadastrodeUsuario));
+            Routing.RegisterRoute(nameof(ClienteSearch), typeof(ClienteSearch));
+            Routing.RegisterRoute(nameof(FornecedorSearch), typeof(FornecedorSearch));
+            Routing.RegisterRoute(nameof(ProdutoSearch), typeof(ProdutoSearch));
+            Routing.RegisterRoute(nameof(VendedorSearch), typeof(VendedorSearch));
+            Routing.RegisterRoute(nameof(UsuarioSearch), typeof(UsuarioSearch));
+            Routing.RegisterRoute(nameof(VendaSearch), typeof(VendaSearch));
+            Routing.RegisterRoute(nameof(CompraSearch), typeof(CompraSearch));
         }
     }
 }

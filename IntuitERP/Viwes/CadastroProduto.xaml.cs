@@ -10,9 +10,10 @@ public partial class CadastroProduto : ContentPage
     private readonly ProdutoService _produtoService;
     private readonly FornecedorService _fornecedorService;
     private ObservableCollection<FornecedorModel> _listaFornecedores;
+    private readonly int _id;
 
     // Constructor for Dependency Injection (recommended)
-    public CadastroProduto(ProdutoService produtoService, FornecedorService fornecedorService)
+    public CadastroProduto(ProdutoService produtoService, FornecedorService fornecedorService, int id = 0)
     {
         InitializeComponent();
         _produtoService = produtoService;
@@ -25,12 +26,28 @@ public partial class CadastroProduto : ContentPage
 
         // Set default date for DataCadastroPicker
         DataCadastroPicker.Date = DateTime.Today;
+
+        _id = id;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await LoadFornecedoresAsync();
+
+        if (_id != 0)
+        {
+            var produto = await _produtoService.GetByIdAsync(_id);
+            if (produto != null)
+            {
+                DescricaoProdutoEntry.Text = produto.Descricao;
+                FornecedorPicker.SelectedItem = produto.Fornecedor;
+                EstoqueMinimoEntry.Text = produto.EstMinimo.ToString();
+                TipoProdutoEntry.Text = produto.Tipo;
+                DataCadastroPicker.Date = (DateTime)produto.DataCadastro;
+                AtivoSwitch.IsToggled = (bool)produto.Ativo;
+            }
+        }
     }
 
     private async Task LoadFornecedoresAsync()

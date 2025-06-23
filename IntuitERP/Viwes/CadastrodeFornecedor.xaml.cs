@@ -11,7 +11,8 @@ public partial class CadastrodeFornecedor : ContentPage
     private readonly FornecedorService _fornecedorService;
     private readonly CidadeService _cidadeService;
     private ObservableCollection<CidadeModel> _listaCidades;
-    public CadastrodeFornecedor(FornecedorService fornecedorService, CidadeService cidadeService)
+    private readonly int _fornecedorId;
+    public CadastrodeFornecedor(FornecedorService fornecedorService, CidadeService cidadeService, int fornecedorId = 0)
     {
         InitializeComponent();
         _fornecedorService = fornecedorService;
@@ -27,12 +28,31 @@ public partial class CadastrodeFornecedor : ContentPage
         // Optional: Add TextChanged event for CNPJ and Telefone formatting
         CnpjEntry.TextChanged += CnpjEntry_TextChanged;
         TelefoneEntry.TextChanged += TelefoneEntry_TextChanged;
+
+        _fornecedorId = fornecedorId;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await LoadCidadesAsync();
+
+        if (_fornecedorId != 0)
+        {
+            var fornecedor = await _fornecedorService.GetByIdAsync(_fornecedorId);
+            if (fornecedor != null) {
+                RazaoSocialEntry.Text = fornecedor.RazaoSocial;
+                NomeFantasiaEntry.Text = fornecedor.NomeFantasia;
+                CnpjEntry.Text = fornecedor.CNPJ;
+                EmailEntry.Text = fornecedor.Email;
+                TelefoneEntry.Text = fornecedor.Telefone;
+                EnderecoEntry.Text = fornecedor.Endereco;
+                CidadePicker.SelectedItem = _listaCidades.FirstOrDefault(c => c.CodCIdade == fornecedor.CodCidade);
+                DataCadastroPicker.Date = (DateTime)fornecedor.DataCadastro;
+                AtivoSwitch.IsToggled = (bool)fornecedor.Ativo;
+            }
+
+        }
     }
 
     private async Task LoadCidadesAsync()

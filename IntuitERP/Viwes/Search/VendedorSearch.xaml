@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:IntuitERP.models"             
+             x:Class="IntuitERP.Viwes.Search.VendedorSearch"
+             Title="VendedorSearch">
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Actions -->
+            <RowDefinition Height="*"/>
+            <!-- List -->
+        </Grid.RowDefinitions>
+
+        <!-- Top header -->
+        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
+            <Label Text="Vendedores Cadastrados" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Actions: Search Bar and Action Buttons -->
+        <VerticalStackLayout Grid.Row="1" Padding="10" Spacing="10">
+            <SearchBar x:Name="VendedorSearchBar" Placeholder="Buscar por nome do vendedor..." TextChanged="VendedorSearchBar_TextChanged"/>
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" x:Name="NovoVendedorButton" Text="Novo" Clicked="NovoVendedorButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
+                <Button Grid.Column="1" x:Name="EditarVendedorButton" Text="Editar Selecionado" Clicked="EditarVendedorSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Orange" TextColor="White"/>
+                <Button Grid.Column="2" x:Name="ExcluirVendedorButton" Text="Excluir Selecionado" Clicked="ExcluirVendedorSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Red" TextColor="White"/>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Vendedores List -->
+        <CollectionView x:Name="VendedoresCollectionView"
+                        Grid.Row="2"
+                        SelectionMode="Single"
+                        SelectionChanged="VendedoresCollectionView_SelectionChanged"
+                        EmptyView="Nenhum vendedor encontrado.">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:VendedorModel">
+                    <Frame Padding="10" Margin="5" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="5">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                                <VisualState Name="Normal" />
+                                <VisualState Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkSlateBlue}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid RowSpacing="5" ColumnDefinitions="*,*">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="Medium" FontAttributes="Bold">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding CodVendedor, StringFormat='Cód: {0} - '}"/>
+                                        <Span Text="{Binding NomeVendedor}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+
+                            <Label Grid.Row="1" Grid.Column="0" FontSize="Small" Text="{Binding totalvendas, StringFormat='Total Vendas: {0}'}"/>
+                            <Label Grid.Row="1" Grid.Column="1" FontSize="Small" Text="{Binding vendasfinalizadas, StringFormat='Finalizadas: {0}'}"/>
+                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" FontSize="Small" Text="{Binding vendascanceladas, StringFormat='Canceladas: {0}'}"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

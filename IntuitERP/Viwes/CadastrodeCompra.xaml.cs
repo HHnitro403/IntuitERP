@@ -21,22 +21,8 @@ public partial class CadastrodeCompra : ContentPage
     private ObservableCollection<FornecedorModel> _availableFornecedoresInternal;
     private ObservableCollection<VendedorModel> _availableVendedoresInternal; // Changed from UsuarioModel
     private ObservableCollection<ItemCompraModel> _itensCompraInternal;
+    private readonly int _compraId;
 
-
-    // IMPORTANT: Replace with your actual DB connection mechanism
-    private IDbConnection GetDbConnection()
-    {
-        // Example for MySQL:
-        // string connectionString = "Server=your_server;Port=3306;Database=your_database;Uid=your_user;Pwd=your_password;";
-        // return new MySql.Data.MySqlClient.MySqlConnection(connectionString);
-
-        // Example for SQL Server:
-        // string connectionString = "Server=your_server;Database=your_database;User ID=your_user;Password=your_password;";
-        // return new System.Data.SqlClient.SqlConnection(connectionString);
-
-        // Placeholder - MUST BE REPLACED
-        throw new NotImplementedException("Database connection not implemented. Please configure GetDbConnection().");
-    }
 
     public CadastrodeCompra(
         CompraService compraService,
@@ -44,7 +30,7 @@ public partial class CadastrodeCompra : ContentPage
         FornecedorService fornecedorService,
         ProdutoService produtoService,
         VendedorService vendedorService, // Changed from UsuarioService
-        EstoqueService estoqueService)
+        EstoqueService estoqueService, int compraId = 0)
     {
         InitializeComponent();
 
@@ -74,6 +60,7 @@ public partial class CadastrodeCompra : ContentPage
         DataCompraPicker.Date = DateTime.Today;
         HoraCompraPicker.Time = DateTime.Now.TimeOfDay;
 
+        _compraId = compraId;
         // Set BindingContext to the page itself for XAML bindings to page properties (like AvailableProducts)
         this.BindingContext = this;
     }
@@ -82,6 +69,25 @@ public partial class CadastrodeCompra : ContentPage
     {
         base.OnAppearing();
         await LoadInitialDataAsync();
+        if (_compraId > 0)
+        {
+            var compra = await _compraService.GetByIdAsync(_compraId);
+            if (compra != null)
+            {
+                FornecedorPicker.SelectedItem = compra.Fornecedor;
+                VendedorPicker.SelectedItem = compra.Vendedor;
+                DataCompraPicker.Date = (DateTime)compra.data_compra;
+                HoraCompraPicker.Time = (TimeSpan)compra.hora_compra;
+                _itensCompraInternal.Clear();
+
+                var itensCompra = await _itemCompraService.GetByCompraAsync(_compraId);
+
+                foreach (var item in itensCompra)
+                {
+                    _itensCompraInternal.Add(item);
+                }
+            }
+        }
     }
 
     private async Task LoadInitialDataAsync()

@@ -1,5 +1,6 @@
 using IntuitERP.models;
 using IntuitERP.Services;
+using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 
 namespace IntuitERP.Viwes;
@@ -8,10 +9,11 @@ public partial class CadastrodeCliente : ContentPage
 {
     private readonly ClienteService _clienteService;
     private readonly CidadeService _cidadeService; // Uncomment if you implement a Cidade Picker
+    readonly int _id = 0;
 
     // Constructor for Dependency Injection (recommended)
     // Register ClienteService (and CidadeService if used) in MauiProgram.cs
-    public CadastrodeCliente(ClienteService clienteService , CidadeService cidadeService )
+    public CadastrodeCliente(ClienteService clienteService , CidadeService cidadeService , int id = 0)
     {
         InitializeComponent();
         _clienteService = clienteService;
@@ -23,10 +25,32 @@ public partial class CadastrodeCliente : ContentPage
         DataNascimentoPicker.Date = DateTime.Today.AddYears(-18); // Default to 18 years ago
         DataNascimentoPicker.MaximumDate = DateTime.Today; // Cannot be born in the future
 
-        // Optional: Add TextChanged event for CPF and CEP formatting
-        CpfEntry.TextChanged += CpfEntry_TextChanged;
-        CepEntry.TextChanged += CepEntry_TextChanged;
-        TelefoneEntry.TextChanged += TelefoneEntry_TextChanged;
+       _id = id;
+    }
+
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (_id != 0)
+        {
+            var cliente = await _clienteService.GetByIdAsync(_id);
+            var cidade = await _cidadeService.GetByIdAsync(cliente.CodCidade);
+            
+            NomeEntry.Text = cliente?.Nome ?? string.Empty;
+            EmailEntry.Text = cliente?.Email ?? string.Empty;
+            TelefoneEntry.Text = cliente?.Telefone ?? string.Empty;
+            DataNascimentoPicker.Date = cliente?.DataNascimento ?? DateTime.Today.AddYears(-18);
+            CpfEntry.Text = cliente?.CPF ?? string.Empty;
+            EnderecoEntry.Text = cliente?.Endereco ?? string.Empty;
+            NumeroEntry.Text = cliente?.Numero ?? string.Empty;
+            BairroEntry.Text = cliente?.Bairro ?? string.Empty;
+            CepEntry.Text = cliente?.CEP ?? string.Empty;
+            CodCidadeEntry.Text = cliente?.CodCidade.ToString() ?? string.Empty;
+            DataCadastroPicker.Date = cliente?.DataCadastro ?? DateTime.Today;
+            AtivoSwitch.IsToggled = cliente?.Ativo ?? true;
+
+            NomeEntry.Focus();
+        }
     }
 
     private void ClearForm()

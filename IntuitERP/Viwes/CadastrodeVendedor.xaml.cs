@@ -6,9 +6,10 @@ namespace IntuitERP.Viwes;
 public partial class CadastrodeVendedor : ContentPage
 {
     private readonly VendedorService _vendedorService;
+    private readonly int _vendedorId;
 
     // Constructor for Dependency Injection (recommended)
-    public CadastrodeVendedor(VendedorService vendedorService)
+    public CadastrodeVendedor(VendedorService vendedorService, int id = 0)
     {
         InitializeComponent();
         _vendedorService = vendedorService;
@@ -18,7 +19,24 @@ public partial class CadastrodeVendedor : ContentPage
         TotalVendasEntry.Text = "0";
         VendasFinalizadasEntry.Text = "0";
         VendasCanceladasEntry.Text = "0";
+        _vendedorId = id;
 
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (_vendedorId != 0)
+        {
+            var vendedor = await _vendedorService.GetByIdAsync(_vendedorId);
+            if (vendedor != null)
+            {
+                NomeVendedorEntry.Text = vendedor.NomeVendedor;
+                TotalVendasEntry.Text = vendedor.totalvendas.ToString();
+                VendasFinalizadasEntry.Text = vendedor.vendasfinalizadas.ToString();
+                VendasCanceladasEntry.Text = vendedor.vendascanceladas.ToString() ;
+            }
+        }
     }
 
     private void ClearForm()
@@ -58,13 +76,13 @@ public partial class CadastrodeVendedor : ContentPage
             // Optional: Check if a vendor with the same name already exists.
             // This would require an additional method in your VendedorService, e.g., GetByNomeAsync.
             // Example:
-            //var existingVendedor = await _vendedorService.get(novoVendedor.NomeVendedor);
-            //if (existingVendedor != null)
-            //{
-            //    await DisplayAlert("Duplicidade", $"Já existe um vendedor com o nome: {novoVendedor.NomeVendedor}", "OK");
-            //    NomeVendedorEntry.Focus();
-            //  return;
-            //}
+            var existingVendedor = await _vendedorService.GetByIdAsync(novoVendedor.CodVendedor);
+            if (existingVendedor != null)
+            {
+                await DisplayAlert("Duplicidade", $"Já existe um vendedor com o nome: {novoVendedor.NomeVendedor}", "OK");
+                NomeVendedorEntry.Focus();
+                return;
+            }
 
             int newVendedorId = await _vendedorService.InsertAsync(novoVendedor);
 

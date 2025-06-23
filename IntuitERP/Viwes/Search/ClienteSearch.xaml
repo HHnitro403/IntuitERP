@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:IntuitERP.models"
+             x:Class="IntuitERP.Viwes.Search.ClienteSearch"
+             xmlns:converters="clr-namespace:IntuitERP.Helpers"
+             Title="ClienteSearch">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Actions (Search, New, Edit, Delete Buttons) -->
+            <RowDefinition Height="*"/>
+            <!-- List -->
+        </Grid.RowDefinitions>
+
+        <!-- Top header -->
+        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
+            <Label Text="Clientes Cadastrados" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        </Grid>
+
+        <!-- Actions: Search Bar and Action Buttons -->
+        <VerticalStackLayout Grid.Row="1" Padding="10" Spacing="10">
+            <SearchBar x:Name="ClienteSearchBar" Placeholder="Buscar cliente por nome, email ou CPF..." TextChanged="ClienteSearchBar_TextChanged"/>
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" x:Name="NovoClienteButton" Text="Novo" Clicked="NovoClienteButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
+                <Button Grid.Column="1" x:Name="EditarClienteButton" Text="Editar Selecionado" Clicked="EditarClienteSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Orange" TextColor="White"/>
+                <Button Grid.Column="2" x:Name="ExcluirClienteButton" Text="Excluir Selecionado" Clicked="ExcluirClienteSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Red" TextColor="White"/>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Clients List -->
+        <CollectionView x:Name="ClientesCollectionView"
+                        Grid.Row="2"
+                        ItemsSource="{Binding _listaClientesDisplay}"
+                        SelectionMode="Single"
+            SelectionChanged="ClientesCollectionView_SelectionChanged"
+           
+            EmptyView="Nenhum cliente encontrado.">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ClienteModel">
+                    <Frame Padding="10" Margin="5" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="5">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                                <VisualState Name="Normal" />
+                                <VisualState Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkSlateBlue}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid RowSpacing="5" ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <!-- Column for buttons removed -->
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" FontSize="Medium" FontAttributes="Bold">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding CodCliente, StringFormat='Cód: {0} - '}"/>
+                                        <Span Text="{Binding Nome}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="1" Grid.Column="0" FontSize="Small" Text="{Binding Email, StringFormat='Email: {0}'}"/>
+                            <Label Grid.Row="2" Grid.Column="0" FontSize="Small" Text="{Binding CPF, StringFormat='CPF: {0}'}"/>
+                            <Label Grid.Row="3" Grid.Column="0" FontSize="Small">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Status: "/>
+                                        <Span Text="{Binding Ativo, Converter={StaticResource BoolToStatusConverter}}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <!-- Buttons removed from here -->
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+
+</ContentPage>

@@ -38,51 +38,44 @@
                 <ColumnDefinition Width="0.75*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Side navigation menu -->
-            <ScrollView Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#E6F2F5, 
-                                        Dark=#4682B4}" MaximumWidthRequest="250">
-                <Grid>
-                    <StackLayout Spacing="0">
-                        <!-- Dashboard -->
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Dashboard" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
+            <ScrollView>
+                <VerticalStackLayout Spacing="10" Padding="20">
 
-                        <!-- Other menu items follow the same pattern -->
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Button x:Name="ClientesBnt" Text="Clientes" FontSize="16" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light='#000000', Dark='#777777'}" BackgroundColor="Transparent" Clicked="ClientesBntClicked"/>
-                        </Border>
+                    <Label Text="Menu Principal" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,0,0,20"/>
 
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Produtos" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
+                    <!-- Registrations Group -->
+                    <Frame Padding="10" CornerRadius="5" BorderColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Cadastros" FontSize="Medium" FontAttributes="Bold"/>
+                            <Button Text="Produtos" Clicked="OnProdutosClicked" Style="{StaticResource MenuButton}" />
+                            <Button Text="Cidades" Clicked="OnCidadesClicked" Style="{StaticResource MenuButton}" />
+                            <Button Text="Clientes" Clicked="OnClientesClicked" Style="{StaticResource MenuButton}" />
+                            <Button Text="Fornecedores" Clicked="OnFornecedoresClicked" Style="{StaticResource MenuButton}" />
+                            <Button Text="Usuários" Clicked="OnUsuariosClicked" Style="{StaticResource MenuButton}" />
+                            <Button Text="Vendedores" Clicked="OnVendedoresClicked" Style="{StaticResource MenuButton}" />
+                        </VerticalStackLayout>
+                    </Frame>
 
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Fornecedores" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
+                    <!-- Operations Group -->
+                    <Frame Padding="10" CornerRadius="5" BorderColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Operações" FontSize="Medium" FontAttributes="Bold"/>
+                            <Button Text="Compras" Clicked="OnComprasClicked" Style="{StaticResource MenuButton}" />
+                            <Button Text="Vendas" Clicked="OnVendasClicked" Style="{StaticResource MenuButton}" />
+                        </VerticalStackLayout>
+                    </Frame>
 
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Atendimentos" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
+                    <!-- Stock Management -->
+                    <Frame Padding="10" CornerRadius="5" BorderColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Estoque" FontSize="Medium" FontAttributes="Bold"/>
+                            <Button Text="Gerenciar Estoque" Clicked="OnEstoqueClicked" Style="{StaticResource MenuButton}" />
+                        </VerticalStackLayout>
+                    </Frame>
 
-                        <!-- Additional menu items... -->
-                    </StackLayout>
-                </Grid>
+                
+
+                </VerticalStackLayout>
             </ScrollView>
 
             <!-- Content area with scrolling for responsiveness -->
