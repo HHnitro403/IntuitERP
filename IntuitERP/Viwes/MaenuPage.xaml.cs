@@ -92,7 +92,7 @@ public partial class MaenuPage : ContentPage
             var configurator = new Configurator();
             IDbConnection connection = configurator.GetMySqlConnection();
             var usuarioService = new UsuarioService(connection); // Assuming UsuarioService exists
-            var cadastroUsuarioPage = new CadastrodeUsuario(usuarioService); // Assuming CadastrodeUsuario constructor takes UsuarioService
+            var cadastroUsuarioPage = new UsuarioSearch(usuarioService); // Assuming CadastrodeUsuario constructor takes UsuarioService
             await Navigation.PushAsync(cadastroUsuarioPage);
         }
         catch (Exception ex)

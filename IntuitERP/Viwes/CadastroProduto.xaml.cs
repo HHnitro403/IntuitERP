@@ -44,6 +44,8 @@ public partial class CadastroProduto : ContentPage
                 FornecedorPicker.SelectedItem = produto.Fornecedor;
                 EstoqueMinimoEntry.Text = produto.EstMinimo.ToString();
                 TipoProdutoEntry.Text = produto.Tipo;
+                CategoriaEntry.Text = produto.Categoria;
+                PrecoUnitarioEntry.Text = produto.PrecoUnitario.ToString();
                 DataCadastroPicker.Date = (DateTime)produto.DataCadastro;
                 AtivoSwitch.IsToggled = (bool)produto.Ativo;
             }
@@ -230,5 +232,10 @@ public partial class CadastroProduto : ContentPage
                 entry.CursorPosition = cleanedText.Length;
             }
         }
+    }
+
+    private void SalvarProdutoButton_Clicked_1(object sender, EventArgs e)
+    {
+
     }
 }

@@ -88,7 +88,9 @@ namespace IntuitERP.Services
                 PermissaoClientesDelete = @PermissaoClientesDelete 
                 WHERE CodUsuarios = @CodUsuarios";
 
-            return await _connection.ExecuteAsync(query, usuario);
+            var result = await _connection.ExecuteAsync(query, usuario);
+
+            return result;
         }
 
         public async Task<int> DeleteAsync(int id)

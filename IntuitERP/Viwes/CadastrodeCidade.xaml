@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.CadastrodeCidade"
-             Title="CadastrodeCidade">
+             Title="Cadastro de Cidades">
     <Grid RowSpacing="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -32,57 +32,11 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.11*"/>
-                <ColumnDefinition Width="0.75*"/>
+               
             </Grid.ColumnDefinitions>
 
             <!-- Side navigation menu -->
-            <ScrollView Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#E6F2F5, Dark=#4682B4}" MaximumWidthRequest="250">
-                <Grid>
-                    <StackLayout Spacing="0">
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Dashboard" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
-
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Clientes" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
-
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Produtos" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
-
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Fornecedores" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
-
-                        <Border Padding="10,12" Stroke="Transparent" BackgroundColor="{AppThemeBinding Light=#D0E8F2, Dark=#36648B}">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Cidades" FontSize="16" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
-                        </Border>
-
-                        <Border Padding="10,12" Stroke="Transparent">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer />
-                            </Border.GestureRecognizers>
-                            <Label Text="Atendimentos" FontSize="16" LineBreakMode="TailTruncation"/>
-                        </Border>
-                    </StackLayout>
-                </Grid>
-            </ScrollView>
+           
 
             <!-- Content area for CRUD operations -->
             <Grid Grid.Column="1" BackgroundColor="{AppThemeBinding Light=White, Dark=#909EAE}">
@@ -124,21 +78,21 @@
                                    Margin="0,0,0,10"/>
 
                                 <!-- ID Field (disabled for editing, hidden for new) -->
-                                <Label Grid.Row="1" Grid.Column="0" 
+                                <Label Grid.Row="1" Grid.Column="2" 
                                    Text="Código:" 
                                    VerticalOptions="Center"/>
-                                <Entry Grid.Row="1" Grid.Column="1" 
+                                <Entry Grid.Row="1" Grid.Column="3" 
                                    x:Name="EntryId" 
                                    IsEnabled="False" 
                                    Placeholder="Automático" 
                                    BackgroundColor="#F0F0F0"/>
 
                                 <!-- City Name Field -->
-                                <Label Grid.Row="1" Grid.Column="2" 
+                                <Label Grid.Row="1" Grid.Column="0" 
                                    Text="Cidade:" 
                                    VerticalOptions="Center" 
                                    Margin="10,0,0,0"/>
-                                <Entry Grid.Row="1" Grid.Column="3" 
+                                <Entry Grid.Row="1" Grid.Column="1" 
                                    x:Name="EntryCidade" 
                                    Placeholder="Nome da Cidade" 
                                    MaxLength="255"/>

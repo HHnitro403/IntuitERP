@@ -10,19 +10,19 @@ namespace IntuitERP.Validators
             var result = new ModelValidationResult();
 
             // Required fields validation
-            if (string.IsNullOrWhiteSpace(usuario.UsuarioNome))
+            if (string.IsNullOrWhiteSpace(usuario.Usuario))
             {
                 result.AddError("Nome de usuário é obrigatório");
             }
-            else if (usuario.UsuarioNome.Length > 255)
+            else if (usuario.Usuario.Length > 255)
             {
                 result.AddError("Nome de usuário não pode exceder 255 caracteres");
             }
-            else if (usuario.UsuarioNome.Length < 3)
+            else if (usuario.Usuario.Length < 3)
             {
                 result.AddError("Nome de usuário deve ter pelo menos 3 caracteres");
             }
-            else if (!Regex.IsMatch(usuario.UsuarioNome, @"^[a-zA-Z0-9_\-\.]+$"))
+            else if (!Regex.IsMatch(usuario.Usuario, @"^[a-zA-Z0-9_\-\.]+$"))
             {
                 result.AddError("Nome de usuário contém caracteres inválidos. Use apenas letras, números, underline, hífen e ponto");
             }
@@ -51,9 +51,9 @@ namespace IntuitERP.Validators
         // Method to sanitize input
         public UsuarioModel Sanitize(UsuarioModel usuario)
         {
-            if (usuario.UsuarioNome != null)
+            if (usuario.Usuario != null)
             {
-                usuario.UsuarioNome = usuario.UsuarioNome.Trim();
+                usuario.Usuario = usuario.Usuario.Trim();
             }
 
             // Don't sanitize password as it might interfere with special characters needed for security

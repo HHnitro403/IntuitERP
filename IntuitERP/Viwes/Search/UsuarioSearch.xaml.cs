@@ -41,7 +41,7 @@ public partial class UsuarioSearch : ContentPage
         try
         {
             var usuarios = await _usuarioService.GetAllAsync();
-            _masterListaUsuarios = new List<UsuarioModel>(usuarios.OrderBy(u => u.UsuarioNome));
+            _masterListaUsuarios = new List<UsuarioModel>(usuarios.OrderBy(u => u.Usuario));
             FilterUsuarios();
         }
         catch (Exception ex)
@@ -66,7 +66,7 @@ public partial class UsuarioSearch : ContentPage
         else
         {
             filteredList = _masterListaUsuarios.Where(u =>
-                u.UsuarioNome?.ToLowerInvariant().Contains(searchTerm) ?? false
+                u.Usuario?.ToLowerInvariant().Contains(searchTerm) ?? false
             );
         }
 
@@ -164,7 +164,7 @@ public partial class UsuarioSearch : ContentPage
         }
 
         bool confirm = await DisplayAlert("Confirmar Exclusão",
-            $"ATENÇÃO: Esta ação é PERMANENTE e não pode ser desfeita.\n\nTem certeza que deseja excluir o usuário '{_usuarioSelecionado.UsuarioNome}'?",
+            $"ATENÇÃO: Esta ação é PERMANENTE e não pode ser desfeita.\n\nTem certeza que deseja excluir o usuário '{_usuarioSelecionado.Usuario}'?",
             "Sim, Excluir Permanentemente", "Não");
 
         if (confirm)
