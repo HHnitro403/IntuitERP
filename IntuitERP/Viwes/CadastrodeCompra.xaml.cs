@@ -1,410 +1,302 @@
 using IntuitERP.models;
 using IntuitERP.Services;
 using System.Collections.ObjectModel;
-using System.Data;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace IntuitERP.Viwes;
 
-public partial class CadastrodeCompra : ContentPage
+// Helper class for UI-binding of each purchase item
+public class CompraItemDisplay : INotifyPropertyChanged
 {
+    public ItemCompraModel Item { get; }
+
+    public int? Quantidade
+    {
+        get => Item.quantidade;
+        set { if (Item.quantidade != value && value >= 0) { Item.quantidade = value; OnPropertyChanged(); RecalculateTotal(); } }
+    }
+
+    public decimal? Desconto
+    {
+        get => Item.desconto;
+        set { if (Item.desconto != value && value >= 0) { Item.desconto = value; OnPropertyChanged(); RecalculateTotal(); } }
+    }
+
+    public string ValorUnitarioDisplay => (Item.valor_unitario ?? 0).ToString("N2");
+    public string ValorTotalItemDisplay => (Item.valor_total ?? 0).ToString("N2");
+
+    public CompraItemDisplay(ItemCompraModel item)
+    {
+        Item = item;
+        RecalculateTotal();
+    }
+
+    private void RecalculateTotal()
+    {
+        Item.valor_total = (Item.quantidade ?? 0) * (Item.valor_unitario ?? 0) - (Item.desconto ?? 0);
+        if (Item.valor_total < 0) Item.valor_total = 0;
+        OnPropertyChanged(nameof(ValorTotalItemDisplay));
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}
+
+public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
+{
+    // Services
     private readonly CompraService _compraService;
     private readonly ItemCompraService _itemCompraService;
     private readonly FornecedorService _fornecedorService;
+    private readonly VendedorService _vendedorService;
     private readonly ProdutoService _produtoService;
-    private readonly VendedorService _vendedorService; // Changed from UsuarioService
     private readonly EstoqueService _estoqueService;
 
-    // These are public for the Product Picker's ItemsSource binding in XAML
-    public ObservableCollection<ProdutoModel> AvailableProducts { get; private set; }
+    // Data collections
+    private ObservableCollection<FornecedorModel> _listaFornecedores;
+    private ObservableCollection<VendedorModel> _listaVendedores;
+    public ObservableCollection<ProdutoModel> MasterListaProdutos { get; private set; }
+    public ObservableCollection<CompraItemDisplay> ItensCompra { get; set; }
+    private readonly int? _compraId;
 
-    private ObservableCollection<FornecedorModel> _availableFornecedoresInternal;
-    private ObservableCollection<VendedorModel> _availableVendedoresInternal; // Changed from UsuarioModel
-    private ObservableCollection<ItemCompraModel> _itensCompraInternal;
-    private readonly int _compraId;
+    // UI State Property
+    private bool _hasItems;
+    public bool HasItems
+    {
+        get => _hasItems;
+        set { if (_hasItems != value) { _hasItems = value; OnPropertyChanged(); } }
+    }
 
+    // CORRECTED: StatusCompraItem now uses byte for its Value to match the database
+    public class StatusCompraItem { public string DisplayName { get; set; } public byte Value { get; set; } }
+    private ObservableCollection<StatusCompraItem> _statusCompraList;
 
     public CadastrodeCompra(
-        CompraService compraService,
-        ItemCompraService itemCompraService,
-        FornecedorService fornecedorService,
-        ProdutoService produtoService,
-        VendedorService vendedorService, // Changed from UsuarioService
-        EstoqueService estoqueService, int compraId = 0)
+        CompraService compraService, ItemCompraService itemCompraService, FornecedorService fornecedorService,
+        VendedorService vendedorService, ProdutoService produtoService, EstoqueService estoqueService, int? compraId = null)
     {
         InitializeComponent();
 
         _compraService = compraService;
         _itemCompraService = itemCompraService;
         _fornecedorService = fornecedorService;
+        _vendedorService = vendedorService;
         _produtoService = produtoService;
-        _vendedorService = vendedorService; // Changed from _usuarioService
         _estoqueService = estoqueService;
 
+        _listaFornecedores = new ObservableCollection<FornecedorModel>();
+        _listaVendedores = new ObservableCollection<VendedorModel>();
+        MasterListaProdutos = new ObservableCollection<ProdutoModel>();
+        ItensCompra = new ObservableCollection<CompraItemDisplay>();
 
-        _availableFornecedoresInternal = new ObservableCollection<FornecedorModel>();
-        _availableVendedoresInternal = new ObservableCollection<VendedorModel>(); // Changed from UsuarioModel
-        AvailableProducts = new ObservableCollection<ProdutoModel>(); // Public for XAML binding
-        _itensCompraInternal = new ObservableCollection<ItemCompraModel>();
+        FornecedorPicker.ItemsSource = _listaFornecedores;
+        FornecedorPicker.ItemDisplayBinding = new Binding("NomeFantasia");
+        VendedorPicker.ItemsSource = _listaVendedores;
+        VendedorPicker.ItemDisplayBinding = new Binding("NomeVendedor");
+        ProdutoParaAdicionarPicker.ItemsSource = MasterListaProdutos;
+        ProdutoParaAdicionarPicker.ItemDisplayBinding = new Binding("Descricao");
+        ItensCompraCollectionView.ItemsSource = ItensCompra;
 
-        // Set ItemsSource for pickers and CollectionView
-        FornecedorPicker.ItemsSource = _availableFornecedoresInternal;
-        FornecedorPicker.ItemDisplayBinding = new Binding("NomeFantasia"); // Or RazaoSocial, as appropriate
+        _statusCompraList = new ObservableCollection<StatusCompraItem>
+        {
+            new StatusCompraItem { DisplayName = "Pendente", Value = 0 },
+            new StatusCompraItem { DisplayName = "Em Processamento", Value = 1 },
+            new StatusCompraItem { DisplayName = "Concluída", Value = 2 },
+            new StatusCompraItem { DisplayName = "Cancelada", Value = 3 }
+        };
+        StatusCompraPicker.ItemsSource = _statusCompraList;
+        StatusCompraPicker.ItemDisplayBinding = new Binding("DisplayName");
+        FormaPagamentoPicker.ItemsSource = new List<string> { "Dinheiro", "Cartão de Crédito", "Cartão de Débito", "PIX", "Boleto Bancário" };
 
-        VendedorPicker.ItemsSource = _availableVendedoresInternal;
-        VendedorPicker.ItemDisplayBinding = new Binding("NomeVendedor"); // Changed from "Usuario" to "NomeVendedor"
-
-        ItensCompraCollectionView.ItemsSource = _itensCompraInternal;
-
-        // Initialize default values
         DataCompraPicker.Date = DateTime.Today;
         HoraCompraPicker.Time = DateTime.Now.TimeOfDay;
-
         _compraId = compraId;
-        // Set BindingContext to the page itself for XAML bindings to page properties (like AvailableProducts)
-        this.BindingContext = this;
+
+        if (_compraId.HasValue && _compraId > 0)
+        {
+            this.Title = $"Editar Compra Cód: {_compraId}";
+            HeaderLabel.Text = $"Editar Compra #{_compraId}";
+        }
+
+        ItensCompra.CollectionChanged += (s, e) => { HasItems = ItensCompra.Any(); RecalculateTotalCompra(); };
+        DescontoCompraEntry.TextChanged += (s, e) => RecalculateTotalCompra();
+        BindingContext = this;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await LoadInitialDataAsync();
-        if (_compraId > 0)
+        if (_compraId.HasValue && _compraId > 0)
         {
-            var compra = await _compraService.GetByIdAsync(_compraId);
-            if (compra != null)
-            {
-                FornecedorPicker.SelectedItem = compra.Fornecedor;
-                VendedorPicker.SelectedItem = compra.Vendedor;
-                DataCompraPicker.Date = (DateTime)compra.data_compra;
-                HoraCompraPicker.Time = (TimeSpan)compra.hora_compra;
-                _itensCompraInternal.Clear();
+            await LoadCompraAsync(_compraId.Value);
+        }
+    }
 
-                var itensCompra = await _itemCompraService.GetByCompraAsync(_compraId);
+    private async Task LoadCompraAsync(int compraId)
+    {
+        var compra = await _compraService.GetByIdAsync(compraId);
+        if (compra == null) { await DisplayAlert("Erro", "Compra não encontrada.", "OK"); await Navigation.PopAsync(); return; }
 
-                foreach (var item in itensCompra)
-                {
-                    _itensCompraInternal.Add(item);
-                }
-            }
+        if (compra.data_compra.HasValue) DataCompraPicker.Date = compra.data_compra.Value;
+        if (compra.hora_compra.HasValue) HoraCompraPicker.Time = compra.hora_compra.Value;
+
+        FornecedorPicker.SelectedItem = _listaFornecedores.FirstOrDefault(f => f.CodFornecedor == compra.CodFornec);
+        VendedorPicker.SelectedItem = _listaVendedores.FirstOrDefault(v => v.CodVendedor == compra.CodVendedor);
+        // CORRECTED: Comparison is now byte to byte
+        StatusCompraPicker.SelectedItem = _statusCompraList.FirstOrDefault(s => s.Value == compra.status_compra);
+        FormaPagamentoPicker.SelectedItem = compra.forma_pagamento;
+        DescontoCompraEntry.Text = compra.Desconto?.ToString("F2", CultureInfo.CurrentCulture);
+        ObservacoesEditor.Text = compra.OBS;
+
+        var itens = await _itemCompraService.GetByCompraAsync(compraId);
+        ItensCompra.Clear();
+        foreach (var item in itens ?? Enumerable.Empty<ItemCompraModel>())
+        {
+            ItensCompra.Add(new CompraItemDisplay(item));
+        }
+
+        if (compra.status_compra == 2)
+        {        
+            SalvarCompraButton.IsEnabled = false;    
+            DetalhesdaCompraFrame.IsEnabled = false;
+            ItemFrame.IsEnabled = false;
+            ItensSectionFrame.IsEnabled = false;
+            SalvarCompraButton.IsEnabled = false;
         }
     }
 
     private async Task LoadInitialDataAsync()
     {
-        try
-        {
-            var fornecedores = await _fornecedorService.GetAllAsync();
-            _availableFornecedoresInternal.Clear();
-            foreach (var f in fornecedores.OrderBy(fn => fn.NomeFantasia)) _availableFornecedoresInternal.Add(f);
+        var fornecedores = await _fornecedorService.GetAllAsync();
+        _listaFornecedores.Clear();
+        foreach (var f in fornecedores.OrderBy(fn => fn.NomeFantasia ?? fn.RazaoSocial)) _listaFornecedores.Add(f);
 
-            var vendedores = await _vendedorService.GetAllAsync(); // Changed from _usuarioService
-            _availableVendedoresInternal.Clear();
-            foreach (var v in vendedores.OrderBy(u => u.NomeVendedor)) _availableVendedoresInternal.Add(v); // Changed from u.Usuario to u.NomeVendedor
+        var vendedores = await _vendedorService.GetAllAsync();
+        _listaVendedores.Clear();
+        foreach (var v in vendedores.OrderBy(vn => vn.NomeVendedor)) _listaVendedores.Add(v);
 
-            var produtos = await _produtoService.GetAllAsync();
-            AvailableProducts.Clear();
-            foreach (var p in produtos.OrderBy(pr => pr.Descricao)) AvailableProducts.Add(p);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading initial data: {ex.Message}");
-            await DisplayAlert("Erro", $"Falha ao carregar dados iniciais: {ex.Message}", "OK");
-        }
+        var produtos = await _produtoService.GetAllAsync();
+        MasterListaProdutos.Clear();
+        foreach (var p in produtos.OrderBy(pr => pr.Descricao)) MasterListaProdutos.Add(p);
     }
 
-    private void AdicionarItemButton_Clicked(object sender, EventArgs e)
+    private void ConfirmarAdicionarItemButton_Clicked(object sender, EventArgs e)
     {
-        var newItem = new ItemCompraModel { quantidade = 1, desconto = 0m }; // Sensible defaults
-        _itensCompraInternal.Add(newItem);
-        RecalculateGrandTotal();
-    }
+        var selectedProduto = ProdutoParaAdicionarPicker.SelectedItem as ProdutoModel;
+        if (selectedProduto == null) { DisplayAlert("Produto Inválido", "Selecione um produto.", "OK"); return; }
+        if (!int.TryParse(QuantidadeParaAdicionarEntry.Text, out int quantidade) || quantidade <= 0) { DisplayAlert("Quantidade Inválida", "A quantidade deve ser > 0.", "OK"); return; }
+        decimal.TryParse(DescontoParaAdicionarEntry.Text, out decimal desconto);
 
-    private void ItemProductPicker_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        var picker = sender as Picker;
-        if (picker?.BindingContext is ItemCompraModel itemModel && picker.SelectedItem is ProdutoModel selectedProduct)
+        ItensCompra.Add(new CompraItemDisplay(new ItemCompraModel
         {
-            itemModel.CodProduto = selectedProduct.CodProduto;
-            itemModel.Descricao = selectedProduct.Descricao;
-            itemModel.valor_unitario = selectedProduct.PrecoUnitario;
+            CodProduto = selectedProduto.CodProduto,
+            Descricao = selectedProduto.Descricao,
+            valor_unitario = selectedProduto.PrecoUnitario,
+            quantidade = quantidade,
+            desconto = desconto
+        }));
 
-            UpdateSpecificItemTotalLabel(picker, itemModel);
-            RecalculateGrandTotal();
-        }
-    }
-
-    private void ItemEntry_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        var entry = sender as Entry;
-        if (entry?.BindingContext is ItemCompraModel itemModel)
-        {
-            // Model property is updated by two-way binding.
-            UpdateSpecificItemTotalLabel(entry, itemModel);
-            RecalculateGrandTotal();
-        }
-    }
-
-    private void UpdateSpecificItemTotalLabel(Element controlInItemTemplate, ItemCompraModel itemModel)
-    {
-        if (itemModel == null || controlInItemTemplate == null) return;
-
-        decimal quantidade = itemModel.quantidade ?? 0m;
-        decimal valorUnitario = itemModel.valor_unitario ?? 0m;
-        decimal descontoItem = itemModel.desconto ?? 0m;
-        itemModel.valor_total = (quantidade * valorUnitario) - descontoItem;
-
-        var itemViewRoot = GetItemViewRoot(controlInItemTemplate);
-
-        if (itemViewRoot != null)
-        {
-            var totalLabel = FindVisualChild<Label>(itemViewRoot, el => el.AutomationId == "ValorTotalItemLabel");
-            if (totalLabel != null)
-            {
-                var fs = new FormattedString();
-                fs.Spans.Add(new Span { Text = "Total: R$ " });
-                fs.Spans.Add(new Span { Text = (itemModel.valor_total ?? 0m).ToString("N2", CultureInfo.GetCultureInfo("pt-BR")) });
-                totalLabel.FormattedText = fs;
-            }
-        }
-    }
-
-    private Element GetItemViewRoot(Element element)
-    {
-        if (element == null) return null;
-        Element current = element;
-        while (current != null)
-        {
-            var parent = current.Parent;
-            if (parent == null || parent is CollectionView || (parent.BindingContext != current.BindingContext && current.BindingContext is ItemCompraModel))
-            {
-                return current;
-            }
-            current = parent;
-        }
-        return element;
-    }
-
-
-    public static T FindVisualChild<T>(Element element, Func<T, bool> predicate) where T : Element
-    {
-        if (element == null) return null;
-        if (element is T typedElement && predicate(typedElement)) return typedElement;
-
-        foreach (var child in GetVisualChildren(element))
-        {
-            var result = FindVisualChild(child, predicate);
-            if (result != null) return result;
-        }
-        return null;
-    }
-
-    public static System.Collections.Generic.IEnumerable<Element> GetVisualChildren(Element element)
-    {
-        if (element is Layout layout)
-        {
-            foreach (var child in layout.Children)
-            {
-                if (child is Element childElement)
-                {
-                    yield return childElement;
-                }
-            }
-        }
-        else if (element is ContentView contentView && contentView.Content is Element contentElement)
-        {
-            yield return contentElement;
-        }
-        else if (element is Frame frame && frame.Content is Element frameContent)
-        {
-            yield return frameContent;
-        }
-        else if (element is ScrollView scrollView && scrollView.Content is Element scrollContent)
-        {
-            yield return scrollContent;
-        }
-        else if (element is Border border && border.Content is Element borderContent)
-        {
-            yield return borderContent;
-        }
-    }
-
-
-    private void RecalculateGrandTotal()
-    {
-        decimal subTotalItens = _itensCompraInternal.Sum(item =>
-        {
-            decimal qty = item.quantidade ?? 0m;
-            decimal unitPrice = item.valor_unitario ?? 0m;
-            decimal itemDiscount = item.desconto ?? 0m;
-            return (qty * unitPrice) - itemDiscount;
-        });
-
-        decimal descontoGeral = 0m;
-        if (decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Currency, CultureInfo.GetCultureInfo("pt-BR"), out var desc))
-        {
-            descontoGeral = desc;
-        }
-        else if (decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Number, CultureInfo.GetCultureInfo("pt-BR"), out desc))
-        {
-            descontoGeral = desc;
-        }
-
-        decimal totalFinal = subTotalItens - descontoGeral;
-        ValorTotalCompraLabel.Text = totalFinal.ToString("N2", CultureInfo.GetCultureInfo("pt-BR"));
+        ProdutoParaAdicionarPicker.SelectedItem = null;
+        QuantidadeParaAdicionarEntry.Text = "1";
+        DescontoParaAdicionarEntry.Text = string.Empty;
     }
 
     private void RemoverItem_Clicked(object sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is ItemCompraModel itemToRemove)
+        if (sender is Button button && button.CommandParameter is CompraItemDisplay itemToRemove)
         {
-            _itensCompraInternal.Remove(itemToRemove);
-            RecalculateGrandTotal();
+            ItensCompra.Remove(itemToRemove);
         }
     }
 
-    private byte? MapStatusCompraToByte(string statusString)
+    private void RecalculateTotalCompra()
     {
-        if (string.IsNullOrWhiteSpace(statusString)) return null;
-
-        switch (statusString.ToLowerInvariant())
-        {
-            case "pendente": return 0;
-            case "em processamento": return 1;
-            case "concluída": return 2; // Assuming 'Concluída' maps to 2
-            case "cancelada": return 3; // Assuming 'Cancelada' maps to 3
-            default:
-                Console.WriteLine($"Unknown compra status: {statusString}");
-                return null;
-        }
+        decimal subTotalItens = ItensCompra.Sum(item => item.Item.valor_total ?? 0);
+        decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal descontoGeral);
+        decimal valorTotalFinal = subTotalItens - descontoGeral;
+        ValorTotalCompraLabel.Text = valorTotalFinal.ToString("C", CultureInfo.CurrentCulture);
     }
-
 
     private async void SalvarCompraButton_Clicked(object sender, EventArgs e)
     {
-        if (FornecedorPicker.SelectedItem == null)
-        {
-            await DisplayAlert("Validação", "Selecione um fornecedor.", "OK"); return;
-        }
-        if (VendedorPicker.SelectedItem == null)
-        {
-            await DisplayAlert("Validação", "Selecione um vendedor.", "OK"); return;
-        }
-        if (FormaPagamentoPicker.SelectedItem == null)
-        {
-            await DisplayAlert("Validação", "Selecione uma forma de pagamento.", "OK"); return;
-        }
+        if (FornecedorPicker.SelectedItem == null || VendedorPicker.SelectedItem == null || FormaPagamentoPicker.SelectedItem == null || StatusCompraPicker.SelectedItem == null)
+        { await DisplayAlert("Campos Obrigatórios", "Fornecedor, Vendedor, Forma de Pagamento e Status são obrigatórios.", "OK"); return; }
+        if (!ItensCompra.Any()) { await DisplayAlert("Itens da Compra", "Adicione pelo menos um item à compra.", "OK"); return; }
 
-        byte? statusCompraByte = MapStatusCompraToByte(StatusCompraPicker.SelectedItem?.ToString());
-        if (StatusCompraPicker.SelectedItem == null || statusCompraByte == null)
-        {
-            await DisplayAlert("Validação", "Selecione um status válido para a compra.", "OK"); return;
-        }
+        var selectedStatus = (StatusCompraItem)StatusCompraPicker.SelectedItem;
+        var selectedFornecedor = (FornecedorModel)FornecedorPicker.SelectedItem;
+        var selectedVendedor = (VendedorModel)VendedorPicker.SelectedItem;
+        decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal descontoGeralParsed);
 
-        if (!_itensCompraInternal.Any())
+        var compraModel = new CompraModel
         {
-            await DisplayAlert("Validação", "Adicione pelo menos um item à compra.", "OK"); return;
-        }
-
-        foreach (var itemModel in _itensCompraInternal)
-        {
-            if (!itemModel.CodProduto.HasValue || itemModel.CodProduto == 0)
-            {
-                await DisplayAlert("Validação", "Todos os itens devem ter um produto selecionado.", "OK"); return;
-            }
-            if (!itemModel.quantidade.HasValue || itemModel.quantidade <= 0)
-            {
-                await DisplayAlert("Validação", $"O item '{itemModel.Descricao ?? "Desconhecido"}' deve ter uma quantidade válida.", "OK"); return;
-            }
-            // Ensure the itemModel.valor_total is up-to-date before saving.
-            // This calculation should mirror what UpdateSpecificItemTotalLabel does for the model part.
-            decimal quantidade = itemModel.quantidade ?? 0m;
-            decimal valorUnitario = itemModel.valor_unitario ?? 0m;
-            decimal descontoItem = itemModel.desconto ?? 0m;
-            itemModel.valor_total = (quantidade * valorUnitario) - descontoItem;
-        }
-        RecalculateGrandTotal(); // Recalculate grand total based on potentially updated item totals.
-
-        var compra = new CompraModel
-        {
+            CodCompra = _compraId ?? 0,
             data_compra = DataCompraPicker.Date,
             hora_compra = HoraCompraPicker.Time,
-            CodFornec = (FornecedorPicker.SelectedItem as FornecedorModel)?.CodFornecedor,
-            CodVendedor = (VendedorPicker.SelectedItem as VendedorModel)?.CodVendedor,
-            OBS = ObservacoesEditor.Text,
-            forma_pagamento = FormaPagamentoPicker.SelectedItem?.ToString(),
-            status_compra = statusCompraByte
+            CodFornec = selectedFornecedor.CodFornecedor,
+            CodVendedor = selectedVendedor.CodVendedor,
+            Desconto = descontoGeralParsed,
+            OBS = ObservacoesEditor.Text?.Trim(),
+            forma_pagamento = FormaPagamentoPicker.SelectedItem.ToString(),
+            status_compra = selectedStatus.Value, // Correctly assigns the byte value
+            valor_total = decimal.Parse(ValorTotalCompraLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture)
         };
-
-        if (decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Currency, CultureInfo.GetCultureInfo("pt-BR"), out var d))
-            compra.Desconto = d;
-        else if (decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Number, CultureInfo.GetCultureInfo("pt-BR"), out d))
-            compra.Desconto = d;
-        else
-            compra.Desconto = 0m;
-
-        if (decimal.TryParse(ValorTotalCompraLabel.Text, NumberStyles.Currency, CultureInfo.GetCultureInfo("pt-BR"), out var vt))
-            compra.valor_total = vt;
-        else if (decimal.TryParse(ValorTotalCompraLabel.Text, NumberStyles.Number, CultureInfo.GetCultureInfo("pt-BR"), out vt))
-            compra.valor_total = vt;
-        else
-        {
-            await DisplayAlert("Erro de Cálculo", "Não foi possível determinar o valor total da compra.", "OK");
-            return;
-        }
 
         try
         {
-            int compraId = await _compraService.InsertAsync(compra);
-            if (compraId > 0)
+            int compraIdParaItens;
+            if (compraModel.CodCompra > 0) // UPDATE
             {
-                foreach (var itemModel in _itensCompraInternal)
-                {
-                    itemModel.CodCompra = compraId;
-                    await _itemCompraService.InsertAsync(itemModel);
-
-                    if (itemModel.CodProduto.HasValue && itemModel.quantidade.HasValue)
-                    {
-                        await _produtoService.AtualizarEstoqueAsync(itemModel.CodProduto.Value, (int)itemModel.quantidade.Value);
-                    }
-                }
-
-                if (compra.CodFornec.HasValue)
-                {
-                    await _fornecedorService.UpdateUltimaCompraAsync(compra.CodFornec.Value);
-                }
-
-                await DisplayAlert("Sucesso", "Compra salva com sucesso!", "OK");
-                ClearForm();
+                await _compraService.UpdateAsync(compraModel);
+                compraIdParaItens = compraModel.CodCompra;
+                await _itemCompraService.DeleteByCompraAsync(compraIdParaItens);
             }
-            else
+            else // INSERT
             {
-                await DisplayAlert("Erro", "Falha ao salvar a compra principal.", "OK");
+                compraIdParaItens = await _compraService.InsertAsync(compraModel);
+                if (compraIdParaItens <= 0) { await DisplayAlert("Erro", "Falha ao criar o registro da compra.", "OK"); return; }
             }
+
+            foreach (var displayItem in ItensCompra)
+            {
+                displayItem.Item.CodCompra = compraIdParaItens;
+                await _itemCompraService.InsertAsync(displayItem.Item);
+
+                // CORRECTED: Comparison is now byte to byte
+                if (compraModel.status_compra == 2) // 2 = Concluída
+                {
+                    await _estoqueService.InsertAsync(new EstoqueModel { CodProduto = displayItem.Item.CodProduto.Value, Tipo = 'E', Qtd = displayItem.Item.quantidade, Data = compraModel.data_compra.Value });
+                    await _produtoService.AtualizarEstoqueAsync(displayItem.Item.CodProduto.Value, (int)(displayItem.Item.quantidade ?? 0));
+                }
+            }
+
+            // CORRECTED: Comparison is now byte to byte
+            if (compraModel.status_compra == 2) // 2 = Concluída
+            {
+                await _fornecedorService.UpdateUltimaCompraAsync(selectedFornecedor.CodFornecedor);
+            }
+
+            await DisplayAlert("Sucesso", "Compra salva com sucesso!", "OK");
+            await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error saving Compra: {ex.Message}");
-            await DisplayAlert("Erro Crítico", $"Ocorreu um erro ao salvar a compra: {ex.Message}", "OK");
+            await DisplayAlert("Erro ao Salvar", $"Ocorreu um erro: {ex.Message}", "OK");
         }
     }
 
-    private void CancelarCompraButton_Clicked(object sender, EventArgs e)
+    private async void CancelarButton_Clicked(object sender, EventArgs e)
     {
-        ClearForm();
-    }
-
-    private void ClearForm()
-    {
-        DataCompraPicker.Date = DateTime.Today;
-        HoraCompraPicker.Time = DateTime.Now.TimeOfDay;
-        FornecedorPicker.SelectedItem = null;
-        VendedorPicker.SelectedItem = null;
-        DescontoCompraEntry.Text = string.Empty;
-        ObservacoesEditor.Text = string.Empty;
-        FormaPagamentoPicker.SelectedItem = null;
-        StatusCompraPicker.SelectedItem = null;
-        _itensCompraInternal.Clear();
-        ValorTotalCompraLabel.Text = (0m).ToString("N2", CultureInfo.GetCultureInfo("pt-BR"));
+        if (await DisplayAlert("Cancelar", "Tem certeza? Informações não salvas serão perdidas.", "Sim", "Não"))
+        {
+            await Navigation.PopAsync();
+        }
     }
 }

@@ -5,12 +5,9 @@
              Title="CompraSerch">
     <Grid RowSpacing="0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="Auto"/>
-            <!-- Actions -->
-            <RowDefinition Height="*"/>
-            <!-- List -->
+            <RowDefinition Height="Auto"/> <!-- Header -->
+            <RowDefinition Height="Auto"/> <!-- Actions -->
+            <RowDefinition Height="*"/>    <!-- List -->
         </Grid.RowDefinitions>
 
         <!-- Top header -->
@@ -28,8 +25,8 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" x:Name="NovaCompraButton" Text="Nova" Clicked="NovaCompraButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
-                <Button Grid.Column="1" x:Name="EditarCompraButton" Text="Editar Selecionada" Clicked="EditarCompraSelecionadaButton_Clicked" IsEnabled="False" BackgroundColor="Orange" TextColor="White"/>
-                <Button Grid.Column="2" x:Name="ExcluirCompraButton" Text="Excluir Selecionada" Clicked="ExcluirCompraSelecionadaButton_Clicked" IsEnabled="False" BackgroundColor="Red" TextColor="White"/>
+                <Button Grid.Column="1" x:Name="EditarCompraButton" Text="Editar Selecionada" Clicked="EditarCompraSelecionadaButton_Clicked" BackgroundColor="Orange" TextColor="White"/>
+                <Button Grid.Column="2" x:Name="ExcluirCompraButton" Text="Excluir Selecionada" Clicked="ExcluirCompraSelecionadaButton_Clicked" BackgroundColor="Red" TextColor="White"/>
             </Grid>
         </VerticalStackLayout>
 
@@ -54,7 +51,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid RowSpacing="5" ColumnDefinitions="*,*">
-                            <Grid.RowDefinitions>
+                           <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -62,7 +59,7 @@
                             </Grid.RowDefinitions>
 
                             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="Medium" FontAttributes="Bold" Text="{Binding CodCompra, StringFormat='Compra Cód: {0}'}"/>
-
+                            
                             <Label Grid.Row="1" Grid.Column="0" FontSize="Small" Text="{Binding DataCompra, StringFormat='{0:dd/MM/yyyy}'}"/>
                             <Label Grid.Row="1" Grid.Column="1" FontSize="Small" FontAttributes="Bold" HorizontalTextAlignment="End" Text="{Binding ValorTotal, StringFormat='R$ {0:N2}'}"/>
 

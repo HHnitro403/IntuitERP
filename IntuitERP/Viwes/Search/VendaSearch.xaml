@@ -29,8 +29,8 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" x:Name="NovaVendaButton" Text="Nova" Clicked="NovaVendaButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
-                <Button Grid.Column="1" x:Name="EditarVendaButton" Text="Editar Selecionada" Clicked="EditarVendaSelecionadaButton_Clicked" IsEnabled="False" BackgroundColor="Orange" TextColor="White"/>
-                <Button Grid.Column="2" x:Name="ExcluirVendaButton" Text="Excluir Selecionada" Clicked="ExcluirVendaSelecionadaButton_Clicked" IsEnabled="False" BackgroundColor="Red" TextColor="White"/>
+                <Button Grid.Column="1" x:Name="EditarVendaButton" Text="Editar Selecionada" Clicked="EditarVendaSelecionadaButton_Clicked" IsEnabled="True" BackgroundColor="Orange" TextColor="White"/>
+                <Button Grid.Column="2" x:Name="ExcluirVendaButton" Text="Excluir Selecionada" Clicked="ExcluirVendaSelecionadaButton_Clicked" IsEnabled="True" BackgroundColor="Red" TextColor="White"/>
             </Grid>
         </VerticalStackLayout>
 
