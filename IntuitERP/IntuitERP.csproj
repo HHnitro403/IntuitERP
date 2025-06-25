@@ -86,7 +86,6 @@
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
 		<PackageReference Include="UraniumUI" Version="2.12.1" />
 		<PackageReference Include="UraniumUI.Material" Version="2.12.1" />
-		<PackageReference Include="Vitvov.Maui.PDFView" Version="1.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -136,7 +135,7 @@
 	  <MauiXaml Update="Viwes\MenuPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Viwes\Reports\PDFViwer\PdfViwer.xaml">
+	  <MauiXaml Update="Viwes\Reports\PdfViewerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Viwes\Reports\ReportsPage.xaml">
