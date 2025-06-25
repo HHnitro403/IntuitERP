@@ -102,8 +102,8 @@ public partial class CompraSearch : ContentPage
         {
             switch (statusByte)
             {
-                case 0: return "Pendente";
-                case 1: return "Em Processamento";
+                case 0: return "Em Processamento";
+                case 1: return "Pendente";
                 case 2: return "Concluída";
                 case 3: return "Cancelada";
                 default: return "Desconhecido";

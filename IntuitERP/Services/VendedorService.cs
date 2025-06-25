@@ -50,10 +50,7 @@ namespace IntuitERP.Services
         {
             const string query =
                 @"UPDATE vendedor SET 
-                NomeVendedor = @NomeVendedor, 
-                totalvendas = @totalvendas, 
-                vendasfinalizadas = @vendasfinalizadas, 
-                vendascanceladas = @vendascanceladas 
+                NomeVendedor = @NomeVendedor,                 
                 WHERE CodVendedor = @CodVendedor";
             return await _connection.ExecuteAsync(query, vendedor);
         }

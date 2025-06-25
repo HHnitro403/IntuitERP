@@ -34,7 +34,7 @@ public partial class CadastrodeVendedor : ContentPage
                 NomeVendedorEntry.Text = vendedor.NomeVendedor;
                 TotalVendasEntry.Text = vendedor.totalvendas.ToString();
                 VendasFinalizadasEntry.Text = vendedor.vendasfinalizadas.ToString();
-                VendasCanceladasEntry.Text = vendedor.vendascanceladas.ToString() ;
+                VendasCanceladasEntry.Text = vendedor.vendascanceladas.ToString();
             }
         }
     }
@@ -64,7 +64,7 @@ public partial class CadastrodeVendedor : ContentPage
         // --- Create VendedorModel ---
         // For a new vendor, sales-related fields (totalvendas, etc.)
         // are typically initialized to 0 by the service if not provided.
-        var novoVendedor = new VendedorModel
+        var Vendedor = new VendedorModel
         {
             NomeVendedor = NomeVendedorEntry.Text.Trim()
             // totalvendas, vendasfinalizadas, vendascanceladas will be defaulted to 0
@@ -73,30 +73,43 @@ public partial class CadastrodeVendedor : ContentPage
 
         try
         {
-            // Optional: Check if a vendor with the same name already exists.
-            // This would require an additional method in your VendedorService, e.g., GetByNomeAsync.
-            // Example:
-            var existingVendedor = await _vendedorService.GetByIdAsync(novoVendedor.CodVendedor);
-            if (existingVendedor != null)
+            if (_vendedorId != 0) // Update)
             {
-                await DisplayAlert("Duplicidade", $"Já existe um vendedor com o nome: {novoVendedor.NomeVendedor}", "OK");
-                NomeVendedorEntry.Focus();
-                return;
-            }
+                Vendedor.CodVendedor = _vendedorId;
+                var result = await _vendedorService.UpdateAsync(Vendedor);
 
-            int newVendedorId = await _vendedorService.InsertAsync(novoVendedor);
-
-            if (newVendedorId > 0)
-            {
-                await DisplayAlert("Sucesso", "Vendedor cadastrado com sucesso!", "OK");
-                ClearForm();
-                // Optionally, navigate away or update a list
-                // await Navigation.PopAsync();
+                if (result > 0) // Success)
+                {
+                    await DisplayAlert("Sucesso", "Vendedor atualizado com sucesso!", "OK");
+                    await Navigation.PopAsync();
+                }
             }
             else
             {
-                await DisplayAlert("Erro", "Não foi possível cadastrar o vendedor. Verifique os dados e tente novamente.", "OK");
+                var existingVendedor = await _vendedorService.GetByIdAsync(Vendedor.CodVendedor);
+                if (existingVendedor != null)
+                {
+                    await DisplayAlert("Duplicidade", $"Já existe um vendedor com o nome: {Vendedor.NomeVendedor}", "OK");
+                    NomeVendedorEntry.Focus();
+                    return;
+                }
+
+                int newVendedorId = await _vendedorService.InsertAsync(Vendedor);
+
+                if (newVendedorId > 0)
+                {
+                    await DisplayAlert("Sucesso", "Vendedor cadastrado com sucesso!", "OK");
+                    ClearForm();
+                    // Optionally, navigate away or update a list
+                    // await Navigation.PopAsync();
+                }
+                else
+                {
+                    await DisplayAlert("Erro", "Não foi possível cadastrar o vendedor. Verifique os dados e tente novamente.", "OK");
+                }
             }
+
+
         }
         catch (Exception ex)
         {

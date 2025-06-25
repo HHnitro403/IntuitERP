@@ -148,7 +148,7 @@ public partial class CadastroProduto : ContentPage
         var selectedFornecedor = (FornecedorModel)FornecedorPicker.SelectedItem;
 
         // --- Create ProdutoModel ---
-        var novoProduto = new ProdutoModel
+        var Produto = new ProdutoModel
         {
             Descricao = DescricaoProdutoEntry.Text.Trim(),
             Categoria = CategoriaEntry.Text.Trim(),
@@ -164,12 +164,19 @@ public partial class CadastroProduto : ContentPage
 
         try
         {
-            // Optional: Check if a product with the same description already exists for the same supplier
-            // This would require an additional method in your ProdutoService.
-            // For example: var existingProduct = await _produtoService.GetByDescricaoAndFornecedorAsync(novoProduto.Descricao, novoProduto.FornecedorP_ID);
-            // if (existingProduct != null) { /* Handle duplicate */ }
+            if (_id > 0)
+            {
+                Produto.CodProduto = _id;
+                var result = await _produtoService.UpdateAsync(Produto);
 
-            int newProdutoId = await _produtoService.InsertAsync(novoProduto);
+                if (result > 0)
+                {
+                    await DisplayAlert("Sucesso", "Produto alterado com sucesso!", "OK");
+                    await Navigation.PopAsync();
+                }
+            }
+
+            int newProdutoId = await _produtoService.InsertAsync(Produto);
 
             if (newProdutoId > 0)
             {

@@ -358,7 +358,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
     private async void CancelarButton_Clicked(object sender, EventArgs e)
     {
-        if (await DisplayAlert("Cancelar", "Tem certeza? Informações não salvas serão perdidas.", "Sim", "Não"))
+        if (await DisplayAlert("Cancelar", "Tem certeza? Informações não salvas serão perdidas.", "Sim", "Não") && )
         {
             await Navigation.PopAsync();
         }

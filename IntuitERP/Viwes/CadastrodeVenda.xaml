@@ -100,18 +100,11 @@
                 </Frame>
 
                 <Frame BorderColor="{AppThemeBinding Light=#006400, Dark=#90EE90}" 
-       BackgroundColor="{AppThemeBinding Light=#F0FFF0, Dark=#003300}" 
-       CornerRadius="8" 
-       Padding="15">
+                       BackgroundColor="{AppThemeBinding Light=#F0FFF0, Dark=#003300}" 
+                       CornerRadius="8" 
+                       Padding="15">
 
-                    <Grid ColumnDefinitions="Auto, *">
-
-                        <Button Grid.Column="0"
-                Text="Finalizar" 
-                FontAttributes="Bold"
-                VerticalOptions="Center"
-                HorizontalOptions="Start"
-                                BackgroundColor="Blue"/>
+                    <Grid ColumnDefinitions="Auto, *">                      
 
                         <HorizontalStackLayout Grid.Column="1" 
                                HorizontalOptions="End" 

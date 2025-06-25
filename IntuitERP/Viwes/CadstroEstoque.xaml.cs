@@ -157,22 +157,7 @@ public partial class CadstroEstoque : ContentPage
                 // 2. Update the product's stock balance (SaldoEst in 'produto' table)
                 decimal quantidadeParaAtualizarSaldo = (tipoMovimentacao == 'E') ? qtd : -qtd;
 
-                // The AtualizarEstoqueAsync in ProdutoService expects an int for quantity.
-                // This might be an issue if your Qtd is decimal.
-                // Assuming Qtd in produto table (SaldoEst) can handle decimals, but the service method needs adjustment
-                // or you handle conversion carefully. For now, let's assume it's okay or needs service adjustment.
-                // If SaldoEst is int, you might need to round 'quantidadeParaAtualizarSaldo' or change service.
-                // For this example, let's cast to int, which might lose precision if Qtd is decimal.
-                // A better approach would be to have ProdutoService.AtualizarEstoqueAsync accept decimal.
-
-                // Let's assume ProdutoService.AtualizarEstoqueAsync is designed to take the *change* in quantity.
-                // If it expects the *new total*, the logic would be different.
-                // Based on `SaldoEst = SaldoEst + @Quantidade` in ProdutoService, it expects the change.
-
-                // The method `_produtoService.AtualizarEstoqueAsync(int produtoId, int quantidade)`
-                // expects an int. If your `qtd` is decimal, this is a point of attention.
-                // For now, we'll proceed assuming the service can handle it or it's an integer quantity.
-                // If `qtd` can be decimal, `AtualizarEstoqueAsync` in `ProdutoService` should accept `decimal`.
+                // Update the product's stock balance
 
                 int updateResult = await _produtoService.AtualizarEstoqueAsync(selectedProduto.CodProduto, (int)quantidadeParaAtualizarSaldo);
 

@@ -105,8 +105,8 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
         _statusCompraList = new ObservableCollection<StatusCompraItem>
         {
-            new StatusCompraItem { DisplayName = "Pendente", Value = 0 },
-            new StatusCompraItem { DisplayName = "Em Processamento", Value = 1 },
+            new StatusCompraItem { DisplayName = "Em Processamento", Value = 0 },
+            new StatusCompraItem { DisplayName = "Pendente", Value = 1 },
             new StatusCompraItem { DisplayName = "Concluída", Value = 2 },
             new StatusCompraItem { DisplayName = "Cancelada", Value = 3 }
         };
@@ -226,6 +226,11 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
     private async void SalvarCompraButton_Clicked(object sender, EventArgs e)
     {
+        await SalvarFaturarVenda(1);
+    }
+
+    private async Task SalvarFaturarVenda(int statusVenda)
+    {
         if (FornecedorPicker.SelectedItem == null || VendedorPicker.SelectedItem == null || FormaPagamentoPicker.SelectedItem == null || StatusCompraPicker.SelectedItem == null)
         { await DisplayAlert("Campos Obrigatórios", "Fornecedor, Vendedor, Forma de Pagamento e Status são obrigatórios.", "OK"); return; }
         if (!ItensCompra.Any()) { await DisplayAlert("Itens da Compra", "Adicione pelo menos um item à compra.", "OK"); return; }
@@ -235,22 +240,25 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         var selectedVendedor = (VendedorModel)VendedorPicker.SelectedItem;
         decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal descontoGeralParsed);
 
-        var compraModel = new CompraModel
-        {
-            CodCompra = _compraId ?? 0,
-            data_compra = DataCompraPicker.Date,
-            hora_compra = HoraCompraPicker.Time,
-            CodFornec = selectedFornecedor.CodFornecedor,
-            CodVendedor = selectedVendedor.CodVendedor,
-            Desconto = descontoGeralParsed,
-            OBS = ObservacoesEditor.Text?.Trim(),
-            forma_pagamento = FormaPagamentoPicker.SelectedItem.ToString(),
-            status_compra = selectedStatus.Value, // Correctly assigns the byte value
-            valor_total = decimal.Parse(ValorTotalCompraLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture)
-        };
+
 
         try
         {
+            var compraModel = new CompraModel
+            {
+                CodCompra = _compraId ?? 0,
+                data_compra = DataCompraPicker.Date,
+                hora_compra = HoraCompraPicker.Time,
+                CodFornec = selectedFornecedor.CodFornecedor,
+                CodVendedor = selectedVendedor.CodVendedor,
+                Desconto = descontoGeralParsed,
+                OBS = ObservacoesEditor.Text?.Trim(),
+                forma_pagamento = FormaPagamentoPicker.SelectedItem.ToString(),
+                status_compra = selectedStatus.Value, // Correctly assigns the byte value
+                valor_total = decimal.Parse(ValorTotalCompraLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture)
+            };
+
+
             int compraIdParaItens;
             if (compraModel.CodCompra > 0) // UPDATE
             {
@@ -298,5 +306,10 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         {
             await Navigation.PopAsync();
         }
+    }
+
+    private void FinalizarButton_Clicked(object sender, EventArgs e)
+    {
+
     }
 }
