@@ -7,7 +7,7 @@ namespace IntuitERP.Viwes.Search;
 
 public partial class CompraSearch : ContentPage
 {
-    // A simple class to hold combined data for display
+    // A simple class to hold combined data for display in the list
     public class CompraDisplayModel
     {
         public int CodCompra { get; set; }
@@ -47,9 +47,9 @@ public partial class CompraSearch : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await LoadComprasAsync();
         _compraSelecionada = null;
         ComprasCollectionView.SelectedItem = null;
+        await LoadComprasAsync();               
         UpdateActionButtonsState();
     }
 
@@ -73,7 +73,7 @@ public partial class CompraSearch : ContentPage
                     CodCompra = compra.CodCompra,
                     DataCompra = compra.data_compra,
                     ValorTotal = compra.valor_total,
-                   // Status = compra.status_compra,
+                    Status = GetStatusCompraString(compra.status_compra), // CORRECTED LOGIC
                     NomeFornecedor = compra.CodFornec.HasValue && fornecedoresDict.ContainsKey(compra.CodFornec.Value)
                                      ? fornecedoresDict[compra.CodFornec.Value]
                                      : "Fornecedor não encontrado",
@@ -89,6 +89,35 @@ public partial class CompraSearch : ContentPage
         {
             Console.WriteLine($"Error loading purchases: {ex.ToString()}");
             await DisplayAlert("Erro", $"Não foi possível carregar a lista de compras: {ex.Message}", "OK");
+        }
+    }
+
+    // CORRECTED: This method now handles both byte and string status values robustly.
+    private string GetStatusCompraString(object statusValue)
+    {
+        if (statusValue == null) return "Desconhecido";
+
+        // Try to parse the value as a byte/int
+        if (byte.TryParse(statusValue.ToString(), out byte statusByte))
+        {
+            switch (statusByte)
+            {
+                case 0: return "Em Processamento";
+                case 1: return "Pendente";
+                case 2: return "Concluída";
+                case 3: return "Cancelada";
+                default: return "Desconhecido";
+            }
+        }
+
+        // Fallback for string values, in case the model is still using them
+        switch (statusValue.ToString())
+        {
+            case "Pendente": return "Pendente";
+            case "Em Processamento": return "Em Processamento";
+            case "Concluída": return "Concluída";
+            case "Cancelada": return "Cancelada";
+            default: return statusValue.ToString(); // Show the raw value if it's an unknown string
         }
     }
 
@@ -140,8 +169,8 @@ public partial class CompraSearch : ContentPage
         bool canEdit = isSelected && _compraSelecionada.Status != "Concluída" && _compraSelecionada.Status != "Cancelada";
         bool canDelete = isSelected;
 
-        EditarCompraButton.IsEnabled = canEdit;
-        ExcluirCompraButton.IsEnabled = canDelete;
+        if (!canEdit && isSelected) DisplayAlert("Atenção", "Compra: " + _compraSelecionada.CodCompra + " Ja faturada, Não é possivel editar", "OK");
+        
     }
 
     private void ComprasCollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -170,8 +199,7 @@ public partial class CompraSearch : ContentPage
             var produtoService = new ProdutoService(newPageConnection);
             var estoqueService = new EstoqueService(newPageConnection);
 
-            // Pass null for CodCompra to indicate a new purchase
-            await Navigation.PushAsync(new CadastrodeCompra(compraService, itemCompraService, fornecedorService, produtoService, vendedorService, estoqueService));
+            await Navigation.PushAsync(new CadastrodeCompra(compraService, itemCompraService, fornecedorService, vendedorService, produtoService, estoqueService, null));
         }
         catch (Exception ex)
         {
@@ -200,8 +228,7 @@ public partial class CompraSearch : ContentPage
             var produtoService = new ProdutoService(editPageConnection);
             var estoqueService = new EstoqueService(editPageConnection);
 
-            // Pass the selected CodCompra to the constructor to load existing data
-            await Navigation.PushAsync(new CadastrodeCompra(compraService, itemCompraService, fornecedorService,  produtoService, vendedorService, estoqueService, _compraSelecionada.CodCompra));
+            await Navigation.PushAsync(new CadastrodeCompra(compraService, itemCompraService, fornecedorService, vendedorService, produtoService, estoqueService, _compraSelecionada.CodCompra));
         }
         catch (Exception ex)
         {

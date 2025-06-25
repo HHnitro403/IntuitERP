@@ -47,9 +47,9 @@ public partial class VendaSearch : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await LoadVendasAsync();
         _vendaSelecionada = null;
         VendasCollectionView.SelectedItem = null;
+        await LoadVendasAsync();       
         UpdateActionButtonsState();
     }
 
@@ -155,8 +155,10 @@ public partial class VendaSearch : ContentPage
         bool canEdit = isSelected && _vendaSelecionada.Status != "Faturada" && _vendaSelecionada.Status != "Cancelada";
         bool canDelete = isSelected; // Or add similar logic for deletion
 
-        EditarVendaButton.IsEnabled = canEdit;
-        ExcluirVendaButton.IsEnabled = canDelete;
+        if (isSelected && !canEdit)
+        {
+            DisplayAlert("Atenção", "Esta venda está faturada ou cancelada e não pode ser editada.", "Ok");
+        }
     }
 
     private void VendasCollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)

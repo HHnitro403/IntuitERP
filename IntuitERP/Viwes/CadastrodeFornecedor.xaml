@@ -84,8 +84,8 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="SalvarFornecedorButton" Grid.Column="0" Text="Salvar Fornecedor" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <Button x:Name="CancelarButton" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <Button x:Name="SalvarFornecedorButton" Clicked="SalvarFornecedorButton_Clicked" Grid.Column="0" Text="Salvar Fornecedor" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <Button x:Name="CancelarButton" Clicked="CancelarButton_Clicked" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
             <!-- Add Clicked event handlers in C# for functionality -->
             <!-- e.g., Clicked="SalvarFornecedorButton_Clicked" -->
         </Grid>

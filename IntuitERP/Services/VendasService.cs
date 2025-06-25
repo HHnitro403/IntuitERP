@@ -18,7 +18,7 @@ namespace IntuitERP.Services
 
         public async Task<IEnumerable<VendaModel>> GetAllAsync()
         {
-            const string query = "SELECT * FROM venda";
+            const string query = "SELECT * FROM venda Order by CodVenda";
             return await _connection.QueryAsync<VendaModel>(query);
         }
 

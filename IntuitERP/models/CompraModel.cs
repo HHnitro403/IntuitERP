@@ -48,5 +48,6 @@ namespace IntuitERP.models
         public virtual VendedorModel? Vendedor { get; set; }
 
         public virtual ICollection<ItemCompraModel>? ItensCompra { get; set; }
+       
     }
 }

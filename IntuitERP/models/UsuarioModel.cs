@@ -13,7 +13,7 @@ namespace IntuitERP.models
         [Column("Usuario")]
         [Required]
         [StringLength(255)]
-        public string UsuarioNome { get; set; }
+        public string Usuario { get; set; }
 
         [Column("Senha")]
         [Required]
@@ -21,67 +21,67 @@ namespace IntuitERP.models
         public string Senha { get; set; }
 
         [Column("PermissaoProdutosCreate")]
-        public bool PermissaoProdutosCreate { get; set; } = false;
+        public int PermissaoProdutosCreate { get; set; } = 0;
 
         [Column("PermissaoProdutosRead")]
-        public bool PermissaoProdutosRead { get; set; } = false;
+        public int PermissaoProdutosRead { get; set; } = 0;
 
         [Column("PermissaoProdutosUpdate")]
-        public bool PermissaoProdutosUpdate { get; set; } = false;
+        public int PermissaoProdutosUpdate { get; set; } = 0;
 
         [Column("PermissaoProdutosDelete")]
-        public bool PermissaoProdutosDelete { get; set; } = false;
+        public int PermissaoProdutosDelete { get; set; } = 0;
 
         [Column("PermissaoVendasCreate")]
-        public bool PermissaoVendasCreate { get; set; } = false;
+        public int PermissaoVendasCreate { get; set; } = 0;
 
         [Column("PermissaoVendasRead")]
-        public bool PermissaoVendasRead { get; set; } = false;
+        public int PermissaoVendasRead { get; set; } = 0;
 
         [Column("PermissaoVendasUpdate")]
-        public bool PermissaoVendasUpdate { get; set; } = false;
+        public int PermissaoVendasUpdate { get; set; } = 0;
 
         [Column("PermissaoVendasDelete")]
-        public bool PermissaoVendasDelete { get; set; } = false;
+        public int PermissaoVendasDelete { get; set; } = 0;
 
         [Column("PermissaoRelatoriosGenerate")]
-        public bool PermissaoRelatoriosGenerate { get; set; } = false;
+        public int PermissaoRelatoriosGenerate { get; set; } = 0;
 
         [Column("PermissaoVendedoresCreate")]
-        public bool PermissaoVendedoresCreate { get; set; } = false;
+        public int PermissaoVendedoresCreate { get; set; } = 0;
 
         [Column("PermissaoVendedoresRead")]
-        public bool PermissaoVendedoresRead { get; set; } = false;
+        public int PermissaoVendedoresRead { get; set; } = 0;
 
         [Column("PermissaoVendedoresUpdate")]
-        public bool PermissaoVendedoresUpdate { get; set; } = false;
+        public int PermissaoVendedoresUpdate { get; set; } = 0;
 
         [Column("PermissaoVendedoresDelete")]
-        public bool PermissaoVendedoresDelete { get; set; } = false;
+        public int PermissaoVendedoresDelete { get; set; } = 0;
 
         [Column("PermissaoFornecedoresCreate")]
-        public bool PermissaoFornecedoresCreate { get; set; } = false;
+        public int PermissaoFornecedoresCreate { get; set; } = 0;
 
         [Column("PermissaoFornecedoresRead")]
-        public bool PermissaoFornecedoresRead { get; set; } = false;
+        public int PermissaoFornecedoresRead { get; set; } = 0;
 
         [Column("PermissaoFornecedoresUpdate")]
-        public bool PermissaoFornecedoresUpdate { get; set; } = false;
+        public int PermissaoFornecedoresUpdate { get; set; } = 0;
 
         [Column("PermissaoFornecedoresDelete")]
-        public bool PermissaoFornecedoresDelete { get; set; } = false;
+        public int PermissaoFornecedoresDelete { get; set; } = 0;
 
         [Column("PermissaoClientesCreate")]
-        public bool PermissaoClientesCreate { get; set; } = false;
+        public int PermissaoClientesCreate { get; set; } = 0;
 
         [Column("PermissaoClientesRead")]
-        public bool PermissaoClientesRead { get; set; } = false;
+        public int PermissaoClientesRead { get; set; } = 0;
 
         [Column("PermissaoClientesUpdate")]
-        public bool PermissaoClientesUpdate { get; set; } = false;
+        public int PermissaoClientesUpdate { get; set; } = 0;
 
         [Column("PermissaoClientesDelete")]
-        public bool PermissaoClientesDelete { get; set; } = false;
+        public int PermissaoClientesDelete { get; set; } = 0;
     }
 
 }

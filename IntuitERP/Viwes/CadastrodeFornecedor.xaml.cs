@@ -40,7 +40,8 @@ public partial class CadastrodeFornecedor : ContentPage
         if (_fornecedorId != 0)
         {
             var fornecedor = await _fornecedorService.GetByIdAsync(_fornecedorId);
-            if (fornecedor != null) {
+            if (fornecedor != null)
+            {
                 RazaoSocialEntry.Text = fornecedor.RazaoSocial;
                 NomeFantasiaEntry.Text = fornecedor.NomeFantasia;
                 CnpjEntry.Text = fornecedor.CNPJ;
@@ -133,7 +134,7 @@ public partial class CadastrodeFornecedor : ContentPage
         var selectedCidade = (CidadeModel)CidadePicker.SelectedItem;
 
         // --- Create FornecedorModel ---
-        var novoFornecedor = new FornecedorModel
+        var Fornecedor = new FornecedorModel
         {
             RazaoSocial = RazaoSocialEntry.Text.Trim(),
             NomeFantasia = NomeFantasiaEntry.Text?.Trim(), // Nome Fantasia can be optional
@@ -149,27 +150,38 @@ public partial class CadastrodeFornecedor : ContentPage
 
         try
         {
-            // Check if CNPJ already exists
-            var existingByCnpj = await _fornecedorService.GetByCNPJAsync(novoFornecedor.CNPJ);
-            if (existingByCnpj != null)
+            if (_fornecedorId != 0)
             {
-                await DisplayAlert("Duplicidade", $"Já existe um fornecedor cadastrado com o CNPJ: {FormatCnpj(novoFornecedor.CNPJ)}", "OK");
-                CnpjEntry.Focus();
-                return;
-            }
+                Fornecedor.CodFornecedor = _fornecedorId; // Update
+                var newFornecedor = await _fornecedorService.UpdateAsync(Fornecedor); // Use the UpdateAsync method from your Forn
 
-            int newFornecedorId = await _fornecedorService.InsertAsync(novoFornecedor);
-
-            if (newFornecedorId > 0)
-            {
-                await DisplayAlert("Sucesso", "Fornecedor cadastrado com sucesso!", "OK");
-                ClearForm();
-                // Optionally, navigate away or update a list
-                // await Navigation.PopAsync();
+                if (newFornecedor != 0) await DisplayAlert("Sucesso", "Fornecedor alterado com sucesso!", "OK");
+                await Navigation.PopAsync();
             }
             else
             {
-                await DisplayAlert("Erro", "Não foi possível cadastrar o fornecedor. Verifique os dados e tente novamente.", "OK");
+                // Check if CNPJ already exists
+                var existingByCnpj = await _fornecedorService.GetByCNPJAsync(Fornecedor.CNPJ);
+                if (existingByCnpj != null)
+                {
+                    await DisplayAlert("Duplicidade", $"Já existe um fornecedor cadastrado com o CNPJ: {FormatCnpj(Fornecedor.CNPJ)}", "OK");
+                    CnpjEntry.Focus();
+                    return;
+                }
+
+                int newFornecedorId = await _fornecedorService.InsertAsync(Fornecedor);
+
+                if (newFornecedorId > 0)
+                {
+                    await DisplayAlert("Sucesso", "Fornecedor cadastrado com sucesso!", "OK");
+                    ClearForm();
+                    // Optionally, navigate away or update a list
+                    await Navigation.PopAsync();
+                }
+                else
+                {
+                    await DisplayAlert("Erro", "Não foi possível cadastrar o fornecedor. Verifique os dados e tente novamente.", "OK");
+                }
             }
         }
         catch (Exception ex)

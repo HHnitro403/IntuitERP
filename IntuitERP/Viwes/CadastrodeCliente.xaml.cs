@@ -13,7 +13,7 @@ public partial class CadastrodeCliente : ContentPage
 
     // Constructor for Dependency Injection (recommended)
     // Register ClienteService (and CidadeService if used) in MauiProgram.cs
-    public CadastrodeCliente(ClienteService clienteService , CidadeService cidadeService , int id = 0)
+    public CadastrodeCliente(ClienteService clienteService, CidadeService cidadeService, int id = 0)
     {
         InitializeComponent();
         _clienteService = clienteService;
@@ -25,7 +25,7 @@ public partial class CadastrodeCliente : ContentPage
         DataNascimentoPicker.Date = DateTime.Today.AddYears(-18); // Default to 18 years ago
         DataNascimentoPicker.MaximumDate = DateTime.Today; // Cannot be born in the future
 
-       _id = id;
+        _id = id;
     }
 
     protected async override void OnAppearing()
@@ -35,7 +35,7 @@ public partial class CadastrodeCliente : ContentPage
         {
             var cliente = await _clienteService.GetByIdAsync(_id);
             var cidade = await _cidadeService.GetByIdAsync(cliente.CodCidade);
-            
+
             NomeEntry.Text = cliente?.Nome ?? string.Empty;
             EmailEntry.Text = cliente?.Email ?? string.Empty;
             TelefoneEntry.Text = cliente?.Telefone ?? string.Empty;
@@ -106,7 +106,7 @@ public partial class CadastrodeCliente : ContentPage
 
 
         // --- Create ClienteModel ---
-        var novoCliente = new ClienteModel
+        var Cliente = new ClienteModel
         {
             Nome = NomeEntry.Text.Trim(),
             Email = EmailEntry.Text.Trim(),
@@ -125,36 +125,52 @@ public partial class CadastrodeCliente : ContentPage
 
         try
         {
-            // Check if CPF or Email already exists (optional, but good practice)
-            var existingByCpf = await _clienteService.GetByCPFAsync(novoCliente.CPF);
-            if (existingByCpf != null)
+            if (_id != 0)
             {
-                await DisplayAlert("Duplicidade", $"Já existe um cliente cadastrado com o CPF: {novoCliente.CPF}", "OK");
-                CpfEntry.Focus();
-                return;
-            }
+                Cliente.CodCliente = _id;
+                var UpdateCliente = await _clienteService.UpdateAsync(Cliente);
 
-            var existingByEmail = await _clienteService.GetByEmailAsync(novoCliente.Email);
-            if (existingByEmail != null)
-            {
-                await DisplayAlert("Duplicidade", $"Já existe um cliente cadastrado com o Email: {novoCliente.Email}", "OK");
-                EmailEntry.Focus();
-                return;
-            }
-
-
-            int newClienteId = await _clienteService.InsertAsync(novoCliente);
-
-            if (newClienteId > 0)
-            {
-                await DisplayAlert("Sucesso", "Cliente cadastrado com sucesso!", "OK");
-                ClearForm();
-                // Optionally, navigate away or update a list if this page is part of a larger flow
-                // await Navigation.PopAsync(); // Example: if this was a modal or pushed page
+                if (UpdateCliente != 0)
+                {
+                    await DisplayAlert("Sucesso", "Cliente alterado com sucesso!", "OK");
+                    await Navigation.PopAsync();
+                }
             }
             else
             {
-                await DisplayAlert("Erro", "Não foi possível cadastrar o cliente. Verifique os dados e tente novamente.", "OK");
+
+
+                // Check if CPF or Email already exists (optional, but good practice)
+                var existingByCpf = await _clienteService.GetByCPFAsync(Cliente.CPF);
+                if (existingByCpf != null)
+                {
+                    await DisplayAlert("Duplicidade", $"Já existe um cliente cadastrado com o CPF: {Cliente.CPF}", "OK");
+                    CpfEntry.Focus();
+                    return;
+                }
+
+                var existingByEmail = await _clienteService.GetByEmailAsync(Cliente.Email);
+                if (existingByEmail != null)
+                {
+                    await DisplayAlert("Duplicidade", $"Já existe um cliente cadastrado com o Email: {Cliente.Email}", "OK");
+                    EmailEntry.Focus();
+                    return;
+                }
+
+
+                int newClienteId = await _clienteService.InsertAsync(Cliente);
+
+                if (newClienteId > 0)
+                {
+                    await DisplayAlert("Sucesso", "Cliente cadastrado com sucesso!", "OK");
+                    ClearForm();
+                    // Optionally, navigate away or update a list if this page is part of a larger flow
+                    // await Navigation.PopAsync(); // Example: if this was a modal or pushed page
+                }
+                else
+                {
+                    await DisplayAlert("Erro", "Não foi possível cadastrar o cliente. Verifique os dados e tente novamente.", "OK");
+                }
             }
         }
         catch (Exception ex)

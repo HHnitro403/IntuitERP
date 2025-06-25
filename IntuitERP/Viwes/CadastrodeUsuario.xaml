@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.CadastrodeUsuario"
-             Title="CadastrodeUsuario">
+             Title="Cadastro de Usuario">
     <!-- Main Grid for the page layout -->
     <Grid RowSpacing="0" Margin="0">
         <Grid.RowDefinitions>
@@ -193,8 +193,8 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="SalvarUsuarioButton" Grid.Column="0" Text="Salvar Usuário" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <Button x:Name="CancelarButton" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <Button x:Name="SalvarUsuarioButton" Grid.Column="0" Clicked="SalvarUsuarioButton_Clicked" Text="Salvar Usuário" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
+            <Button x:Name="CancelarButton" Grid.Column="1" Clicked="CancelarButton_Clicked" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
             <!-- Add Clicked event handlers in C# for functionality -->
         </Grid>
 
