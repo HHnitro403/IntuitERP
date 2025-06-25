@@ -1,5 +1,6 @@
 using IntuitERP.Config;
 using IntuitERP.Services;
+using IntuitERP.Viwes.Reports;
 using IntuitERP.Viwes.Search;
 using System.Data;
 
@@ -7,14 +8,10 @@ namespace IntuitERP.Viwes;
 
 public partial class MaenuPage : ContentPage
 {
-
-
     public MaenuPage()
     {
         InitializeComponent();
         BindingContext = this;
-
-
     }
 
     // Navigation methods for Cadastros
@@ -27,6 +24,7 @@ public partial class MaenuPage : ContentPage
             var produtosService = new ProdutoService(connection);
             var fornecedoresService = new FornecedorService(connection);
             var cadastroProdutoPage = new ProdutoSearch(produtosService, fornecedoresService);
+
             await Navigation.PushAsync(cadastroProdutoPage);
         }
         catch (Exception ex)
@@ -59,7 +57,7 @@ public partial class MaenuPage : ContentPage
             IDbConnection connection = configurator.GetMySqlConnection();
             var clientesService = new ClienteService(connection); // Assuming ClientesService exists
             var cidadeService = new CidadeService(connection);
-            var cadastroClientePage = new ClienteSearch(clientesService, cidadeService); 
+            var cadastroClientePage = new ClienteSearch(clientesService, cidadeService);
             await Navigation.PushAsync(cadastroClientePage);
         }
         catch (Exception ex)
@@ -128,9 +126,9 @@ public partial class MaenuPage : ContentPage
             var itemService = new ItemCompraService(connection);
             var fornecedorService = new FornecedorService(connection);
             var produtoService = new ProdutoService(connection);
-            var vendedorService = new VendedorService(connection); 
+            var vendedorService = new VendedorService(connection);
             var estoqueService = new EstoqueService(connection);
-            var cadastroCompraPage = new CompraSearch(comprasService, itemService, fornecedorService, vendedorService, produtoService,  estoqueService); // Adjust constructor as needed
+            var cadastroCompraPage = new CompraSearch(comprasService, itemService, fornecedorService, vendedorService, produtoService, estoqueService); // Adjust constructor as needed
             await Navigation.PushAsync(cadastroCompraPage);
         }
         catch (Exception ex)
@@ -178,7 +176,24 @@ public partial class MaenuPage : ContentPage
             await DisplayAlert("Erro", $"Falha ao abrir cadastro de estoque: {ex.Message}", "OK");
         }
     }
-    
 
+    private async void GeraRelatButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var configurator = new Configurator();
+            IDbConnection connection = configurator.GetMySqlConnection();
+            var relatorioService = new ReportsService(connection);
+            var reportpage = new ReportsPage(relatorioService);
+            await Navigation.PushAsync(reportpage);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Falha ao gerar relatório: {ex.Message}", "OK");
+        }
+    }
 
+    private void GeraRelatButtonSintec_Clicked(object sender, EventArgs e)
+    {
+    }
 }
