@@ -1,5 +1,6 @@
 using IntuitERP.models;
 using IntuitERP.Services;
+using IntuitERP.Viwes.Modals;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 
@@ -9,7 +10,7 @@ public partial class CadastrodeCliente : ContentPage
 {
     private readonly ClienteService _clienteService;
     private readonly CidadeService _cidadeService; // Uncomment if you implement a Cidade Picker
-    readonly int _id = 0;
+    private readonly int _id = 0;
 
     // Constructor for Dependency Injection (recommended)
     // Register ClienteService (and CidadeService if used) in MauiProgram.cs
@@ -28,7 +29,7 @@ public partial class CadastrodeCliente : ContentPage
         _id = id;
     }
 
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (_id != 0)
@@ -45,7 +46,7 @@ public partial class CadastrodeCliente : ContentPage
             NumeroEntry.Text = cliente?.Numero ?? string.Empty;
             BairroEntry.Text = cliente?.Bairro ?? string.Empty;
             CepEntry.Text = cliente?.CEP ?? string.Empty;
-            CodCidadeEntry.Text = cliente?.CodCidade.ToString() ?? string.Empty;
+            //CodCidadeEntry.Text = cliente?.CodCidade.ToString() ?? string.Empty;
             DataCadastroPicker.Date = cliente?.DataCadastro ?? DateTime.Today;
             AtivoSwitch.IsToggled = cliente?.Ativo ?? true;
 
@@ -64,12 +65,13 @@ public partial class CadastrodeCliente : ContentPage
         NumeroEntry.Text = string.Empty;
         BairroEntry.Text = string.Empty;
         CepEntry.Text = string.Empty;
-        CodCidadeEntry.Text = string.Empty; // In a real app, you'd reset a Picker
+        // CodCidadeEntry.Text = string.Empty; // In a real app, you'd reset a Picker
         DataCadastroPicker.Date = DateTime.Today; // Reset, though it's disabled
         AtivoSwitch.IsToggled = true;
 
         NomeEntry.Focus();
     }
+
     // Event handler for Save button click
 
     private async void SalvarButton_Clicked(object sender, EventArgs e)
@@ -96,14 +98,13 @@ public partial class CadastrodeCliente : ContentPage
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(CodCidadeEntry.Text) || !int.TryParse(CodCidadeEntry.Text, out _))
-        {
-            await DisplayAlert("Código da Cidade Inválido", "Por favor, insira um código da cidade numérico válido.", "OK");
-            CodCidadeEntry.Focus();
-            return;
-        }
+        //if (string.IsNullOrWhiteSpace(CodCidadeEntry.Text) || !int.TryParse(CodCidadeEntry.Text, out _))
+        //{
+        //    await DisplayAlert("Código da Cidade Inválido", "Por favor, insira um código da cidade numérico válido.", "OK");
+        //    CodCidadeEntry.Focus();
+        //    return;
+        //}
         // Add more validation as needed (e.g., for Telefone, CEP format, Endereco, etc.)
-
 
         // --- Create ClienteModel ---
         var Cliente = new ClienteModel
@@ -117,7 +118,7 @@ public partial class CadastrodeCliente : ContentPage
             Numero = NumeroEntry.Text?.Trim(),
             Bairro = BairroEntry.Text?.Trim(),
             CEP = SanitizeCep(CepEntry.Text),
-            CodCidade = int.Parse(CodCidadeEntry.Text), // Already validated as int
+            //  CodCidade = int.Parse(CodCidadeEntry.Text), // Already validated as int
             DataCadastro = DateTime.Now, // Service layer also defaults this if null
             Ativo = AtivoSwitch.IsToggled
             // DataUltimaCompra is typically not set when creating a new client
@@ -138,8 +139,6 @@ public partial class CadastrodeCliente : ContentPage
             }
             else
             {
-
-
                 // Check if CPF or Email already exists (optional, but good practice)
                 var existingByCpf = await _clienteService.GetByCPFAsync(Cliente.CPF);
                 if (existingByCpf != null)
@@ -156,7 +155,6 @@ public partial class CadastrodeCliente : ContentPage
                     EmailEntry.Focus();
                     return;
                 }
-
 
                 int newClienteId = await _clienteService.InsertAsync(Cliente);
 
@@ -242,7 +240,6 @@ public partial class CadastrodeCliente : ContentPage
     {
         return Regex.Replace(cep ?? string.Empty, @"[^\d]", ""); // Remove non-digits
     }
-
 
     // --- CPF Formatter ---
     private void CpfEntry_TextChanged(object sender, TextChangedEventArgs e)
@@ -336,7 +333,6 @@ public partial class CadastrodeCliente : ContentPage
                 formattedTelefone = $"({digitsOnly}";
             }
 
-
             if (entry.Text != formattedTelefone)
             {
                 entry.Text = formattedTelefone;
@@ -345,5 +341,9 @@ public partial class CadastrodeCliente : ContentPage
         }
     }
 
-    #endregion
+    #endregion Input Formatting and Validation Helpers
+
+    private async void SelectCidadeButton_Clicked(object sender, EventArgs e)
+    {
+    }
 }

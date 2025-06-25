@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IntuitERP.Viwes.Modals.ModalPicker">
+    <ContentPage.Content>
+        <VerticalStackLayout Spacing="10" Padding="20">
+            <!-- Search Bar -->
+            <SearchBar Placeholder="Search items..."
+                       CancelButtonColor="Gray"
+                       SearchCommand="{Binding SearchCommand}"
+                       TextChanged="OnSearchBarTextChanged"
+                       x:Name="SearchInput">
+                <!-- Styling for the SearchBar. Rounded corners are a common UI pattern. -->
+                <SearchBar.Resources>
+                    <Style TargetType="SearchBar">
+                        <Setter Property="VisualStateManager.VisualStateGroups">
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#F5F5F5" />
+                                            <Setter Property="TextColor" Value="Black" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </Setter>
+                    </Style>
+                </SearchBar.Resources>
+            </SearchBar>
+
+            <!-- List View for Search Results -->
+            <ListView x:Name="SearchResultsListView"
+                      ItemsSource="{Binding FilteredItems}"
+                      ItemSelected="OnItemSelected"
+                      HasUnevenRows="True"
+                      SelectionMode="Single">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Frame Margin="5" Padding="10"
+                                   BackgroundColor="White"
+                                   BorderColor="#E0E0E0"
+                                   CornerRadius="8"
+                                   HasShadow="False">
+                                <!-- Binding to '.' will call ToString() on the item of type T -->
+                                <Label Text="{Binding .}"
+                                       FontSize="18"
+                                       TextColor="Black"
+                                       VerticalOptions="Center" />
+                            </Frame>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <!-- Styling for the ListView itself if needed -->
+                <ListView.Resources>
+                    <Style TargetType="ListView">
+                        <Setter Property="SeparatorVisibility" Value="None" />
+                    </Style>
+                </ListView.Resources>
+            </ListView>
+
+            <!-- Buttons for Select and Cancel -->
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="CenterAndExpand" Margin="0,20,0,0">
+                <Button Text="Select"
+                        Clicked="OnSelectButtonClicked"
+                        HorizontalOptions="FillAndExpand"
+                        BackgroundColor="#2196F3"
+                        TextColor="White"
+                        CornerRadius="25"
+                        Padding="15,10"
+                        FontSize="16">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Offset="10,10" Radius="10" Opacity="0.5" />
+                    </Button.Shadow>
+                </Button>
+
+                <Button Text="Cancel"
+                        Clicked="OnCancelButtonClicked"
+                        HorizontalOptions="FillAndExpand"
+                        BackgroundColor="#F44336"
+                        TextColor="White"
+                        CornerRadius="25"
+                        Padding="15,10"
+                        FontSize="16">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Offset="10,10" Radius="10" Opacity="0.5" />
+                    </Button.Shadow>
+                </Button>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>
