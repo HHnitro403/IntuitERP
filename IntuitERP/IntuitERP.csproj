@@ -57,26 +57,30 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<!--PDFs folder-->
+		 <MauiAsset Include="Viwes\Reports\PDFs\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		
 	</ItemGroup>
 
 	<ItemGroup>
 	  <None Remove="Config\ConfigDB.db" />
 	  <None Remove="Config\ConfigsDB.db" />
+	
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="12.0.0" />
 		<PackageReference Include="Dapper" Version="2.1.66" />
 		<PackageReference Include="Dapper.Contrib" Version="2.0.78" />
 		<PackageReference Include="FluentValidation" Version="12.0.0" />
 		<PackageReference Include="LiteDB" Version="5.0.21" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.5" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.80" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
 		<PackageReference Include="MySql.Data" Version="9.3.0" />
 		<PackageReference Include="MySqlConnector" Version="2.4.0" />
-		<PackageReference Include="QuestPDF" Version="2025.5.0" />
+		<PackageReference Include="QuestPDF" Version="2025.5.1" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlcipher" Version="2.1.11" />
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
@@ -89,6 +93,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Viwes\Reports\ReportsPage.xaml.cs">
+	    <DependentUpon>ReportsPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Viwes\Search\CompraSearch.xaml.cs">
 	    <DependentUpon>CompraSearch.xaml</DependentUpon>
 	  </Compile>
@@ -128,6 +135,15 @@
 	  <MauiXaml Update="Viwes\MenuPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Viwes\Modals\ModalPicker.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\Reports\PdfViewerPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Viwes\Reports\ReportsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Viwes\Search\ClienteSearch.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -152,7 +168,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Viwes\Reports\" />
+	  <Folder Include="Viwes\Reports\PDFs\" />
 	</ItemGroup>
 
 </Project>

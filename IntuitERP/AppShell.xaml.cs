@@ -1,4 +1,7 @@
 ﻿using IntuitERP.Viwes;
+using IntuitERP.Viwes.Reports;
+
+//using IntuitERP.Viwes.Reports.PDFViwer;
 using IntuitERP.Viwes.Search;
 
 namespace IntuitERP
@@ -18,7 +21,6 @@ namespace IntuitERP
             Routing.RegisterRoute(nameof(CadastrodeVendedor), typeof(CadastrodeVendedor));
             Routing.RegisterRoute(nameof(CadstroEstoque), typeof(CadstroEstoque));
             Routing.RegisterRoute(nameof(CadastrodeVenda), typeof(CadastrodeVenda));
-            Routing.RegisterRoute(nameof(CadastrodeCompra), typeof(CadastrodeCompra));
             Routing.RegisterRoute(nameof(CadastrodeUsuario), typeof(CadastrodeUsuario));
             Routing.RegisterRoute(nameof(ClienteSearch), typeof(ClienteSearch));
             Routing.RegisterRoute(nameof(FornecedorSearch), typeof(FornecedorSearch));
@@ -27,6 +29,8 @@ namespace IntuitERP
             Routing.RegisterRoute(nameof(UsuarioSearch), typeof(UsuarioSearch));
             Routing.RegisterRoute(nameof(VendaSearch), typeof(VendaSearch));
             Routing.RegisterRoute(nameof(CompraSearch), typeof(CompraSearch));
+            Routing.RegisterRoute(nameof(ReportsPage), typeof(ReportsPage));
+            Routing.RegisterRoute(nameof(PdfViewerPage), typeof(PdfViewerPage));
         }
     }
 }

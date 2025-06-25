@@ -17,9 +17,5 @@ namespace IntuitERP.models
         [Column("UF")]
         [StringLength(2)]
         public string? UF { get; set; }
-
-        // Navigation properties
-        public virtual ICollection<ClienteModel>? Clientes { get; set; }
-        public virtual ICollection<FornecedorModel>? Fornecedores { get; set; }
     }
 }
