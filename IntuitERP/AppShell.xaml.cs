@@ -1,5 +1,6 @@
 ﻿using IntuitERP.Viwes;
 using IntuitERP.Viwes.Reports;
+using IntuitERP.Viwes.Reports.PDFViwer;
 using IntuitERP.Viwes.Search;
 
 namespace IntuitERP
@@ -28,7 +29,7 @@ namespace IntuitERP
             Routing.RegisterRoute(nameof(VendaSearch), typeof(VendaSearch));
             Routing.RegisterRoute(nameof(CompraSearch), typeof(CompraSearch));
             Routing.RegisterRoute(nameof(ReportsPage), typeof(ReportsPage));
-            Routing.RegisterRoute(nameof(PdfViewerPage), typeof(PdfViewerPage));
+            Routing.RegisterRoute(nameof(PdfViwer), typeof(PdfViwer));
         }
     }
 }

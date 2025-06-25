@@ -1,15 +1,15 @@
-namespace IntuitERP.Viwes.Reports;
-
 using Maui.PDFView;
 
-public class PdfViewerPage : ContentPage
+namespace IntuitERP.Viwes.Reports.PDFViwer;
+
+public partial class PdfViwer : ContentPage
 {
     private readonly PdfView pdfView;
     private readonly ActivityIndicator activityIndicator;
     private readonly byte[] pdfData;
     private readonly string fileName;
 
-    public PdfViewerPage(byte[] pdfData, string fileName)
+    public PdfViwer(byte[] pdfData, string fileName)
     {
         this.pdfData = pdfData;
         this.fileName = fileName;
@@ -47,7 +47,7 @@ public class PdfViewerPage : ContentPage
         try
         {
             // Save the byte array to a temporary file in the cache
-            var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+            var filePath = $"PDFs/{fileName}";
             await File.WriteAllBytesAsync(filePath, pdfData);
 
             // Set the source of the PDF viewer

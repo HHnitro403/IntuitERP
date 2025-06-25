@@ -1,4 +1,5 @@
 using IntuitERP.Services;
+using IntuitERP.Viwes.Reports.PDFViwer;
 
 namespace IntuitERP.Viwes.Reports;
 
@@ -86,9 +87,15 @@ public partial class ReportsPage : ContentPage
 
             if (pdfData != null)
             {
-                var pdfPage = new PdfViewerPage(pdfData, fileName);
-                await Navigation.PushAsync(pdfPage);
+                var pdfPage = new PdfViwer(pdfData, fileName);
+                Navigation.PushAsync(pdfPage);
             }
+        }
+        catch (System.Runtime.InteropServices.COMException comEx)
+        {
+            // *** PUT A BREAKPOINT ON THE LINE BELOW ***
+            // When the breakpoint is hit, hover over 'comEx' to inspect it.
+            await DisplayAlert("COM Error", $"HRESULT: {comEx.ErrorCode:X}\nMessage: {comEx.Message}", "OK");
         }
         catch (Exception ex)
         {
