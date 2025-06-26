@@ -2,201 +2,218 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.CadastrodeUsuario"
-             Title="Cadastro de Usuario">
+             Shell.NavBarIsVisible="False"
+             Title="Cadastro de Usuario"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
+
+    <ContentPage.Resources>
+        <!-- These styles should ideally be in a global ResourceDictionary -->
+        <Style x:Key="FormLabel" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style x:Key="FormField" TargetType="Border">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="Padding" Value="15,0" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
+        </Style>
+
+        <Style x:Key="InputField" TargetType="Entry">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
+        </Style>
+
+        <Style x:Key="FormButton" TargetType="Button">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+
+        <Style x:Key="PrimaryActionButton" TargetType="Button" BasedOn="{StaticResource FormButton}">
+            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="TextColor" Value="{StaticResource White}" />
+        </Style>
+
+        <Style x:Key="SecondaryActionButton" TargetType="Button" BasedOn="{StaticResource FormButton}">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="BorderColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="BorderWidth" Value="2" />
+        </Style>
+
+        <Style x:Key="PermissionLabel" TargetType="Label">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+        </Style>
+
+        <Style x:Key="PermissionCategoryLabel" TargetType="Label">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+            <Setter Property="Margin" Value="0,10,0,5" />
+        </Style>
+    </ContentPage.Resources>
+
     <!-- Main Grid for the page layout -->
-    <Grid RowSpacing="0" Margin="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="*"/>
-            <!-- Form Content -->
-            <RowDefinition Height="Auto"/>
-            <!-- Footer with Buttons -->
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- Top header -->
-        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
-            <Label Text="Novo Usuário" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label x:Name="HeaderLabel" Text="Cadastro de Usuário" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
         </Grid>
 
         <!-- Scrollable Form Content -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="20" Padding="20">
-
-                <!-- Dados do Usuário -->
-                <Frame BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Dados de Acesso" FontSize="18" FontAttributes="Bold"/>
-
-                        <!-- Nome de Usuário -->
-                        <Label Text="Usuário:" FontSize="16"/>
-                        <Entry x:Name="UsuarioEntry" Placeholder="Digite o nome de usuário" FontSize="16"/>
-
-                        <!-- Senha -->
-                        <Label Text="Senha:" FontSize="16"/>
-                        <Entry x:Name="SenhaEntry" Placeholder="Digite a senha" IsPassword="True" FontSize="16"/>
-
-                        <!-- Confirmar Senha (Recommended for better UX) -->
-                        <Label Text="Confirmar Senha:" FontSize="16"/>
-                        <Entry x:Name="ConfirmarSenhaEntry" Placeholder="Confirme a senha" IsPassword="True" FontSize="16"/>
-                    </VerticalStackLayout>
-                </Frame>
-
-                <!-- Permissões -->
-                <Frame BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
+                <!-- Login Info Card -->
+                <Border StrokeThickness="0" Padding="20, 25" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}" StrokeShape="RoundRectangle 12">
                     <VerticalStackLayout Spacing="15">
-                        <Label Text="Permissões do Usuário" FontSize="18" FontAttributes="Bold" Margin="0,0,0,5"/>
+                        <Label Text="Dados de Acesso" Style="{StaticResource PermissionCategoryLabel}" Margin="0" />
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
 
-                        <!-- Permissões de Produtos -->
-                        <Label Text="Produtos:" FontSize="16" FontAttributes="Bold"/>
-                        <Grid ColumnSpacing="10" RowSpacing="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Text="Criar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="0" Grid.Column="1" x:Name="PermissaoProdutosCreateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="0" Grid.Column="2" Text="Ler:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="0" Grid.Column="3" x:Name="PermissaoProdutosReadSwitch" HorizontalOptions="End" IsToggled="False"/>
+                        <VerticalStackLayout>
+                            <Label Text="Usuário:" Style="{StaticResource FormLabel}" />
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="UsuarioEntry" Placeholder="Digite o nome de usuário" Style="{StaticResource InputField}" />
+                            </Border>
+                        </VerticalStackLayout>
 
-                            <Label Grid.Row="1" Grid.Column="0" Text="Atualizar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="1" Grid.Column="1" x:Name="PermissaoProdutosUpdateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="1" Grid.Column="2" Text="Deletar:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="1" Grid.Column="3" x:Name="PermissaoProdutosDeleteSwitch" HorizontalOptions="End" IsToggled="False"/>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="Senha:" Style="{StaticResource FormLabel}" />
+                                <Border Style="{StaticResource FormField}">
+                                    <Entry x:Name="SenhaEntry" Placeholder="Digite a senha" IsPassword="True" Style="{StaticResource InputField}" />
+                                </Border>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Confirmar Senha:" Style="{StaticResource FormLabel}" />
+                                <Border Style="{StaticResource FormField}">
+                                    <Entry x:Name="ConfirmarSenhaEntry" Placeholder="Confirme a senha" IsPassword="True" Style="{StaticResource InputField}" />
+                                </Border>
+                            </VerticalStackLayout>
                         </Grid>
-                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#DDDDDD, Dark=#444444}" Margin="0,10"/>
-
-
-                        <!-- Permissões de Vendas -->
-                        <Label Text="Vendas:" FontSize="16" FontAttributes="Bold"/>
-                        <Grid ColumnSpacing="10" RowSpacing="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Text="Criar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="0" Grid.Column="1" x:Name="PermissaoVendasCreateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="0" Grid.Column="2" Text="Ler:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="0" Grid.Column="3" x:Name="PermissaoVendasReadSwitch" HorizontalOptions="End" IsToggled="False"/>
-
-                            <Label Grid.Row="1" Grid.Column="0" Text="Atualizar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="1" Grid.Column="1" x:Name="PermissaoVendasUpdateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="1" Grid.Column="2" Text="Deletar:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="1" Grid.Column="3" x:Name="PermissaoVendasDeleteSwitch" HorizontalOptions="End" IsToggled="False"/>
-                        </Grid>
-                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#DDDDDD, Dark=#444444}" Margin="0,10"/>
-
-                        <!-- Permissões de Vendedores -->
-                        <Label Text="Vendedores:" FontSize="16" FontAttributes="Bold"/>
-                        <Grid ColumnSpacing="10" RowSpacing="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Text="Criar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="0" Grid.Column="1" x:Name="PermissaoVendedoresCreateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="0" Grid.Column="2" Text="Ler:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="0" Grid.Column="3" x:Name="PermissaoVendedoresReadSwitch" HorizontalOptions="End" IsToggled="False"/>
-
-                            <Label Grid.Row="1" Grid.Column="0" Text="Atualizar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="1" Grid.Column="1" x:Name="PermissaoVendedoresUpdateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="1" Grid.Column="2" Text="Deletar:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="1" Grid.Column="3" x:Name="PermissaoVendedoresDeleteSwitch" HorizontalOptions="End" IsToggled="False"/>
-                        </Grid>
-                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#DDDDDD, Dark=#444444}" Margin="0,10"/>
-
-                        <!-- Permissões de Fornecedores -->
-                        <Label Text="Fornecedores:" FontSize="16" FontAttributes="Bold"/>
-                        <Grid ColumnSpacing="10" RowSpacing="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Text="Criar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="0" Grid.Column="1" x:Name="PermissaoFornecedoresCreateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="0" Grid.Column="2" Text="Ler:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="0" Grid.Column="3" x:Name="PermissaoFornecedoresReadSwitch" HorizontalOptions="End" IsToggled="False"/>
-
-                            <Label Grid.Row="1" Grid.Column="0" Text="Atualizar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="1" Grid.Column="1" x:Name="PermissaoFornecedoresUpdateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="1" Grid.Column="2" Text="Deletar:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="1" Grid.Column="3" x:Name="PermissaoFornecedoresDeleteSwitch" HorizontalOptions="End" IsToggled="False"/>
-                        </Grid>
-                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#DDDDDD, Dark=#444444}" Margin="0,10"/>
-
-                        <!-- Permissões de Clientes -->
-                        <Label Text="Clientes:" FontSize="16" FontAttributes="Bold"/>
-                        <Grid ColumnSpacing="10" RowSpacing="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Text="Criar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="0" Grid.Column="1" x:Name="PermissaoClientesCreateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="0" Grid.Column="2" Text="Ler:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="0" Grid.Column="3" x:Name="PermissaoClientesReadSwitch" HorizontalOptions="End" IsToggled="False"/>
-
-                            <Label Grid.Row="1" Grid.Column="0" Text="Atualizar:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch Grid.Row="1" Grid.Column="1" x:Name="PermissaoClientesUpdateSwitch" HorizontalOptions="End" IsToggled="False"/>
-                            <Label Grid.Row="1" Grid.Column="2" Text="Deletar:" VerticalOptions="Center" FontSize="14" Margin="20,0,0,0"/>
-                            <Switch Grid.Row="1" Grid.Column="3" x:Name="PermissaoClientesDeleteSwitch" HorizontalOptions="End" IsToggled="False"/>
-                        </Grid>
-                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#DDDDDD, Dark=#444444}" Margin="0,10"/>
-
-                        <!-- Permissão de Relatórios -->
-                        <Label Text="Relatórios:" FontSize="16" FontAttributes="Bold"/>
-                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                            <Label Text="Gerar Relatórios:" VerticalOptions="Center" FontSize="14"/>
-                            <Switch x:Name="PermissaoRelatoriosGenerateSwitch" HorizontalOptions="EndAndExpand" IsToggled="False"/>
-                        </HorizontalStackLayout>
-
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
+                <!-- Permissions Card -->
+                <Border StrokeThickness="0" Padding="20, 25" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}" StrokeShape="RoundRectangle 12">
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="Permissões do Usuário" Style="{StaticResource PermissionCategoryLabel}" Margin="0" />
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
+
+                        <!-- Permissions Grid -->
+                        <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="5">
+
+                            <!-- Row for Products -->
+                            <VerticalStackLayout Grid.Row="0">
+                                <Label Text="Produtos" Style="{StaticResource PermissionCategoryLabel}" />
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="Criar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoProdutosCreateSwitch" />
+                                    <Label Grid.Column="2" Text="Ler:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoProdutosReadSwitch" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10" Margin="0,5,0,0">
+                                    <Label Grid.Column="0" Text="Atualizar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoProdutosUpdateSwitch" />
+                                    <Label Grid.Column="2" Text="Deletar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoProdutosDeleteSwitch" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Row for Vendas -->
+                            <VerticalStackLayout Grid.Row="1">
+                                <Label Text="Vendas" Style="{StaticResource PermissionCategoryLabel}" />
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="Criar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoVendasCreateSwitch" />
+                                    <Label Grid.Column="2" Text="Ler:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoVendasReadSwitch" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10" Margin="0,5,0,0">
+                                    <Label Grid.Column="0" Text="Atualizar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoVendasUpdateSwitch" />
+                                    <Label Grid.Column="2" Text="Deletar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoVendasDeleteSwitch" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Row for Vendedores -->
+                            <VerticalStackLayout Grid.Row="2">
+                                <Label Text="Vendedores" Style="{StaticResource PermissionCategoryLabel}" />
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="Criar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoVendedoresCreateSwitch" />
+                                    <Label Grid.Column="2" Text="Ler:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoVendedoresReadSwitch" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10" Margin="0,5,0,0">
+                                    <Label Grid.Column="0" Text="Atualizar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoVendedoresUpdateSwitch" />
+                                    <Label Grid.Column="2" Text="Deletar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoVendedoresDeleteSwitch" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Row for Fornecedores -->
+                            <VerticalStackLayout Grid.Row="3">
+                                <Label Text="Fornecedores" Style="{StaticResource PermissionCategoryLabel}" />
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="Criar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoFornecedoresCreateSwitch" />
+                                    <Label Grid.Column="2" Text="Ler:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoFornecedoresReadSwitch" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10" Margin="0,5,0,0">
+                                    <Label Grid.Column="0" Text="Atualizar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoFornecedoresUpdateSwitch" />
+                                    <Label Grid.Column="2" Text="Deletar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoFornecedoresDeleteSwitch" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Row for Clientes -->
+                            <VerticalStackLayout Grid.Row="4">
+                                <Label Text="Clientes" Style="{StaticResource PermissionCategoryLabel}" />
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="Criar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoClientesCreateSwitch" />
+                                    <Label Grid.Column="2" Text="Ler:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoClientesReadSwitch" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto,*,Auto" ColumnSpacing="10" Margin="0,5,0,0">
+                                    <Label Grid.Column="0" Text="Atualizar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoClientesUpdateSwitch" />
+                                    <Label Grid.Column="2" Text="Deletar:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="3" x:Name="PermissaoClientesDeleteSwitch" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Row for Relatorios -->
+                            <VerticalStackLayout Grid.Row="5">
+                                <Label Text="Relatórios" Style="{StaticResource PermissionCategoryLabel}" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="Gerar Relatórios:" Style="{StaticResource PermissionLabel}" />
+                                    <Switch Grid.Column="1" x:Name="PermissaoRelatoriosGenerateSwitch" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
         </ScrollView>
 
         <!-- Footer with Action Buttons -->
-        <Grid Grid.Row="2" Padding="20" ColumnSpacing="10" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2C}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Button x:Name="SalvarUsuarioButton" Grid.Column="0" Clicked="SalvarUsuarioButton_Clicked" Text="Salvar Usuário" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <Button x:Name="CancelarButton" Grid.Column="1" Clicked="CancelarButton_Clicked" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <!-- Add Clicked event handlers in C# for functionality -->
-        </Grid>
-
+        <Border Grid.Row="2" Padding="20" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+            <Grid ColumnSpacing="15" ColumnDefinitions="*,*">
+                <Button x:Name="CancelarButton" Grid.Column="0" Text="Cancelar" Clicked="CancelarButton_Clicked" Style="{StaticResource SecondaryActionButton}" />
+                <Button x:Name="SalvarUsuarioButton" Grid.Column="1" Text="Salvar Usuário" Clicked="SalvarUsuarioButton_Clicked" Style="{StaticResource PrimaryActionButton}" />
+            </Grid>
+        </Border>
     </Grid>
 </ContentPage>

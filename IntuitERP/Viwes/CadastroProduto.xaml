@@ -2,92 +2,153 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.CadastroProduto"
-             Title="CadastroProduto">
+             Shell.NavBarIsVisible="False"
+             Title="Cadastro de Produto"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
+
+    <ContentPage.Resources>
+        <!-- These styles should ideally be in a global ResourceDictionary like MyTheme.xaml -->
+        <Style x:Key="FormLabel" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style x:Key="FormField" TargetType="View">
+            <!-- Base style for input fields container -->
+            <Setter Property="HeightRequest" Value="50" />
+        </Style>
+
+        <Style x:Key="InputField" TargetType="Entry">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
+        </Style>
+
+        <Style x:Key="InputPicker" TargetType="Picker">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+            <Setter Property="TitleColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
+        </Style>
+
+        <Style x:Key="InputDatePicker" TargetType="DatePicker">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+        </Style>
+
+        <Style x:Key="FormButton" TargetType="Button">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+
+        <Style x:Key="PrimaryActionButton" TargetType="Button" BasedOn="{StaticResource FormButton}">
+            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="TextColor" Value="{StaticResource White}" />
+        </Style>
+
+        <Style x:Key="SecondaryActionButton" TargetType="Button" BasedOn="{StaticResource FormButton}">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="BorderColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="BorderWidth" Value="2" />
+        </Style>
+    </ContentPage.Resources>
+
     <!-- Main Grid for the page layout -->
-    <Grid RowSpacing="0" Margin="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="*"/>
-            <!-- Form Content -->
-            <RowDefinition Height="Auto"/>
-            <!-- Footer with Buttons -->
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- Top header -->
-        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
-            <Label Text="Novo Produto" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label x:Name="HeaderLabel"  TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
         </Grid>
 
         <!-- Scrollable Form Content -->
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="15" Padding="20">
+            <Border StrokeThickness="0"
+                    Padding="20, 25"
+                    Margin="20"
+                    VerticalOptions="Center"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="15">
 
-                <!-- Descrição do Produto -->
-                <Label Text="Descrição do Produto:" FontSize="16"/>
-                <Entry x:Name="DescricaoProdutoEntry" Placeholder="Digite a descrição do produto" FontSize="16"/>
+                    <!-- Descrição do Produto -->
+                    <VerticalStackLayout>
+                        <Label Text="Descrição do Produto:" Style="{StaticResource FormLabel}" />
+                        <Border Style="{StaticResource FormField}">
+                            <Entry x:Name="DescricaoProdutoEntry" Placeholder="Digite a descrição do produto" Style="{StaticResource InputField}" />
+                        </Border>
+                    </VerticalStackLayout>
 
-                <!-- Categoria -->
-                <Label Text="Categoria:" FontSize="16"/>
-                <Entry x:Name="CategoriaEntry" Placeholder="Ex: Eletrônicos, Vestuário, Alimentos" FontSize="16"/>
-                <!-- Consider using a Picker if categories are predefined -->
+                    <!-- Categoria & Tipo -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Categoria:" Style="{StaticResource FormLabel}" />
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="CategoriaEntry" Placeholder="Ex: Eletrônicos" Style="{StaticResource InputField}" />
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Tipo do Produto:" Style="{StaticResource FormLabel}" />
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="TipoProdutoEntry" Placeholder="Ex: Físico, Digital" Style="{StaticResource InputField}" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
 
-                <!-- Preço Unitário -->
-                <Label Text="Preço Unitário (R$):" FontSize="16"/>
-                <Entry x:Name="PrecoUnitarioEntry" Placeholder="0.00" Keyboard="Numeric" FontSize="16"/>
+                    <!-- Preço Unitário & Estoque Minimo -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Preço Unitário (R$):" Style="{StaticResource FormLabel}" />
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="PrecoUnitarioEntry" Placeholder="0.00" Keyboard="Numeric" Style="{StaticResource InputField}" />
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Estoque Mínimo:" Style="{StaticResource FormLabel}" />
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="EstoqueMinimoEntry" Placeholder="0" Keyboard="Numeric" Style="{StaticResource InputField}" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
 
-                <!-- Fornecedor Principal (FornecedorP_ID) -->
-                <Label Text="Fornecedor Principal:" FontSize="16"/>
-                <Picker x:Name="FornecedorPicker" Title="Selecione o Fornecedor Principal" FontSize="16">
-                    <!-- Items would be populated from your 'fornecedor' table in C# -->
-                    <Picker.ItemsSource>
-                        <x:Array Type="{x:Type x:String}">
-                            <x:String>Fornecedor A (Cód: 1)</x:String>
-                            <x:String>Fornecedor B (Cód: 2)</x:String>
-                            <x:String>Fornecedor C (Cód: 3)</x:String>
-                        </x:Array>
-                    </Picker.ItemsSource>
-                </Picker>
+                    <!-- Fornecedor Principal -->
+                    <VerticalStackLayout>
+                        <Label Text="Fornecedor Principal:" Style="{StaticResource FormLabel}" />
+                        <Border Style="{StaticResource FormField}">
+                            <Picker x:Name="FornecedorPicker" Title="Selecione o Fornecedor Principal" Style="{StaticResource InputPicker}">
+                                <!-- ItemsSource should be bound from C# code-behind -->
+                            </Picker>
+                        </Border>
+                    </VerticalStackLayout>
 
-                <!-- Estoque Mínimo -->
-                <Label Text="Estoque Mínimo:" FontSize="16"/>
-                <Entry x:Name="EstoqueMinimoEntry" Placeholder="0" Keyboard="Numeric" FontSize="16"/>
-
-                <!-- Tipo do Produto -->
-                <Label Text="Tipo do Produto:" FontSize="16"/>
-                <Entry x:Name="TipoProdutoEntry" Placeholder="Ex: Físico, Digital, Serviço" FontSize="16"/>
-                <!-- Consider using a Picker if tipos are predefined -->
-
-                <!-- Data de Cadastro -->
-                <!-- Often set automatically by the system. Can be hidden or read-only. -->
-                <Label Text="Data de Cadastro:" FontSize="16"/>
-                <DatePicker x:Name="DataCadastroPicker" IsEnabled="False" FontSize="16" Format="dd/MM/yyyy"/>
-
-                <!-- Ativo -->
-                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                    <Label Text="Ativo:" FontSize="16" VerticalOptions="Center"/>
-                    <Switch x:Name="AtivoSwitch" IsToggled="True" VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-
-                <!-- Fields typically not set directly on product creation: -->
-                <!-- SaldoEst: Usually managed by stock movement transactions. -->
-                <!-- EstoqueID, VarianteID: Might be for more complex inventory systems or variants, often handled differently. -->
-
-            </VerticalStackLayout>
+                    <!-- Data de Cadastro & Status -->
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="15" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Data de Cadastro:" Style="{StaticResource FormLabel}" />
+                            <Border Style="{StaticResource FormField}">
+                                <DatePicker x:Name="DataCadastroPicker" IsEnabled="False" Style="{StaticResource InputDatePicker}" Format="dd/MM/yyyy" />
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="10" Padding="0,20,0,0">
+                            <Label Text="Ativo:" Style="{StaticResource FormLabel}" VerticalOptions="Center" />
+                            <Switch x:Name="AtivoSwitch" IsToggled="True" VerticalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
         </ScrollView>
 
         <!-- Footer with Action Buttons -->
-        <Grid Grid.Row="2" Padding="20" ColumnSpacing="10" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2C}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Button x:Name="SalvarProdutoButton" Grid.Column="0" Clicked="SalvarProdutoButton_Clicked" Text="Salvar Produto" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <Button x:Name="CancelarButton" Clicked="CancelarButton_Clicked" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <!-- Add Clicked event handlers in C# for functionality -->
-            <!-- e.g., Clicked="SalvarProdutoButton_Clicked" -->
-        </Grid>
-
+        <Border Grid.Row="2" Padding="20" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+            <Grid ColumnSpacing="15" ColumnDefinitions="*,*">
+                <Button CornerRadius="5" MaximumWidthRequest="550" x:Name="CancelarButton" Grid.Column="0" Text="Cancelar" Clicked="CancelarButton_Clicked" Style="{StaticResource SecondaryActionButton}" />
+                <Button CornerRadius="5" MaximumWidthRequest="550" x:Name="SalvarProdutoButton" Grid.Column="1" Text="Salvar Produto" Clicked="SalvarProdutoButton_Clicked" Style="{StaticResource PrimaryActionButton}" />
+            </Grid>
+        </Border>
     </Grid>
 </ContentPage>

@@ -2,242 +2,148 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.CadastrodeCidade"
-             Title="Cadastro de Cidades">
-    <Grid RowSpacing="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+             Shell.NavBarIsVisible="False"
+             Title="Gerenciamento de Cidades"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
 
-        <!-- Top header with user info -->
-        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+    <ContentPage.Resources>
+        <!-- Define local styles for this page. Ideally, move these to a global ResourceDictionary. -->
+        <Style x:Key="FormLabel" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
 
-            <StackLayout Grid.Column="0" Orientation="Vertical" Spacing="2">
-                <Label Text="ERP System" TextColor="White" FontSize="22" FontAttributes="Bold"/>
-                <Label Text="Welcome, User" TextColor="White" FontSize="14"/>
-            </StackLayout>
+        <Style x:Key="FormField" TargetType="Border">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="Padding" Value="15,0" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
+        </Style>
 
-            <Label Grid.Column="1" 
-               Text="12/05/2025" 
-               TextColor="White" 
-               HorizontalOptions="End"
-               VerticalOptions="Center"/>
+        <Style x:Key="InputField" TargetType="Entry">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
+        </Style>
+
+        <Style x:Key="PrimaryActionButton" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="TextColor" Value="{StaticResource White}" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+
+        <Style x:Key="SecondaryActionButton" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+            <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
+            <Setter Property="BorderWidth" Value="2" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+
+        <Style x:Key="InlineButton" TargetType="Button">
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="HeightRequest" Value="35" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <!-- 1. Top Header -->
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label Text="Gerenciamento de Cidades" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
         </Grid>
 
-        <!-- Main content area with navigation -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.11*"/>
-               
-            </Grid.ColumnDefinitions>
+        <!-- 2. Fixed Form Section (Does not scroll) -->
+        <Border Grid.Row="1"
+                Padding="15"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+            <VerticalStackLayout>
+                <Label Text="Adicionar / Editar Cidade" FontSize="18" FontAttributes="Bold" Margin="0,0,0,10"
+                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
 
-            <!-- Side navigation menu -->
-           
-
-            <!-- Content area for CRUD operations -->
-            <Grid Grid.Column="1" BackgroundColor="{AppThemeBinding Light=White, Dark=#909EAE}">
-                <ScrollView>
-                    <Grid Padding="15" RowSpacing="20">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <!-- Page Header -->
-                        <Label Grid.Row="0" Text="Gerenciamento de Cidades" FontSize="24" FontAttributes="Bold"/>
-
-                        <!-- Form for adding/editing cities -->
-                        <Border Grid.Row="1"
-                            StrokeShape="RoundRectangle 10"
-                            Stroke="#DDDDDD"
-                            BackgroundColor="#FFFFFF">
-                            <Grid Padding="15" RowSpacing="10" ColumnSpacing="10">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Form Title -->
-                                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" 
-                                   Text="Adicionar/Editar Cidade" 
-                                   FontSize="18" 
-                                   FontAttributes="Bold" 
-                                   Margin="0,0,0,10"/>
-
-                                <!-- ID Field (disabled for editing, hidden for new) -->
-                                <Label Grid.Row="1" Grid.Column="2" 
-                                   Text="Código:" 
-                                   VerticalOptions="Center"/>
-                                <Entry Grid.Row="1" Grid.Column="3" 
-                                   x:Name="EntryId" 
-                                   IsEnabled="False" 
-                                   Placeholder="Automático" 
-                                   BackgroundColor="#F0F0F0"/>
-
-                                <!-- City Name Field -->
-                                <Label Grid.Row="1" Grid.Column="0" 
-                                   Text="Cidade:" 
-                                   VerticalOptions="Center" 
-                                   Margin="10,0,0,0"/>
-                                <Entry Grid.Row="1" Grid.Column="1" 
-                                   x:Name="EntryCidade" 
-                                   Placeholder="Nome da Cidade" 
-                                   MaxLength="255"/>
-
-                                <!-- State/UF Field -->
-                                <Label Grid.Row="2" Grid.Column="0" 
-                                   Text="UF:" 
-                                   VerticalOptions="Center"/>
-                                <Entry Grid.Row="2" Grid.Column="1" 
-                                   x:Name="EntryUF" 
-                                   Placeholder="UF" 
-                                   MaxLength="2"/>
-
-                                <!-- Action Buttons -->
-                                <StackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
-                                         Orientation="Horizontal" 
-                                         HorizontalOptions="End" 
-                                         Spacing="10" 
-                                         Margin="0,15,0,0">
-                                    <Button x:Name="BtnClear" 
-                                        Text="Limpar" 
-                                        BackgroundColor="#6c757d" 
-                                        TextColor="White"/>
-                                    <Button x:Name="BtnSave" 
-                                        Text="Salvar"
-                                            Clicked="BtnSave_Clicked"
-                                        BackgroundColor="#0078D7" 
-                                        TextColor="White"/>
-                                </StackLayout>
-                            </Grid>
+                <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="15" RowSpacing="10">
+                    <!-- Nome da Cidade -->
+                    <VerticalStackLayout Grid.Column="0">
+                        <Label Text="Cidade:" Style="{StaticResource FormLabel}" />
+                        <Border Style="{StaticResource FormField}">
+                            <Entry x:Name="EntryCidade" Placeholder="Nome da Cidade" MaxLength="255" Style="{StaticResource InputField}" />
                         </Border>
+                    </VerticalStackLayout>
 
-                        <!-- Cities List -->
-                        <Border Grid.Row="2"
-                            StrokeShape="RoundRectangle 10"
-                            Stroke="#DDDDDD"
-                            BackgroundColor="#FFFFFF">
-                            <Grid Padding="15">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <!-- List Header -->
-                                <Label Grid.Row="0" Text="Lista de Cidades" FontAttributes="Bold" FontSize="16" Margin="0,0,0,10"/>
-
-                                <!-- Search Bar -->
-                                <Grid Grid.Row="1" Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Entry Grid.Column="0" 
-                                       x:Name="EntrySearch" 
-                                       Placeholder="Buscar por nome da cidade..." 
-                                       Margin="0,0,10,0"/>
-                                    <Button Grid.Column="1" 
-                                        x:Name="BtnSearch" 
-                                        Text="Buscar" 
-                                        Clicked="BtnSearch_Clicked"
-                                        BackgroundColor="#0078D7" 
-                                        TextColor="White"/>
-                                </Grid>
-
-                                <!-- Cities List with Headers -->
-                                <Grid Grid.Row="2" RowSpacing="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-
-                                    <!-- Column Headers -->
-                                    <Grid Grid.Row="0" BackgroundColor="#f0f0f0" Padding="10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Label Grid.Column="0" Text="Código" FontAttributes="Bold"/>
-                                        <Label Grid.Column="1" Text="Cidade" FontAttributes="Bold" Margin="10,0,0,0"/>
-                                        <Label Grid.Column="2" Text="UF" FontAttributes="Bold" Margin="10,0,0,0"/>
-                                        <Label Grid.Column="3" Text="Ações" FontAttributes="Bold" Margin="10,0,0,0"/>
-                                    </Grid>
-
-                                    <!-- Cities Collection View -->
-                                    <CollectionView Grid.Row="1" x:Name="CitiesList">
-                                        <CollectionView.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid Padding="10">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <Label Grid.Column="0" 
-                                                       Text="{Binding CodCIdade}" 
-                                                       VerticalOptions="Center"/>
-                                                    <Label Grid.Column="1" 
-                                                       Text="{Binding Cidade}" 
-                                                       VerticalOptions="Center" 
-                                                       Margin="10,0,0,0"/>
-                                                    <Label Grid.Column="2" 
-                                                       Text="{Binding UF}" 
-                                                       VerticalOptions="Center" 
-                                                       Margin="10,0,0,0"/>
-                                                    <StackLayout Grid.Column="3" 
-                                                             Orientation="Horizontal" 
-                                                             Spacing="5" 
-                                                             Margin="10,0,0,0">
-                                                        <Button Text="Editar" 
-                                                            BackgroundColor="#0078D7" 
-                                                            TextColor="White" 
-                                                            HeightRequest="30" 
-                                                            WidthRequest="60" 
-                                                            FontSize="12" 
-                                                            Padding="0" 
-                                                            Clicked="BtnEdit_Clicked"
-                                                            x:Name="BtnEdit"/>
-                                                        <Button Text="Excluir" 
-                                                            BackgroundColor="#D32F2F" 
-                                                            TextColor="White" 
-                                                            HeightRequest="30" 
-                                                            WidthRequest="60" 
-                                                            FontSize="12" 
-                                                            Padding="0" 
-                                                            Clicked="BtnDelete_Clicked"
-                                                            x:Name="BtnDelete"/>
-                                                    </StackLayout>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </CollectionView.ItemTemplate>
-                                    </CollectionView>
-                                </Grid>
-                            </Grid>
+                    <!-- UF -->
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="UF:" Style="{StaticResource FormLabel}" />
+                        <Border Style="{StaticResource FormField}">
+                            <Entry x:Name="EntryUF" Placeholder="UF" MaxLength="2" Style="{StaticResource InputField}" />
                         </Border>
-                    </Grid>
-                </ScrollView>
-            </Grid>
-        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Codigo -->
+                    <VerticalStackLayout Grid.Column="2">
+                        <Label Text="Código:" Style="{StaticResource FormLabel}" />
+                        <Border Style="{StaticResource FormField}">
+                            <Entry x:Name="EntryId" IsEnabled="False" Placeholder="Automático" Style="{StaticResource InputField}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Action Buttons for the form -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="15" Margin="0,15,0,0">
+                    <Button x:Name="BtnClear" Text="Limpar" Style="{StaticResource SecondaryActionButton}" />
+                    <Button x:Name="BtnSave" Grid.Column="1" Text="Salvar" Clicked="BtnSave_Clicked" Style="{StaticResource PrimaryActionButton}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- 3. Scrollable List Section -->
+        <ScrollView Grid.Row="2" Margin="15">
+            <VerticalStackLayout Spacing="15">
+                <!-- Search Bar -->
+                <SearchBar TextChanged="EntrySearch_TextChanged" x:Name="EntrySearch" Placeholder="Buscar por nome da cidade..." />
+
+                <!-- Cities List -->
+                <CollectionView x:Name="CitiesList">
+                    <CollectionView.Header>
+                        <!-- Column Headers -->
+                        <Grid Padding="10,5" ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="Código" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                            <Label Grid.Column="1" Text="Cidade" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                            <Label Grid.Column="2" Text="UF" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                        </Grid>
+                    </CollectionView.Header>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeShape="RoundRectangle 8" Padding="10" Margin="0,0,0,5"
+                                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}">
+                                <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                    <Label Grid.Column="0" Text="{Binding CodCIdade}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                    <Label Grid.Column="1" Text="{Binding Cidade}" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+                                    <Label Grid.Column="2" Text="{Binding UF}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+
+                                    <!-- Inline Action Buttons -->
+                                    <HorizontalStackLayout Grid.Column="3" Spacing="5">
+                                        <Button x:Name="BtnEdit" Text="Editar" Clicked="BtnEdit_Clicked" Style="{StaticResource InlineButton}" BackgroundColor="{StaticResource WarningColor}" TextColor="{StaticResource WarningTextColor}" />
+                                        <Button x:Name="BtnDelete" Text="Excluir" Clicked="BtnDelete_Clicked" Style="{StaticResource InlineButton}" BackgroundColor="{StaticResource DangerColor}" TextColor="White" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="Nenhuma cidade encontrada." HorizontalOptions="Center" VerticalOptions="Center" Margin="20" />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
-
 </ContentPage>

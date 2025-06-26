@@ -14,6 +14,7 @@ public partial class ProdutoSearch : ContentPage
     public ObservableCollection<ProdutoModel> _listaProdutosDisplay { get; set; }
     private List<ProdutoModel> _masterListaProdutos;
     private ProdutoModel _produtoSelecionado;
+
     public ProdutoSearch(ProdutoService produtoService, FornecedorService fornecedorService)
     {
         InitializeComponent();
@@ -131,9 +132,11 @@ public partial class ProdutoSearch : ContentPage
 
             var produtoServiceForNewPage = new ProdutoService(newPageConnection);
             var fornecedorServiceForNewPage = new FornecedorService(newPageConnection);
+            var cadastroprodutopage = new CadastroProduto(produtoServiceForNewPage, fornecedorServiceForNewPage, 0);
+            cadastroprodutopage.Title = "Novo Produto";
 
             // Pass 0 or no ID for a new product, assuming CadastroProduto handles this
-            await Navigation.PushAsync(new CadastroProduto(produtoServiceForNewPage, fornecedorServiceForNewPage, 0));
+            await Navigation.PushAsync(cadastroprodutopage);
         }
         catch (Exception ex)
         {
@@ -158,9 +161,11 @@ public partial class ProdutoSearch : ContentPage
 
             var produtoServiceForEditPage = new ProdutoService(editPageConnection);
             var fornecedorServiceForEditPage = new FornecedorService(editPageConnection);
+            var cadastroprodutopage = new CadastroProduto(produtoServiceForEditPage, fornecedorServiceForEditPage, _produtoSelecionado.CodProduto);
+            cadastroprodutopage.Title = $"Produto {_produtoSelecionado.Descricao} - Editar Produto";
 
             // Pass the ID of the selected product to CadastroProduto
-            await Navigation.PushAsync(new CadastroProduto(produtoServiceForEditPage, fornecedorServiceForEditPage, _produtoSelecionado.CodProduto));
+            await Navigation.PushAsync(cadastroprodutopage);
         }
         catch (Exception ex)
         {

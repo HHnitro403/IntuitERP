@@ -1,105 +1,124 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:IntuitERP.models"
              x:Class="IntuitERP.Viwes.Search.ClienteSearch"
+             xmlns:models="clr-namespace:IntuitERP.models"
              xmlns:converters="clr-namespace:IntuitERP.Helpers"
-             Title="ClienteSearch">
+             Shell.NavBarIsVisible="False"
+             Title="Pesquisa de Clientes"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
+
+            <!-- Action Button Colors -->
+            <Color x:Key="SuccessColor">#28A745</Color>
+            <Color x:Key="WarningColor">#FFC107</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
+            <Color x:Key="WarningTextColor">#212529</Color>
+
+            <!-- Base Style for Action Buttons -->
+            <Style x:Key="ActionButton" TargetType="Button">
+                <Setter Property="TextColor" Value="{StaticResource White}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="HeightRequest" Value="45" />
+                <Setter Property="Padding" Value="15,0" />
+            </Style>
+
+            <!-- Specific Styles for CRUD Buttons -->
+            <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+            </Style>
+            <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+                <Setter Property="TextColor" Value="{StaticResource WarningTextColor}" />
+            </Style>
+            <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowSpacing="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="Auto"/>
-            <!-- Actions (Search, New, Edit, Delete Buttons) -->
-            <RowDefinition Height="*"/>
-            <!-- List -->
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto, Auto, *">
 
         <!-- Top header -->
-        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
-            <Label Text="Clientes Cadastrados" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label Text="Clientes Cadastrados" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
         </Grid>
 
         <!-- Actions: Search Bar and Action Buttons -->
-        <VerticalStackLayout Grid.Row="1" Padding="10" Spacing="10">
-            <SearchBar x:Name="ClienteSearchBar" Placeholder="Buscar cliente por nome, email ou CPF..." TextChanged="ClienteSearchBar_TextChanged"/>
-            <Grid ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="NovoClienteButton" Text="Novo" Clicked="NovoClienteButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
-                <Button Grid.Column="1" x:Name="EditarClienteButton" Text="Editar Selecionado" Clicked="EditarClienteSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Orange" TextColor="White"/>
-                <Button Grid.Column="2" x:Name="ExcluirClienteButton" Text="Excluir Selecionado" Clicked="ExcluirClienteSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Red" TextColor="White"/>
-            </Grid>
-        </VerticalStackLayout>
+        <Border Grid.Row="1"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                Padding="15">
+            <VerticalStackLayout Spacing="15">
+                <SearchBar x:Name="ClienteSearchBar" Placeholder="Buscar cliente por nome, email ou CPF..." TextChanged="ClienteSearchBar_TextChanged" />
+                <Grid ColumnSpacing="10" ColumnDefinitions="*,*,*">
+                    <Button Grid.Column="0" x:Name="NovoClienteButton" Text="Novo" Clicked="NovoClienteButton_Clicked" Style="{StaticResource SuccessButton}" />
+                    <Button Grid.Column="1" x:Name="EditarClienteButton" Text="Editar" Clicked="EditarClienteSelecionadoButton_Clicked" IsEnabled="False" Style="{StaticResource WarningButton}" />
+                    <Button Grid.Column="2" x:Name="ExcluirClienteButton" Text="Excluir" Clicked="ExcluirClienteSelecionadoButton_Clicked" IsEnabled="False" Style="{StaticResource DangerButton}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
 
         <!-- Clients List -->
         <CollectionView x:Name="ClientesCollectionView"
                         Grid.Row="2"
                         ItemsSource="{Binding _listaClientesDisplay}"
                         SelectionMode="Single"
-            SelectionChanged="ClientesCollectionView_SelectionChanged"
-           
-            EmptyView="Nenhum cliente encontrado.">
+                        SelectionChanged="ClientesCollectionView_SelectionChanged"
+                        EmptyView="Nenhum cliente encontrado."
+                        Margin="10,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ClienteModel">
-                    <Frame Padding="10" Margin="5" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="5">
+                    <Border Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="15"
+                            Margin="5">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup Name="CommonStates">
                                 <VisualState Name="Normal" />
                                 <VisualState Name="Selected">
                                     <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkSlateBlue}" />
+                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightBlue}" />
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Grid RowSpacing="5" ColumnSpacing="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <!-- Column for buttons removed -->
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
 
-                            <Label Grid.Row="0" Grid.Column="0" FontSize="Medium" FontAttributes="Bold">
+                        <VerticalStackLayout Spacing="8">
+                            <!-- Client Name -->
+                            <Label FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}">
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span Text="{Binding CodCliente, StringFormat='Cód: {0} - '}"/>
-                                        <Span Text="{Binding Nome}"/>
+                                        <Span Text="{Binding CodCliente, StringFormat='Cód: {0} - '}" />
+                                        <Span Text="{Binding Nome}" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="1" Grid.Column="0" FontSize="Small" Text="{Binding Email, StringFormat='Email: {0}'}"/>
-                            <Label Grid.Row="2" Grid.Column="0" FontSize="Small" Text="{Binding CPF, StringFormat='CPF: {0}'}"/>
-                            <Label Grid.Row="3" Grid.Column="0" FontSize="Small">
-                                <Label.FormattedText>
-                                    <FormattedString>
-                                        <Span Text="Status: "/>
-                                        <Span Text="{Binding Ativo, Converter={StaticResource BoolToStatusConverter}}"/>
-                                    </FormattedString>
-                                </Label.FormattedText>
-                            </Label>
-                            <!-- Buttons removed from here -->
-                        </Grid>
-                    </Frame>
+
+                            <!-- Client Details Grid -->
+                            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" RowSpacing="5">
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Email, StringFormat='Email: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding CPF, StringFormat='CPF: {0}'}" FontSize="12" HorizontalTextAlignment="End" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+
+                                <!-- Spacer Row to ensure status is always on its own line if needed -->
+
+                                <Label Grid.Row="1" Grid.Column="0" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Status: " />
+                                            <Span Text="{Binding Ativo, Converter={StaticResource BoolToStatusConverter}}" FontAttributes="Bold" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
     </Grid>
-
-
 </ContentPage>

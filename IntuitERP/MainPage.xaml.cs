@@ -11,10 +11,10 @@ namespace IntuitERP
     {
         // Track validation state
         private bool _isUserValid = false;
+
         private bool _isPasswordValid = false;
         private IDbConnection _connection;
         private UsuarioService _usuarioService;
-
 
         public MainPage()
         {
@@ -36,6 +36,8 @@ namespace IntuitERP
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            UserEntry.Text = string.Empty;
+            PasswordEntry.Text = string.Empty;
 
             // Only initialize if it hasn't been done already
             if (_usuarioService == null)
@@ -49,17 +51,22 @@ namespace IntuitERP
             }
         }
 
-
         private void OnUserTextChanged(object sender, TextChangedEventArgs e)
         {
-            ValidateUser();
-            UpdateLoginButtonState();
+            if (UserEntry.IsFocused == true)
+            {
+                ValidateUser();
+                UpdateLoginButtonState();
+            }
         }
 
         private void OnPasswordTextChanged(object sender, TextChangedEventArgs e)
         {
-            ValidatePassword();
-            UpdateLoginButtonState();
+            if (PasswordEntry.IsFocused == true)
+            {
+                ValidatePassword();
+                UpdateLoginButtonState();
+            }
         }
 
         private void ValidateUser()
@@ -122,26 +129,26 @@ namespace IntuitERP
         {
             UserErrorLabel.Text = message;
             UserErrorLabel.IsVisible = true;
-            UserFrame.BorderColor = Colors.Red;
+            UserFrame.Stroke = Colors.Red;
         }
 
         private void HideUserError()
         {
             UserErrorLabel.IsVisible = false;
-            UserFrame.BorderColor = Colors.Gray;
+            UserFrame.Stroke = Colors.Gray;
         }
 
         private void ShowPasswordError(string message)
         {
             PasswordErrorLabel.Text = message;
             PasswordErrorLabel.IsVisible = true;
-            PasswordFrame.BorderColor = Colors.Red;
+            PasswordFrame.Stroke = Colors.Red;
         }
 
         private void HidePasswordError()
         {
             PasswordErrorLabel.IsVisible = false;
-            PasswordFrame.BorderColor = Colors.Gray;
+            PasswordFrame.Stroke = Colors.Gray;
         }
 
         private void UpdateLoginButtonState()
@@ -149,22 +156,15 @@ namespace IntuitERP
             LoginButton.IsEnabled = _isUserValid && _isPasswordValid;
         }
 
-
-
-
-
         private async void LoginButton_Clicked(object sender, EventArgs e)
         {
             // var result =  await LoginAsync();
             //    if (result)
             //    {
-
             //    }
 
             await Navigation.PushAsync(new MaenuPage());
-
         }
-
 
         public async Task<bool> LoginAsync()
         {
@@ -190,12 +190,6 @@ namespace IntuitERP
             }
         }
 
-
-
-
         // The method containing this code needs to be async
-
-
     }
-
 }

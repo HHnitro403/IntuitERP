@@ -34,7 +34,7 @@ public partial class CadastroProduto : ContentPage
     {
         base.OnAppearing();
         await LoadFornecedoresAsync();
-
+        HeaderLabel.Text = this.Title;
         if (_id != 0)
         {
             var produto = await _produtoService.GetByIdAsync(_id);
@@ -121,7 +121,6 @@ public partial class CadastroProduto : ContentPage
                 return;
             }
         }
-
 
         if (FornecedorPicker.SelectedItem == null)
         {
@@ -243,6 +242,5 @@ public partial class CadastroProduto : ContentPage
 
     private void SalvarProdutoButton_Clicked_1(object sender, EventArgs e)
     {
-
     }
 }

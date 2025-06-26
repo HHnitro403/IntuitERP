@@ -14,6 +14,12 @@ public partial class MaenuPage : ContentPage
         BindingContext = this;
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        DataLabel.Text = DateTime.Now.ToString("dd/MM/yyyy");
+    }
+
     // Navigation methods for Cadastros
     private async void OnProdutosClicked(object sender, EventArgs e)
     {

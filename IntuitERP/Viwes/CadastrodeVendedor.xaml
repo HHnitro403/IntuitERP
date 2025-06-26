@@ -2,65 +2,120 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.CadastrodeVendedor"
-             Title="CadastrodeVendedor">
+             Shell.NavBarIsVisible="False"
+             Title="Cadastro de Vendedor"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
+
+    <ContentPage.Resources>
+        <!-- These styles should ideally be in a global ResourceDictionary -->
+        <Style x:Key="FormLabel" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style x:Key="FormField" TargetType="Border">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 8"/>
+            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"/>
+        </Style>
+
+        <Style x:Key="InputField" TargetType="Entry">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
+        </Style>
+
+        <Style x:Key="ReadOnlyField" TargetType="Entry" BasedOn="{StaticResource InputField}">
+            <Setter Property="IsEnabled" Value="False" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+        </Style>
+
+        <Style x:Key="FormButton" TargetType="Button">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+
+        <Style x:Key="PrimaryActionButton" TargetType="Button" BasedOn="{StaticResource FormButton}">
+            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="TextColor" Value="{StaticResource White}" />
+        </Style>
+
+        <Style x:Key="SecondaryActionButton" TargetType="Button" BasedOn="{StaticResource FormButton}">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="BorderColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="BorderWidth" Value="2" />
+        </Style>
+
+    </ContentPage.Resources>
+
     <!-- Main Grid for the page layout -->
-    <Grid RowSpacing="0" Margin="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="*"/>
-            <!-- Form Content -->
-            <RowDefinition Height="Auto"/>
-            <!-- Footer with Buttons -->
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- Top header -->
-        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
-            <Label Text="Novo Vendedor" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label x:Name="HeaderLabel" Text="Cadastro de Vendedor" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
         </Grid>
 
         <!-- Scrollable Form Content -->
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="20" Padding="20">
+            <Border StrokeThickness="0" 
+                    Padding="20, 25" 
+                    Margin="20"
+                    VerticalOptions="Center"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="15">
 
-                <!-- Dados do Vendedor -->
-                <Frame BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Informações do Vendedor" FontSize="18" FontAttributes="Bold"/>
-
-                        <!-- Nome do Vendedor -->
-                        <Label Text="Nome do Vendedor:" FontSize="16"/>
-                        <Entry x:Name="NomeVendedorEntry" Placeholder="Digite o nome completo do vendedor" FontSize="16"/>
-
-                        <!-- Total de Vendas (Read-only or for display when editing) -->
-                        <Label Text="Total de Vendas:" FontSize="16"/>
-                        <Entry x:Name="TotalVendasEntry" Text="0" IsEnabled="False" FontSize="16"/>
-
-                        <!-- Vendas Finalizadas (Read-only or for display when editing) -->
-                        <Label Text="Vendas Finalizadas:" FontSize="16"/>
-                        <Entry x:Name="VendasFinalizadasEntry" Text="0" IsEnabled="False" FontSize="16"/>
-
-                        <!-- Vendas Canceladas (Read-only or for display when editing) -->
-                        <Label Text="Vendas Canceladas:" FontSize="16"/>
-                        <Entry x:Name="VendasCanceladasEntry" Text="0" IsEnabled="False" FontSize="16"/>
+                    <!-- Nome do Vendedor -->
+                    <VerticalStackLayout>
+                        <Label Text="Nome do Vendedor:" Style="{StaticResource FormLabel}"/>
+                        <Border Style="{StaticResource FormField}">
+                            <Entry x:Name="NomeVendedorEntry" Placeholder="Digite o nome completo do vendedor" Style="{StaticResource InputField}"/>
+                        </Border>
                     </VerticalStackLayout>
-                </Frame>
 
-            </VerticalStackLayout>
+                    <!-- Sales Statistics -->
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="15">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Total de Vendas:" Style="{StaticResource FormLabel}"/>
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="TotalVendasEntry" Text="0" Style="{StaticResource ReadOnlyField}"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Vendas Finalizadas:" Style="{StaticResource FormLabel}"/>
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="VendasFinalizadasEntry" Text="0" Style="{StaticResource ReadOnlyField}"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="2">
+                            <Label Text="Vendas Canceladas:" Style="{StaticResource FormLabel}"/>
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="VendasCanceladasEntry" Text="0" Style="{StaticResource ReadOnlyField}"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
         </ScrollView>
 
         <!-- Footer with Action Buttons -->
-        <Grid Grid.Row="2" Padding="20" ColumnSpacing="10" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2C}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Button x:Name="SalvarVendedorButton" Clicked="SalvarVendedorButton_Clicked" Grid.Column="0" Text="Salvar Vendedor" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <Button x:Name="CancelarButton" Clicked="CancelarButton_Clicked" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <!-- Add Clicked event handlers in C# for functionality -->
-            <!-- e.g., Clicked="SalvarVendedorButton_Clicked" -->
-        </Grid>
+        <Border Grid.Row="2" Padding="20" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+            <Grid ColumnSpacing="15" ColumnDefinitions="*,*">
+                <Button CornerRadius="5" MaximumWidthRequest="550" x:Name="CancelarButton" Grid.Column="0" Text="Cancelar" Clicked="CancelarButton_Clicked" Style="{StaticResource SecondaryActionButton}"/>
+                <Button CornerRadius="5" MaximumWidthRequest="550" x:Name="SalvarVendedorButton" Grid.Column="1" Text="Salvar" Clicked="SalvarVendedorButton_Clicked" Style="{StaticResource PrimaryActionButton}"/>
+            </Grid>
+        </Border>
 
     </Grid>
 </ContentPage>
