@@ -1,104 +1,115 @@
 // MainPage.xaml.cs (or a new ContentPage code-behind)
 using Microsoft.Maui.Controls;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace IntuitERP.Viwes.Modals;
 
-public partial class ModalPicker : ContentPage
+public partial class ModalPicker: ContentPage
 {
-    public ObservableCollection<object> Items { get; set; }
+    // The TaskCompletionSource now works with 'object' internally.
+    private readonly TaskCompletionSource<object> _taskCompletionSource;
 
-    public ObservableCollection<object> FilteredItems { get; set; }
+    // The list of all items, stored as a non-generic IEnumerable.
+    private readonly IEnumerable _allItems;
 
-    public Func<object, string, bool> SearchPredicate { get; set; }
+    private object _selectedItem;
 
-    public Action<object> OnItemSelectedCallback { get; set; }
-
-    public ModalPicker(object Itemlist)
+    public ModalPicker(string title, IEnumerable items)
     {
         InitializeComponent();
 
-        Items = new ObservableCollection<object>();
-        FilteredItems = new ObservableCollection<object>(Items);
-        this.BindingContext = this;
+        Title = title;
+        _allItems = items;
+        _taskCompletionSource = new TaskCompletionSource<object>();
+
+        // The ListView's ItemsSource is set directly with the non-generic collection.
+        SearchResultsListView.ItemsSource = _allItems;
     }
 
-    public ModalPicker(ObservableCollection<object> initialItems, Func<object, string, bool> searchPredicate, Action<object> onItemSelectedCallback = null)
+    
+    public static async Task<T> Show<T>(INavigation navigation, string title, IEnumerable<T> items)
     {
-        Items = initialItems;
-        FilteredItems = new ObservableCollection<object>(initialItems);
-        SearchPredicate = searchPredicate;
-        OnItemSelectedCallback = onItemSelectedCallback;
+        // 1. Create an instance of the non-generic ModalPicker.
+        var modal = new ModalPicker(title, items);
+
+        // 2. Push the modal onto the navigation stack.
+        await navigation.PushModalAsync(modal);
+
+        // 3. Await the internal TaskCompletionSource. This task will only complete 
+        //    when the user selects an item or cancels.
+        var result = await modal._taskCompletionSource.Task;
+
+        // 4. Cast the object result back to the original generic type 'T'.
+        return (T)result;
     }
 
+    /// <summary>
+    /// Handles the TextChanged event of the SearchBar to filter the list.
+    /// </summary>
     private void OnSearchBarTextChanged(object sender, TextChangedEventArgs e)
     {
-        FilteredItems.Clear();
+        var searchText = e.NewTextValue?.ToLowerInvariant();
 
-        if (string.IsNullOrWhiteSpace(e.NewTextValue))
+        if (string.IsNullOrWhiteSpace(searchText))
         {
-            foreach (var item in Items)
-            {
-                FilteredItems.Add(item);
-            }
+            SearchResultsListView.ItemsSource = _allItems;
         }
-        else if (SearchPredicate != null)
+        else
         {
-            var searchText = e.NewTextValue;
-            var results = Items.Where(item => SearchPredicate(item, searchText));
-            foreach (var item in results)
-            {
-                FilteredItems.Add(item);
-            }
-        }
-        else // Fallback if no predicate is provided (e.g., relies on item.ToString())
-        {
-            var searchText = e.NewTextValue.ToLowerInvariant();
-            var results = Items.Where(item => item.ToString().ToLowerInvariant().Contains(searchText));
-            foreach (var item in results)
-            {
-                FilteredItems.Add(item);
-            }
+            // The filtering logic still works perfectly because it calls ToString() on each item,
+            // which is available on the base 'object' type.
+            SearchResultsListView.ItemsSource = _allItems
+                .Cast<object>() // Cast to object to use LINQ
+                .Where(item => item.ToString().ToLowerInvariant().Contains(searchText))
+                .ToList();
         }
     }
 
-    private async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
+    /// <summary>
+    /// Handles the selection of an item in the ListView.
+    /// </summary>
+    private void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
-        if (e.SelectedItem != null)
-        {
-            // Optionally call a callback if provided
-            OnItemSelectedCallback?.Invoke(e.SelectedItem);
-
-            // Display an alert with the selected item's ToString() representation.
-            await DisplayAlert("Item Selected", $"You selected: {e.SelectedItem.ToString()}", "OK");
-
-            ((ListView)sender).SelectedItem = null; // Deselect the item
-        }
+        // The SelectedItem is already an object, so no cast is needed here.
+        _selectedItem = e.SelectedItem;
     }
 
+    /// <summary>
+    /// Handles the 'Select' button click.
+    /// </summary>
     private async void OnSelectButtonClicked(object sender, EventArgs e)
     {
-        object selectedItem = SearchResultsListView.SelectedItem;
-        string selectedText = (selectedItem != null) ? selectedItem.ToString() : "Nothing";
+        // Set the result on the TaskCompletionSource with the selected object.
+        _taskCompletionSource.SetResult(_selectedItem);
 
-        // If a callback is provided, invoke it with the selected item
-        if (selectedItem != null)
-        {
-            OnItemSelectedCallback?.Invoke(selectedItem);
-        }
-
-        await DisplayAlert("Action", $"Select button clicked. Current selection: {selectedText}", "OK");
-
-        // You typically want to close the modal after selection
+        // Close the modal.
         await Navigation.PopModalAsync();
     }
 
+    /// <summary>
+    // Handles the 'Cancel' button click.
+    /// </summary>
     private async void OnCancelButtonClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("Action", "Cancel button clicked.", "OK");
+        // Set a default/null result to indicate cancellation.
+        _taskCompletionSource.SetResult(null);
 
-        // You typically want to close the modal on cancel
+        // Close the modal.
         await Navigation.PopModalAsync();
+    }
+
+    /// <summary>
+    /// Overrides the back button behavior to ensure the task is cancelled properly.
+    /// </summary>
+    protected override bool OnBackButtonPressed()
+    {
+        // When the physical back button is pressed, the page is about to be popped by the system.
+        // We must complete the task so the calling page doesn't wait forever.
+        _taskCompletionSource.TrySetResult(null);
+
+        // Allow the default back button behavior to proceed and pop the page.
+        return base.OnBackButtonPressed();
     }
 }

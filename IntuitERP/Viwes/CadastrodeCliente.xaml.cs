@@ -345,5 +345,23 @@ public partial class CadastrodeCliente : ContentPage
 
     private async void SelectCidadeButton_Clicked(object sender, EventArgs e)
     {
+        try
+        {
+            var cidadelist = await _cidadeService.GetAllAsync();
+            var selectedCidade = await ModalPicker.Show<CidadeModel>(Navigation, "Selecione a Cidade", cidadelist);
+            if (selectedCidade != null)
+            {
+                // 4. Use the selected product.
+               
+
+                // You could also show an alert or update a viewmodel property.
+                await DisplayAlert("Success", $"You picked product ID: {selectedCidade.CodCIdade}", "OK");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro Inesperado", $"Ocorreu um erro ao Selecionar a Cidade: {ex.Message}", "OK");
+        }
     }
 }
