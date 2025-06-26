@@ -2,78 +2,104 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.Search.ProdutoSearch"
-             xmlns:models="clr-namespace:IntuitERP.models" 
+             xmlns:models="clr-namespace:IntuitERP.models"
              xmlns:converters="clr-namespace:IntuitERP.Helpers"
-             Title="ProdutoSearch">
+             Shell.NavBarIsVisible="False"
+             Title="Pesquisa de Produtos"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
+
+            <!-- Using the globally defined colors, but adding specific action colors -->
+            <Color x:Key="SuccessColor">#28A745</Color>
+            <Color x:Key="WarningColor">#FFC107</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
+            <Color x:Key="WarningTextColor">#212529</Color>
+
+            <!-- Base Style for Action Buttons -->
+            <Style x:Key="ActionButton" TargetType="Button">
+                <Setter Property="TextColor" Value="{StaticResource White}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="HeightRequest" Value="45" />
+                <Setter Property="Padding" Value="15,0" />
+            </Style>
+
+            <!-- Specific Styles for CRUD Buttons inheriting from the base style -->
+            <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+            </Style>
+            <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+                <Setter Property="TextColor" Value="{StaticResource WarningTextColor}" />
+            </Style>
+            <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+            </Style>
+
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowSpacing="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="Auto"/>
-            <!-- Actions (Search, New, Edit, Delete Buttons) -->
-            <RowDefinition Height="*"/>
-            <!-- List -->
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto, Auto, *" RowSpacing="0" >
 
-        <!-- Top header -->
-        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
-            <Label Text="Produtos Cadastrados" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <!-- Top header - Consistent with other pages -->
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label Text="Produtos Cadastrados" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
         </Grid>
 
-        <!-- Actions: Search Bar and Action Buttons -->
-        <VerticalStackLayout Grid.Row="1" Padding="10" Spacing="10">
-            <SearchBar x:Name="ProdutoSearchBar" Placeholder="Buscar produto por descrição, categoria ou tipo..." TextChanged="ProdutoSearchBar_TextChanged"/>
-            <Grid ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="NovoProdutoButton" Text="Novo" Clicked="NovoProdutoButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
-                <Button Grid.Column="1" x:Name="EditarProdutoButton" Text="Editar Selecionado" Clicked="EditarProdutoSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Orange" TextColor="White"/>
-                <Button Grid.Column="2" x:Name="ExcluirProdutoButton" Text="Excluir Selecionado" Clicked="ExcluirProdutoSelecionadoButton_Clicked" IsEnabled="False" BackgroundColor="Red" TextColor="White"/>
-            </Grid>
-        </VerticalStackLayout>
+        <!-- Actions: Search Bar and Action Buttons in a cleaner layout -->
+        <Border Grid.Row="1" 
+                StrokeThickness="0" 
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                Padding="15">
+            <VerticalStackLayout Spacing="15">
+                <SearchBar x:Name="ProdutoSearchBar" 
+                           Placeholder="Buscar produto por descrição, categoria ou tipo..." 
+                           TextChanged="ProdutoSearchBar_TextChanged"/>
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" x:Name="NovoProdutoButton" Text="Novo" Clicked="NovoProdutoButton_Clicked" Style="{StaticResource SuccessButton}"/>
+                    <Button Grid.Column="1" x:Name="EditarProdutoButton" Text="Editar" Clicked="EditarProdutoSelecionadoButton_Clicked" IsEnabled="False" Style="{StaticResource WarningButton}"/>
+                    <Button Grid.Column="2" x:Name="ExcluirProdutoButton" Text="Excluir" Clicked="ExcluirProdutoSelecionadoButton_Clicked" IsEnabled="False" Style="{StaticResource DangerButton}"/>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
 
         <!-- Products List -->
         <CollectionView x:Name="ProdutosCollectionView"
                         Grid.Row="2"
                         ItemsSource="{Binding _listaProdutosDisplay}"
-            SelectionMode="Single"
+                        SelectionMode="Single"
                         SelectionChanged="ProdutosCollectionView_SelectionChanged"
-                        EmptyView="Nenhum produto encontrado.">
+                        EmptyView="Nenhum produto encontrado."
+                        Margin="10,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ProdutoModel">
-                    <Frame Padding="10" Margin="5" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="5">
+                    <Border Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="15" 
+                            Margin="5">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup Name="CommonStates">
                                 <VisualState Name="Normal" />
                                 <VisualState Name="Selected">
                                     <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkSlateBlue}" />
+                                        <!-- Using a subtle blue from our palette for selection -->
+                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightBlue}" />
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Grid RowSpacing="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
 
-                            <Label Grid.Row="0" FontSize="Medium" FontAttributes="Bold">
+                        <VerticalStackLayout Spacing="8">
+                            <!-- Main Product Title -->
+                            <Label FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="{Binding CodProduto, StringFormat='Cód: {0} - '}"/>
@@ -81,19 +107,23 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="1" FontSize="Small" Text="{Binding Categoria, StringFormat='Categoria: {0}'}"/>
-                            <Label Grid.Row="2" FontSize="Small" Text="{Binding PrecoUnitario, StringFormat='Preço: R$ {0:N2}'}"/>
-                            <Label Grid.Row="3" FontSize="Small" Text="{Binding SaldoEst, StringFormat='Estoque: {0}'}"/>
-                            <Label Grid.Row="4" FontSize="Small">
-                                <Label.FormattedText>
-                                    <FormattedString>
-                                        <Span Text="Status: "/>
-                                        <Span Text="{Binding Ativo, Converter={StaticResource BoolToStatusConverter}}"/>
-                                    </FormattedString>
-                                </Label.FormattedText>
-                            </Label>
-                        </Grid>
-                    </Frame>
+
+                            <!-- Product Details -->
+                            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" RowSpacing="5">
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Categoria, StringFormat='Categoria: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}"/>
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding PrecoUnitario, StringFormat='Preço: R$ {0:N2}'}" FontSize="12" HorizontalTextAlignment="End" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}"/>
+                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding SaldoEst, StringFormat='Estoque: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}"/>
+                                <Label Grid.Row="1" Grid.Column="1" HorizontalTextAlignment="End" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Status: "/>
+                                            <Span Text="{Binding Ativo, Converter={StaticResource BoolToStatusConverter}}" FontAttributes="Bold"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

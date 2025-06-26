@@ -2,80 +2,138 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IntuitERP.Viwes.CadstroEstoque"
-             Title="CadstroEstoque">
+             Shell.NavBarIsVisible="False"
+             Title="Movimentação de Estoque"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
+
+    <ContentPage.Resources>
+        <!-- These styles should ideally be in a global ResourceDictionary -->
+        <Style x:Key="FormLabel" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style x:Key="FormField" TargetType="Border">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 8"/>
+            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"/>
+        </Style>
+
+        <Style x:Key="InputField" TargetType="Entry">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
+        </Style>
+
+        <Style x:Key="InputPicker" TargetType="Picker">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+            <Setter Property="TitleColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
+        </Style>
+
+        <Style x:Key="InputDatePicker" TargetType="DatePicker">
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+        </Style>
+
+        <Style x:Key="FormButton" TargetType="Button">
+            <Setter Property="HeightRequest" Value="50" />
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+
+        <Style x:Key="PrimaryActionButton" TargetType="Button" BasedOn="{StaticResource FormButton}">
+            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="TextColor" Value="{StaticResource White}" />
+        </Style>
+
+        <Style x:Key="SecondaryActionButton" TargetType="Button" BasedOn="{StaticResource FormButton}">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="BorderColor" Value="{StaticResource PrimaryMidBlue}" />
+            <Setter Property="BorderWidth" Value="2" />
+        </Style>
+
+    </ContentPage.Resources>
+
     <!-- Main Grid for the page layout -->
-    <Grid RowSpacing="0" Margin="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="*"/>
-            <!-- Form Content -->
-            <RowDefinition Height="Auto"/>
-            <!-- Footer with Buttons -->
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- Top header -->
-        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
-            <Label Text="Nova Movimentação de Estoque" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label Text="Nova Movimentação de Estoque" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
         </Grid>
 
         <!-- Scrollable Form Content -->
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="20" Padding="20">
+            <Border StrokeThickness="0" 
+                    Padding="20, 25" 
+                    Margin="20"
+                    VerticalOptions="Center"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Detalhes da Movimentação" FontSize="18" FontAttributes="Bold"
+                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}"/>
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"/>
 
-                <!-- Seção de Informações da Movimentação -->
-                <Frame BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Detalhes da Movimentação" FontSize="18" FontAttributes="Bold"/>
-
-                        <!-- Código do Produto (CodProduto) -->
-                        <Label Text="Produto:" FontSize="16"/>
-                        <Picker x:Name="ProdutoPicker" Title="Selecione o Produto" FontSize="16">
-                            <!-- Items would be populated from your 'produto' table in C# -->
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>Produto Alpha (Cód: 101)</x:String>
-                                    <x:String>Produto Beta (Cód: 102)</x:String>
-                                    <x:String>Produto Gamma (Cód: 103)</x:String>
-                                </x:Array>
-                            </Picker.ItemsSource>
-                        </Picker>
-
-                        <!-- Tipo de Movimentação (Tipo) -->
-                        <Label Text="Tipo de Movimentação:" FontSize="16"/>
-                        <Picker x:Name="TipoMovimentacaoPicker" Title="Selecione o Tipo" FontSize="16">
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>E - Entrada</x:String>
-                                    <x:String>S - Saída</x:String>
-                                </x:Array>
-                            </Picker.ItemsSource>
-                        </Picker>
-
-                        <!-- Quantidade (Qtd) -->
-                        <Label Text="Quantidade:" FontSize="16"/>
-                        <Entry x:Name="QuantidadeEntry" Placeholder="0.00" Keyboard="Numeric" FontSize="16"/>
-
-                        <!-- Data da Movimentação -->
-                        <Label Text="Data da Movimentação:" FontSize="16"/>
-                        <DatePicker x:Name="DataMovimentacaoPicker" FontSize="16" Format="dd/MM/yyyy"/>
-
+                    <!-- Produto -->
+                    <VerticalStackLayout>
+                        <Label Text="Produto:" Style="{StaticResource FormLabel}"/>
+                        <Border Style="{StaticResource FormField}">
+                            <Picker x:Name="ProdutoPicker" Title="Selecione o Produto" Style="{StaticResource InputPicker}">
+                                <!-- ItemsSource should be bound from C# code-behind -->
+                            </Picker>
+                        </Border>
                     </VerticalStackLayout>
-                </Frame>
 
-            </VerticalStackLayout>
+                    <!-- Tipo de Movimentação & Quantidade -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Tipo de Movimentação:" Style="{StaticResource FormLabel}"/>
+                            <Border Style="{StaticResource FormField}">
+                                <Picker x:Name="TipoMovimentacaoPicker" Title="Selecione o Tipo" Style="{StaticResource InputPicker}">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>E - Entrada</x:String>
+                                            <x:String>S - Saída</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Quantidade:" Style="{StaticResource FormLabel}"/>
+                            <Border Style="{StaticResource FormField}">
+                                <Entry x:Name="QuantidadeEntry" Placeholder="0.00" Keyboard="Numeric" Style="{StaticResource InputField}"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Data da Movimentação -->
+                    <VerticalStackLayout>
+                        <Label Text="Data da Movimentação:" Style="{StaticResource FormLabel}"/>
+                        <Border Style="{StaticResource FormField}">
+                            <DatePicker x:Name="DataMovimentacaoPicker" Style="{StaticResource InputDatePicker}" Format="dd/MM/yyyy"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
         </ScrollView>
 
         <!-- Footer with Action Buttons -->
-        <Grid Grid.Row="2" Padding="20" ColumnSpacing="10" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2C}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Border Grid.Row="2" Padding="20" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+            <Grid ColumnSpacing="15" ColumnDefinitions="*,*">
+                <Button CornerRadius="5" MaximumWidthRequest="550" x:Name="CancelarMovimentacaoButton" Grid.Column="0" Text="Cancelar" Style="{StaticResource SecondaryActionButton}"/>
+                <Button CornerRadius="5" MaximumWidthRequest="550" x:Name="SalvarMovimentacaoButton" Grid.Column="1" Text="Salvar" Clicked="SalvarMovimentacaoButton_Clicked" Style="{StaticResource PrimaryActionButton}"/>
+            </Grid>
+        </Border>
 
-            <Button x:Name="SalvarMovimentacaoButton" Grid.Column="0" Text="Salvar Movimentação" BackgroundColor="ForestGreen" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <Button x:Name="CancelarMovimentacaoButton" Grid.Column="1" Text="Cancelar" BackgroundColor="DarkRed" TextColor="White" FontSize="16" CornerRadius="8"/>
-            <!-- Add Clicked event handlers in C# for functionality -->
-        </Grid>
     </Grid>
 </ContentPage>

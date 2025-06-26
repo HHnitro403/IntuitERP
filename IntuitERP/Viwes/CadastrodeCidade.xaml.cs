@@ -9,6 +9,7 @@ public partial class CadastrodeCidade : ContentPage
     private readonly CidadeService _cidadeService;
     private ObservableCollection<CidadeModel> _cities;
     private List<CidadeModel> _allCitiesMasterList; // For client-side filtering
+
     public CadastrodeCidade(CidadeService cidadeService)
     {
         InitializeComponent();
@@ -17,8 +18,6 @@ public partial class CadastrodeCidade : ContentPage
         _cities = new ObservableCollection<CidadeModel>();
         _allCitiesMasterList = new List<CidadeModel>();
         CitiesList.ItemsSource = _cities;
-
-        
     }
 
     protected override async void OnAppearing()
@@ -145,7 +144,7 @@ public partial class CadastrodeCidade : ContentPage
             }
             else
             {
-                DisplayAlert("Atenção","Nenhum Registro Encontrado","OK");
+                DisplayAlert("Atenção", "Nenhum Registro Encontrado", "OK");
             }
         }
         else
@@ -164,8 +163,6 @@ public partial class CadastrodeCidade : ContentPage
                     _cities.Add(city);
                 }
             }
-
-
         }
     }
 
@@ -218,5 +215,9 @@ public partial class CadastrodeCidade : ContentPage
                 }
             }
         }
+    }
+
+    private void EntrySearch_TextChanged(object sender, TextChangedEventArgs e)
+    {
     }
 }

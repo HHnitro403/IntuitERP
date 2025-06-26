@@ -1,81 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="IntuitERP.MainPage">
+             x:Class="IntuitERP.MainPage"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
 
-    <ScrollView>
-        <Grid RowDefinitions="Auto,Auto,*"
-              Padding="20">
+    <!-- Main layout centered on the page -->
+    <Grid VerticalOptions="Center" HorizontalOptions="Center">
 
-            <!-- Logo/Image -->
-            <Image Grid.Row="0" 
-                   Source="dotnet_bot.png"
-                   HeightRequest="150"
-                   HorizontalOptions="Center"
-                   Margin="0,40,0,20" />
+        <!-- Login Card with modern styling -->
+        <Border StrokeShape="RoundRectangle 20"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                Padding="30"
+                WidthRequest="400">
+            <Border.Shadow>
+                <Shadow Brush="#000000"
+                        Radius="30"
+                        Offset="0,8">
+                    <Shadow.Opacity>
+                        <!-- FIX: Use property element syntax for AppThemeBinding on numeric properties -->
+                        <AppThemeBinding Light="0.1" Dark="0.6" />
+                    </Shadow.Opacity>
+                </Shadow>
+            </Border.Shadow>
 
-            <!-- Login Title -->
-            <Label Grid.Row="1" 
-                   Text="Welcome Back"
-                   FontSize="28"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   Margin="0,0,0,30" />
+            <VerticalStackLayout Spacing="25">
 
-            <!-- Login Form -->
-            <VerticalStackLayout Grid.Row="2" 
-                                 Spacing="20">
+                <!-- Logo/Image -->
+                <Image Source="dotnet_bot.png"
+                       HeightRequest="100"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,10" />
 
-                <!-- Username Input -->
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Username" FontAttributes="Bold" />
-                    <Frame Padding="15,0" HasShadow="False" 
-                           x:Name="UserFrame"
-                           BorderColor="Gray"
-                           CornerRadius="8" HeightRequest="50">
-                        <Entry Placeholder="Enter your username"
-                               x:Name="UserEntry" 
-                               TextChanged="OnUserTextChanged"
-                               ReturnType="Next" />
-                    </Frame>
-                    <Label x:Name="UserErrorLabel" 
-                           IsVisible="False"
-                           TextColor="Red"
-                           FontSize="12" />
+                <!-- Form Fields -->
+                <VerticalStackLayout Spacing="15">
+
+                    <!-- Username Input -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Usuario" Style="{StaticResource FieldLabel}" />
+                        <Border x:Name="UserFrame" StrokeShape="RoundRectangle 8" Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" Padding="15,0" HeightRequest="50">
+                            <Entry x:Name="UserEntry"
+                                   Placeholder="Digite o seu Usuario"
+                                   TextChanged="OnUserTextChanged"
+                                   ReturnType="Next"
+                                   Style="{StaticResource InputField}" />
+                        </Border>
+                        <Label x:Name="UserErrorLabel" IsVisible="False" TextColor="{StaticResource ErrorColor}" FontSize="12" />
+                    </VerticalStackLayout>
+
+                    <!-- Password Input -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Senha" Style="{StaticResource FieldLabel}" />
+                        <Border x:Name="PasswordFrame" StrokeShape="RoundRectangle 8" Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" Padding="15,0" HeightRequest="50">
+                            <Entry x:Name="PasswordEntry"
+                                   Placeholder="Digite a sua Senha"
+                                   IsPassword="True"
+                                   TextChanged="OnPasswordTextChanged"
+                                   ReturnType="Done"
+                                   Style="{StaticResource InputField}" />
+                        </Border>
+                        <Label x:Name="PasswordErrorLabel" IsVisible="False" TextColor="{StaticResource ErrorColor}" FontSize="12" />
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
-
-                <!-- Password Input -->
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Password" FontAttributes="Bold" />
-                    <Frame Padding="15,0" HasShadow="False"
-                           x:Name="PasswordFrame"
-                           BorderColor="Gray"
-                           CornerRadius="8" HeightRequest="50">
-                        <Entry Placeholder="Enter your password"
-                               x:Name="PasswordEntry" 
-                               IsPassword="True"
-                               TextChanged="OnPasswordTextChanged"
-                               ReturnType="Done" />
-                    </Frame>
-                    <Label x:Name="PasswordErrorLabel" 
-                           IsVisible="False"
-                           TextColor="Red"
-                           FontSize="12" />
-                </VerticalStackLayout>
-
-               
 
                 <!-- Login Button -->
-                <Button Text="LOGIN"
-                        x:Name="LoginButton"
+                <Button x:Name="LoginButton"
+                        Text="LOGIN"
                         Clicked="LoginButton_Clicked"
-                        
                         IsEnabled="False"
-                        HeightRequest="50"
-                        Margin="0,20,0,0"
-                        CornerRadius="25" />
+                        CornerRadius="5"
+                        Style="{StaticResource LoginButton}" />
             </VerticalStackLayout>
-        </Grid>
-    </ScrollView>
-
+        </Border>
+    </Grid>
 </ContentPage>

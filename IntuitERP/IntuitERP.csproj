@@ -171,4 +171,10 @@
 	  <Folder Include="Viwes\Reports\PDFs\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <MauiXaml Include="Resources\Styles\Colors.xaml.old">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>
