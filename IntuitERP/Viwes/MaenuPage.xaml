@@ -165,27 +165,27 @@
                         <!-- Sales Summary Card -->
                         <Border Grid.Column="0" Style="{StaticResource DashboardCard}">
                             <VerticalStackLayout Spacing="5">
-                                <Label Text="Sales" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                                <Label Text="R$ 85,241.00" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryMidBlue}" />
-                                <Label Text="+12% from last month" FontSize="12" TextColor="{StaticResource SuccessColor}" />
+                                <Label Text="Vendas" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <Label x:Name="TotalVendasMes" Text="" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryMidBlue}" />
+                                <Label x:Name="PorcentagemVendas" Text="" FontSize="12" TextColor="{StaticResource SuccessColor}" />
                             </VerticalStackLayout>
                         </Border>
 
                         <!-- Expenses Card -->
                         <Border Grid.Column="1" Style="{StaticResource DashboardCard}">
                             <VerticalStackLayout Spacing="5">
-                                <Label Text="Expenses" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                                <Label Text="R$ 42,158.00" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryMidBlue}" />
-                                <Label Text="-5% from last month" FontSize="12" TextColor="{StaticResource SuccessColor}" />
+                                <Label Text="Despesas" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <Label x:Name="TotalDespesasMes" Text="R$ 42,158.00" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryMidBlue}" />
+                                <Label x:Name="PorcentagemDespesas" Text="" FontSize="12" TextColor="{StaticResource SuccessColor}" />
                             </VerticalStackLayout>
                         </Border>
 
                         <!-- Inventory Card -->
                         <Border Grid.Column="2" Style="{StaticResource DashboardCard}">
                             <VerticalStackLayout Spacing="5">
-                                <Label Text="Inventory" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                                <Label Text="1,245 items" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryMidBlue}" />
-                                <Label Text="8 low stock items" FontSize="12" TextColor="{StaticResource ErrorColor}" />
+                                <Label Text="Estoque" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <Label x:Name="TotalProdutos" Text="" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryMidBlue}" />
+                                <Label x:Name="ProdEstBaixo" Text="" FontSize="12" TextColor="{StaticResource ErrorColor}" />
                             </VerticalStackLayout>
                         </Border>
                     </Grid>
@@ -193,7 +193,7 @@
                     <!-- Recent Orders Card -->
                     <Border Style="{StaticResource DashboardCard}">
                         <VerticalStackLayout Spacing="15">
-                            <Label Text="Recent Orders"
+                            <Label Text="Pedidos Recentes"
                                    FontAttributes="Bold"
                                    FontSize="18"
                                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
@@ -206,9 +206,9 @@
                                     <ColumnDefinition Width="1.5*" />
                                     <ColumnDefinition Width="1.5*" />
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Text="Order ID" FontAttributes="Bold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                                <Label Grid.Column="1" Text="Customer" FontAttributes="Bold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                                <Label Grid.Column="2" Text="Amount" FontAttributes="Bold" FontSize="12" HorizontalOptions="End" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <Label Grid.Column="0" Text="Numero do Pedido" FontAttributes="Bold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <Label Grid.Column="1" Text="Cliente" FontAttributes="Bold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <Label Grid.Column="2" Text="Quantidade de Itens" FontAttributes="Bold" FontSize="12" HorizontalOptions="End" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
                                 <Label Grid.Column="3" Text="Status" FontAttributes="Bold" FontSize="12" HorizontalOptions="End" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
                             </Grid>
 

@@ -58,4 +58,22 @@ namespace IntuitERP.models
 
         public virtual ICollection<ItemVendaModel>? ItensVenda { get; set; }
     }
+
+    public class ProdutoFilterModel
+    {
+        public int? CodProduto { get; set; }
+        public string? Descricao { get; set; }
+        public string? Categoria { get; set; }
+        public decimal? PrecoUnitario { get; set; }
+        public int? SaldoEst { get; set; }
+        public int? FornecedorP_ID { get; set; }
+        public DateTime? DataCadastro { get; set; }
+        public int? EstMinimo { get; set; }
+        public int? EstoqueID { get; set; }
+        public int? VarianteID { get; set; }
+        public string? Tipo { get; set; }
+        public bool? Ativo { get; set; }
+        public bool comparativo { get; set; } = false;
+        public bool positivo { get; set; } = true;
+    }
 }

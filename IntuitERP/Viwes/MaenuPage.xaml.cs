@@ -1,8 +1,10 @@
 using IntuitERP.Config;
+using IntuitERP.models;
 using IntuitERP.Services;
 using IntuitERP.Viwes.Reports;
 using IntuitERP.Viwes.Search;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace IntuitERP.Viwes;
 
@@ -14,11 +16,145 @@ public partial class MaenuPage : ContentPage
         BindingContext = this;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         DataLabel.Text = DateTime.Now.ToString("dd/MM/yyyy");
+
+        //calculate total sales this month
+
+        try
+        {
+            //Venda
+            var configurator = new Configurator();
+            IDbConnection connection = configurator.GetMySqlConnection();
+            var vendasService = new VendaService(connection);
+            var result = await GetMonthlyVendaComparisonDataAsync(vendasService);
+
+            TotalVendasMes.Text = result.TotalAtual.ToString("C2");
+
+            if (result.Variacao >= 0)
+            {
+                // Handles gains and no-change scenarios
+                PorcentagemVendas.Text = $"+{result.Variacao:F2}%";
+                PorcentagemVendas.TextColor = Colors.Green;
+            }
+            else
+            {
+                // Handles loss scenarios
+                PorcentagemVendas.Text = $"{result.Variacao:F2}%";
+                PorcentagemVendas.TextColor = Colors.Red;
+            }
+
+            //Compra
+            var comprasService = new CompraService(connection);
+            var resultCompra = await GetMonthlyCompraComparisonDataAsync(comprasService);
+
+            TotalDespesasMes.Text = resultCompra.TotalAtual.ToString("C2");
+
+            if (resultCompra.Variacao >= 0)
+            {
+                // Handles gains and no-change scenarios
+                PorcentagemDespesas.Text = $"+{resultCompra.Variacao:F2}%";
+                PorcentagemDespesas.TextColor = Colors.Green;
+            }
+            else
+            {
+                // Handles loss scenarios
+                PorcentagemDespesas.Text = $"{resultCompra.Variacao:F2}%";
+                PorcentagemDespesas.TextColor = Colors.Red;
+            }
+
+            var produtoService = new ProdutoService(connection);
+            var resultProduto = await GetTotalProdutosAsync(produtoService);
+            TotalProdutos.Text = resultProduto.Totalprodutos.ToString();
+            ProdEstBaixo.Text = resultProduto.totalprodutosnegativos.ToString();
+
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+        }
     }
+
+    public async Task<(int Totalprodutos, int totalprodutosestposi, int totalprodutosnegativos)> GetTotalProdutosAsync(ProdutoService produtoService)
+    {
+        var produtos = await produtoService.GetAllAsync();
+        int totalprodutos = produtos.Count(p => p.SaldoEst >= 0);
+        int totalprodutosestposi = produtos.Count(p => p.SaldoEst > p.EstMinimo);
+        int totalprodutosnegativos = produtos.Count(p => p.SaldoEst < p.EstMinimo);
+        return (totalprodutos, totalprodutosestposi, totalprodutosnegativos);
+    }
+
+
+    public async Task<(decimal TotalAnterior, decimal TotalAtual, decimal Variacao)> GetMonthlyVendaComparisonDataAsync(VendaService vendaRepository)
+    {
+        // === Part 1: Define Time Periods ===
+        var today = new DateTime(2025, 6, 26);
+        var inicioMesAtual = new DateTime(today.Year, today.Month, 1);
+        var fimMesAtual = inicioMesAtual.AddMonths(1).AddDays(-1);
+        var inicioMesAnterior = inicioMesAtual.AddMonths(-1);
+        var fimMesAnterior = inicioMesAtual.AddDays(-1);
+
+        // === Part 2: Use the existing GetAllAsync method ===
+        var filtroMesAnterior = new VendaFilterModel { DataInicial = inicioMesAnterior, DataFinal = fimMesAnterior };
+        var vendasMesAnterior = await vendaRepository.GetAllAsync(filtroMesAnterior);
+
+        var filtroMesAtual = new VendaFilterModel { DataInicial = inicioMesAtual, DataFinal = fimMesAtual };
+        var vendasMesAtual = await vendaRepository.GetAllAsync(filtroMesAtual);
+
+        // === Part 3: Perform Calculations ===
+        decimal totalMesAnterior = vendasMesAnterior.Sum(v => v.valor_total);
+        decimal totalMesAtual = vendasMesAtual.Sum(v => v.valor_total);
+
+        decimal variacaoPercentual = 0;
+        if (totalMesAnterior > 0)
+        {
+            variacaoPercentual = ((totalMesAtual - totalMesAnterior) / totalMesAnterior) * 100;
+        }
+        else if (totalMesAtual > 0)
+        {
+            variacaoPercentual = 100;
+        }
+        return (totalMesAnterior, totalMesAtual, variacaoPercentual);
+    }
+
+    // This can live in a service, a reporting class, or even the code-behind
+    public async Task<(decimal TotalAnterior, decimal TotalAtual, decimal Variacao)> GetMonthlyCompraComparisonDataAsync(CompraService compraRepository)
+    {
+        // Part 1: Define Time Periods
+        var today = DateTime.Now; // Uses the actual current date
+        var inicioMesAtual = new DateTime(today.Year, today.Month, 1);
+        var fimMesAtual = inicioMesAtual.AddMonths(1).AddDays(-1);
+        var inicioMesAnterior = inicioMesAtual.AddMonths(-1);
+        var fimMesAnterior = inicioMesAtual.AddDays(-1);
+
+        // Part 2: Use the existing GetAllComprasAsync method
+        var filtroMesAnterior = new CompraFilterModel { DataInicial = inicioMesAnterior, DataFinal = fimMesAnterior };
+        var comprasMesAnterior = await compraRepository.GetAllComprasAsync(filtroMesAnterior);
+
+        var filtroMesAtual = new CompraFilterModel { DataInicial = inicioMesAtual, DataFinal = fimMesAtual };
+        var comprasMesAtual = await compraRepository.GetAllComprasAsync(filtroMesAtual);
+
+        // Part 3: Perform Calculations
+        decimal totalMesAnterior = comprasMesAnterior.Sum(c => c.valor_total ?? 0m);
+        decimal totalMesAtual = comprasMesAtual.Sum(c => c.valor_total ?? 0m);
+
+        decimal variacaoPercentual = 0;
+        if (totalMesAnterior > 0)
+        {
+            variacaoPercentual = ((totalMesAtual - totalMesAnterior) / totalMesAnterior) * 100;
+        }
+        else if (totalMesAtual > 0)
+        {
+            variacaoPercentual = 100;
+        }
+
+        // Part 4: Return the raw data
+        return (totalMesAnterior, totalMesAtual, variacaoPercentual);
+    }
+
+
 
     // Navigation methods for Cadastros
     private async void OnProdutosClicked(object sender, EventArgs e)

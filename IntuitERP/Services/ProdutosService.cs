@@ -3,6 +3,7 @@ using IntuitERP.models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace IntuitERP.Services
@@ -20,6 +21,106 @@ namespace IntuitERP.Services
         {
             const string query = "SELECT * FROM produto";
             return await _connection.QueryAsync<ProdutoModel>(query);
+        }
+
+        public async Task<IEnumerable<ProdutoModel>> GetAllAsync(ProdutoFilterModel filter)
+        {
+            var sqlBuilder = new StringBuilder("SELECT * FROM produto");
+            var parameters = new DynamicParameters();
+            var whereClauses = new List<string>();
+
+            if (filter.CodProduto.HasValue)
+            {
+                whereClauses.Add("CodProduto = @CodProduto");
+                parameters.Add("@CodProduto", filter.CodProduto.Value);
+            }
+
+            if (filter.Descricao != null)
+            {
+                whereClauses.Add("Descricao LIKE @Descricao");
+                parameters.Add("@Descricao", $"%{filter.Descricao}%");
+            }
+
+            if (filter.Categoria != null)
+            {
+                whereClauses.Add("Categoria = @Categoria");
+                parameters.Add("@Categoria", filter.Categoria);
+            }
+
+            if (filter.PrecoUnitario.HasValue)
+            {
+                whereClauses.Add("PrecoUnitario = @PrecoUnitario");
+                parameters.Add("@PrecoUnitario", filter.PrecoUnitario.Value);
+            }
+
+            if (filter.SaldoEst.HasValue)
+            {
+                whereClauses.Add("SaldoEst = @SaldoEst");
+                parameters.Add("@SaldoEst", filter.SaldoEst.Value);
+            }
+
+            if (filter.FornecedorP_ID.HasValue)
+            {
+                whereClauses.Add("FornecedorP_ID = @FornecedorP_ID");
+                parameters.Add("@FornecedorP_ID", filter.FornecedorP_ID.Value);
+            }
+
+            if (filter.DataCadastro.HasValue)
+            {
+                whereClauses.Add("DataCadastro = @DataCadastro");
+                parameters.Add("@DataCadastro", filter.DataCadastro.Value);
+            }
+
+            if (filter.EstMinimo.HasValue)
+            {
+                whereClauses.Add("EstMinimo = @EstMinimo");
+                parameters.Add("@EstMinimo", filter.EstMinimo.Value);
+            }
+
+            if (filter.comparativo && filter.positivo)
+            {
+                whereClauses.Add("SaldoEst > EstMinimo");
+            }
+            else if (filter.comparativo && !filter.positivo)
+            {
+                whereClauses.Add("SaldoEst < EstMinimo");
+            }
+            else
+            {
+                if (filter.EstoqueID.HasValue)
+                {
+                    whereClauses.Add("EstoqueID = @EstoqueID");
+                    parameters.Add("@EstoqueID", filter.EstoqueID.Value);
+                }
+
+                if (filter.VarianteID.HasValue)
+                {
+                    whereClauses.Add("VarianteID = @VarianteID");
+                    parameters.Add("@VarianteID", filter.VarianteID.Value);
+                }
+            }
+
+            if (filter.Tipo != null)
+            {
+                whereClauses.Add("Tipo = @Tipo");
+                parameters.Add("@Tipo", filter.Tipo);
+            }
+
+            if (filter.Ativo.HasValue)
+            {
+                whereClauses.Add("Ativo = @Ativo");
+                parameters.Add("@Ativo", filter.Ativo.Value);
+            }
+
+            if (whereClauses.Count > 0)
+            {
+                sqlBuilder.Append(" WHERE ");
+                sqlBuilder.Append(string.Join(" AND ", whereClauses));
+            }
+
+            var result = await _connection.QueryAsync<ProdutoModel>(sqlBuilder.ToString(), parameters);
+
+            return result;
         }
 
         public async Task<ProdutoModel> GetByIdAsync(int id)

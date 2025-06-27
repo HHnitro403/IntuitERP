@@ -3,6 +3,7 @@ using IntuitERP.models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace IntuitERP.Services
@@ -20,6 +21,85 @@ namespace IntuitERP.Services
         {
             const string query = "SELECT * FROM venda Order by CodVenda";
             return await _connection.QueryAsync<VendaModel>(query);
+        }
+
+        public async Task<IEnumerable<VendaModel>> GetAllAsync(VendaFilterModel filters)
+        {
+            // Base query selects all columns from your table
+            var sqlBuilder = new StringBuilder("SELECT * FROM venda");
+            var parameters = new DynamicParameters();
+            var whereClauses = new List<string>();
+
+            // Filter by CodCliente
+            if (filters.CodCliente.HasValue)
+            {
+                whereClauses.Add("CodCliente = @CodCliente");
+                parameters.Add("@CodCliente", filters.CodCliente.Value, DbType.Int32);
+            }
+
+            // Filter by CodVendedor
+            if (filters.CodVendedor.HasValue)
+            {
+                whereClauses.Add("CodVendedor = @CodVendedor");
+                parameters.Add("@CodVendedor", filters.CodVendedor.Value, DbType.Int32);
+            }
+
+            // Filter by start date (>=) using the 'data_venda' column
+            if (filters.DataInicial.HasValue)
+            {
+                whereClauses.Add("data_venda >= @DataInicial");
+                parameters.Add("@DataInicial", filters.DataInicial.Value, DbType.Date);
+            }
+
+            // Filter by end date (<=) using the 'data_venda' column
+            if (filters.DataFinal.HasValue)
+            {
+                whereClauses.Add("data_venda <= @DataFinal");
+                parameters.Add("@DataFinal", filters.DataFinal.Value, DbType.Date);
+            }
+
+            // Filter by Minimum Total Value using the 'valor_total' column
+            if (filters.ValorTotalMinimo.HasValue)
+            {
+                whereClauses.Add("valor_total >= @ValorTotalMinimo");
+                parameters.Add("@ValorTotalMinimo", filters.ValorTotalMinimo.Value, DbType.Decimal);
+            }
+
+            // Filter by Maximum Total Value using the 'valor_total' column
+            if (filters.ValorTotalMaximo.HasValue)
+            {
+                whereClauses.Add("valor_total <= @ValorTotalMaximo");
+                parameters.Add("@ValorTotalMaximo", filters.ValorTotalMaximo.Value, DbType.Decimal);
+            }
+
+            // Filter by Payment Method (exact match)
+            if (!string.IsNullOrWhiteSpace(filters.FormaPagamento))
+            {
+                whereClauses.Add("forma_pagamento = @FormaPagamento");
+                parameters.Add("@FormaPagamento", filters.FormaPagamento, DbType.String);
+            }
+
+            // Filter by Status
+            if (filters.StatusVenda.HasValue)
+            {
+                whereClauses.Add("status_venda = @StatusVenda");
+                parameters.Add("@StatusVenda", filters.StatusVenda.Value, DbType.Int32);
+            }
+
+
+            // If any clauses were added, append them to the main query
+            if (whereClauses.Any())
+            {
+                sqlBuilder.Append(" WHERE ");
+                sqlBuilder.Append(string.Join(" AND ", whereClauses));
+            }
+
+            // Always add the ordering at the end
+            sqlBuilder.Append(" ORDER BY CodVenda DESC"); // Order by most recent sales
+
+            // Execute the final, dynamically built query
+            string finalQuery = sqlBuilder.ToString();
+            return await _connection.QueryAsync<VendaModel>(finalQuery, parameters);
         }
 
         public async Task<VendaModel> GetByIdAsync(int id)

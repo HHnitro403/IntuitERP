@@ -50,4 +50,13 @@ namespace IntuitERP.models
         public virtual ICollection<ItemCompraModel>? ItensCompra { get; set; }
        
     }
+
+    public class CompraFilterModel
+    {
+        public int? CodFornec { get; set; }
+        public DateTime? DataInicial { get; set; }
+        public DateTime? DataFinal { get; set; }
+        public int? StatusCompra { get; set; }
+        // Add any other filters you might need
+    }
 }

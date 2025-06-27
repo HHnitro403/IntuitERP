@@ -52,4 +52,16 @@ namespace IntuitERP.models
 
         public virtual ICollection<ItemVendaModel>? ItensVenda { get; set; }
     }
+
+    public class VendaFilterModel
+    {
+        public int? CodCliente { get; set; }
+        public int? CodVendedor { get; set; }
+        public DateTime? DataInicial { get; set; }
+        public DateTime? DataFinal { get; set; }
+        public decimal? ValorTotalMinimo { get; set; }
+        public decimal? ValorTotalMaximo { get; set; }
+        public string? FormaPagamento { get; set; }
+        public int? StatusVenda { get; set; }
+    }
 }

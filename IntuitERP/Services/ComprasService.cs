@@ -3,6 +3,7 @@ using IntuitERP.models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace IntuitERP.Services
@@ -26,6 +27,50 @@ namespace IntuitERP.Services
         {
             const string query = "SELECT * FROM compra WHERE CodCompra = @Id";
             return await _connection.QueryFirstOrDefaultAsync<CompraModel>(query, new { Id = id });
+        }
+
+        public async Task<IEnumerable<CompraModel>> GetAllComprasAsync(CompraFilterModel filters)
+        {
+            var sqlBuilder = new StringBuilder("SELECT * FROM compra");
+            var parameters = new DynamicParameters();
+            var whereClauses = new List<string>();
+
+            // Filter by Supplier (CodFornec)
+            if (filters.CodFornec.HasValue)
+            {
+                whereClauses.Add("CodFornec = @CodFornec");
+                parameters.Add("@CodFornec", filters.CodFornec.Value);
+            }
+
+            // Filter by Start Date
+            if (filters.DataInicial.HasValue)
+            {
+                whereClauses.Add("data_compra >= @DataInicial");
+                parameters.Add("@DataInicial", filters.DataInicial.Value);
+            }
+
+            // Filter by End Date
+            if (filters.DataFinal.HasValue)
+            {
+                whereClauses.Add("data_compra <= @DataFinal");
+                parameters.Add("@DataFinal", filters.DataFinal.Value);
+            }
+
+            // Filter by Status
+            if (filters.StatusCompra.HasValue)
+            {
+                whereClauses.Add("status_compra = @StatusCompra");
+                parameters.Add("@StatusCompra", filters.StatusCompra.Value);
+            }
+
+            if (whereClauses.Any())
+            {
+                sqlBuilder.Append(" WHERE " + string.Join(" AND ", whereClauses));
+            }
+
+            sqlBuilder.Append(" ORDER BY CodCompra DESC");
+
+            return await _connection.QueryAsync<CompraModel>(sqlBuilder.ToString(), parameters);
         }
 
         public async Task<int> InsertAsync(CompraModel compra)
