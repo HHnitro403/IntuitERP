@@ -70,6 +70,12 @@ public partial class MaenuPage : ContentPage
             TotalProdutos.Text = resultProduto.Totalprodutos.ToString();
             ProdEstBaixo.Text = resultProduto.totalprodutosnegativos.ToString();
 
+            var vendaservice = new VendaService(connection);
+            var filter = new VendaFilterModel();
+            filter.StatusVenda = 1;
+            var resultVenda = vendaservice.GetAllAsync();
+           
+
         }
         catch (Exception ex)
         {

@@ -216,7 +216,7 @@
                             <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
 
                             <!-- Order List -->
-                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding RecentOrders}" Spacing="10">
+                            <VerticalStackLayout Spacing="10">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Padding="10,5">

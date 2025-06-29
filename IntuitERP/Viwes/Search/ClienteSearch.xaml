@@ -64,9 +64,9 @@
         </Border>
 
         <!-- Clients List -->
+        <!-- *** THE FIX IS HERE: I have removed the "ItemsSource" property from this CollectionView *** -->
         <CollectionView x:Name="ClientesCollectionView"
                         Grid.Row="2"
-                        ItemsSource="{Binding _listaClientesDisplay}"
                         SelectionMode="Single"
                         SelectionChanged="ClientesCollectionView_SelectionChanged"
                         EmptyView="Nenhum cliente encontrado."
