@@ -220,4 +220,9 @@ public partial class CadastrodeCidade : ContentPage
     private void EntrySearch_TextChanged(object sender, TextChangedEventArgs e)
     {
     }
+
+    private void CitiesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
+    }
 }

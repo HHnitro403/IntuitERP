@@ -39,6 +39,7 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+		<Configurations>Debug;Release</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -176,5 +177,21 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-android'">
+		<AndroidLinkSkip>IntuitERP</AndroidLinkSkip>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-ios'">
+		<MtouchLink>SdkOnly</MtouchLink>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-windows10.0.19041.0'">
+		<PublishTrimmed>false</PublishTrimmed>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-maccatalyst'">
+		<MtouchLink>SdkOnly</MtouchLink>
+	</PropertyGroup>
 
 </Project>

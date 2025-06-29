@@ -4,9 +4,11 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Maui.Controls.Internals;
 
 namespace IntuitERP.Helpers
 {
+    [Preserve(AllMembers = true)]
     public class BoolToStatusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

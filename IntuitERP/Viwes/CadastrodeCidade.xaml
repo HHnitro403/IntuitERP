@@ -1,94 +1,112 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:IntuitERP.models"
+             xmlns:converters="clr-namespace:IntuitERP.Helpers"
              x:Class="IntuitERP.Viwes.CadastrodeCidade"
              Shell.NavBarIsVisible="False"
-             Title="Gerenciamento de Cidades"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
+             Title="Clientes">
 
     <ContentPage.Resources>
-        <!-- Define local styles for this page. Ideally, move these to a global ResourceDictionary. -->
-        <Style x:Key="FormLabel" TargetType="Label">
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-            <Setter Property="VerticalOptions" Value="Center" />
-        </Style>
+        <ResourceDictionary>
 
-        <Style x:Key="FormField" TargetType="Border">
-            <Setter Property="HeightRequest" Value="50" />
-            <Setter Property="Padding" Value="15,0" />
-            <Setter Property="StrokeShape" Value="RoundRectangle 8" />
-            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
-        </Style>
+            <!-- Action Button Colors -->
+            <Color x:Key="SuccessColor">#28A745</Color>
+            <Color x:Key="WarningColor">#FFC107</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
+            <Color x:Key="WarningTextColor">#212529</Color>
 
-        <Style x:Key="InputField" TargetType="Entry">
-            <Setter Property="VerticalOptions" Value="Center" />
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
-        </Style>
+            <!-- Base Style for Action Buttons -->
+            <Style x:Key="ActionButton" TargetType="Button">
+                <Setter Property="TextColor" Value="{StaticResource White}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="HeightRequest" Value="45" />
+                <Setter Property="Padding" Value="15,0" />
+            </Style>
 
-        <Style x:Key="PrimaryActionButton" TargetType="Button">
-            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryMidBlue}" />
-            <Setter Property="TextColor" Value="{StaticResource White}" />
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="HeightRequest" Value="50" />
-            <Setter Property="CornerRadius" Value="8" />
-        </Style>
+            <!-- Specific Styles for CRUD Buttons -->
+            <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+            </Style>
+            <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+                <Setter Property="TextColor" Value="{StaticResource WarningTextColor}" />
+            </Style>
+            <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+            </Style>
 
-        <Style x:Key="SecondaryActionButton" TargetType="Button">
-            <Setter Property="BackgroundColor" Value="Transparent" />
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-            <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
-            <Setter Property="BorderWidth" Value="2" />
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="HeightRequest" Value="50" />
-            <Setter Property="CornerRadius" Value="8" />
-        </Style>
+            <Style x:Key="FormLabel" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+            <Style x:Key="FormField" TargetType="Border">
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="Padding" Value="15,0" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
+            </Style>
+            <Style x:Key="InputField" TargetType="Entry">
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource PlaceholderColorLight}, Dark={StaticResource PlaceholderColorDark}}" />
+            </Style>
+            <Style x:Key="PrimaryActionButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryMidBlue}" />
+                <Setter Property="TextColor" Value="{StaticResource White}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="CornerRadius" Value="8" />
+            </Style>
+            <Style x:Key="SecondaryActionButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
+                <Setter Property="BorderWidth" Value="2" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="CornerRadius" Value="8" />
+            </Style>
+            <Style x:Key="InlineButton" TargetType="Button">
+                <Setter Property="Padding" Value="10,5" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="HeightRequest" Value="35" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
 
-        <Style x:Key="InlineButton" TargetType="Button">
-            <Setter Property="Padding" Value="10,5" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="HeightRequest" Value="35" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="FontAttributes" Value="Bold" />
-        </Style>
+
+            <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
+        </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *" 
+          
+          RowSpacing="15">
 
-        <!-- 1. Top Header -->
         <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
-            <Label Text="Gerenciamento de Cidades" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
+            <Label Text="Gerenciamento de Cidades" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
         </Grid>
 
-        <!-- 2. Fixed Form Section (Does not scroll) -->
-        <Border Grid.Row="1"
-                Padding="15"
-                StrokeThickness="0"
-                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
+        <Border Grid.Row="1" Padding="15" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}">
             <VerticalStackLayout>
-                <Label Text="Adicionar / Editar Cidade" FontSize="18" FontAttributes="Bold" Margin="0,0,0,10"
-                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-
+                <Label Text="Adicionar / Editar Cidade" FontSize="18" FontAttributes="Bold" Margin="0,0,0,10" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
                 <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="15" RowSpacing="10">
-                    <!-- Nome da Cidade -->
                     <VerticalStackLayout Grid.Column="0">
                         <Label Text="Cidade:" Style="{StaticResource FormLabel}" />
                         <Border Style="{StaticResource FormField}">
                             <Entry x:Name="EntryCidade" Placeholder="Nome da Cidade" MaxLength="255" Style="{StaticResource InputField}" />
                         </Border>
                     </VerticalStackLayout>
-
-                    <!-- UF -->
                     <VerticalStackLayout Grid.Column="1">
                         <Label Text="UF:" Style="{StaticResource FormLabel}" />
                         <Border Style="{StaticResource FormField}">
                             <Entry x:Name="EntryUF" Placeholder="UF" MaxLength="2" Style="{StaticResource InputField}" />
                         </Border>
                     </VerticalStackLayout>
-
-                    <!-- Codigo -->
                     <VerticalStackLayout Grid.Column="2">
                         <Label Text="Código:" Style="{StaticResource FormLabel}" />
                         <Border Style="{StaticResource FormField}">
@@ -96,54 +114,54 @@
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
-
-                <!-- Action Buttons for the form -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="15" Margin="0,15,0,0">
-                    <Button x:Name="BtnClear" Text="Limpar" Style="{StaticResource SecondaryActionButton}" />
+                    <Button x:Name="BtnClear" Clicked="BtnClear_Clicked" Text="Limpar" Style="{StaticResource SecondaryActionButton}" />
                     <Button x:Name="BtnSave" Grid.Column="1" Text="Salvar" Clicked="BtnSave_Clicked" Style="{StaticResource PrimaryActionButton}" />
                 </Grid>
             </VerticalStackLayout>
         </Border>
 
-        <!-- 3. Scrollable List Section -->
-        <ScrollView Grid.Row="2" Margin="15">
-            <VerticalStackLayout Spacing="15">
-                <!-- Search Bar -->
-                <SearchBar TextChanged="EntrySearch_TextChanged" x:Name="EntrySearch" Placeholder="Buscar por nome da cidade..." />
+        <Grid Grid.Row="2" RowDefinitions="Auto, *" Margin="15" RowSpacing="10">
+            <SearchBar Grid.Row="0" x:Name="EntrySearch" Placeholder="Buscar por nome da cidade..." TextChanged="EntrySearch_TextChanged" />
 
-                <!-- Cities List -->
-                <CollectionView x:Name="CitiesList">
-                    <CollectionView.Header>
-                        <!-- Column Headers -->
-                        <Grid Padding="10,5" ColumnDefinitions="Auto, *, Auto">
-                            <Label Grid.Column="0" Text="Código" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                            <Label Grid.Column="1" Text="Cidade" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                            <Label Grid.Column="2" Text="UF" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                        </Grid>
-                    </CollectionView.Header>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border StrokeShape="RoundRectangle 8" Padding="10" Margin="0,0,0,5"
-                                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}">
-                                <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
-                                    <Label Grid.Column="0" Text="{Binding CodCIdade}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
-                                    <Label Grid.Column="1" Text="{Binding Cidade}" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-                                    <Label Grid.Column="2" Text="{Binding UF}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
 
-                                    <!-- Inline Action Buttons -->
-                                    <HorizontalStackLayout Grid.Column="3" Spacing="5">
-                                        <Button x:Name="BtnEdit" Text="Editar" Clicked="BtnEdit_Clicked" Style="{StaticResource InlineButton}" BackgroundColor="{StaticResource WarningColor}" TextColor="{StaticResource WarningTextColor}" />
-                                        <Button x:Name="BtnDelete" Text="Excluir" Clicked="BtnDelete_Clicked" Style="{StaticResource InlineButton}" BackgroundColor="{StaticResource DangerColor}" TextColor="White" />
-                                    </HorizontalStackLayout>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.EmptyView>
-                        <Label Text="Nenhuma cidade encontrada." HorizontalOptions="Center" VerticalOptions="Center" Margin="20" />
-                    </CollectionView.EmptyView>
-                </CollectionView>
-            </VerticalStackLayout>
-        </ScrollView>
+            <CollectionView x:Name="CitiesList"
+                        Grid.Row="2"
+                        Margin="0,10,0,0"
+                        SelectionMode="Single"
+                        SelectionChanged="CitiesList_SelectionChanged">
+
+                <CollectionView.Header>
+                    <Grid Padding="10,5" ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10">
+                        <Label Grid.Column="0" Text="Código" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                        <Label Grid.Column="1" Text="Cidade" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                        <Label Grid.Column="2" Text="UF" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                        <Label Grid.Column="3"/>
+                    </Grid>
+                </CollectionView.Header>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:CidadeModel">
+                        <Border StrokeShape="RoundRectangle 8" Padding="10" Margin="0,0,0,5" Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}">
+                            <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="{Binding CodCIdade}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <Label Grid.Column="1" Text="{Binding Cidade}" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+                                <Label Grid.Column="2" Text="{Binding UF}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}" />
+                                <HorizontalStackLayout Grid.Column="3" Spacing="5" HorizontalOptions="End">
+                                    <Button x:Name="BtnEdit" Text="Editar" CommandParameter="{Binding .}" Clicked="BtnEdit_Clicked" Style="{StaticResource InlineButton}" BackgroundColor="{StaticResource WarningColor}" TextColor="{StaticResource WarningTextColor}" />
+                                    <Button x:Name="BtnDelete" Text="Excluir" CommandParameter="{Binding .}" Clicked="BtnDelete_Clicked" Style="{StaticResource InlineButton}" BackgroundColor="{StaticResource DangerColor}" TextColor="White" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label Text="Nenhuma cidade encontrada." HorizontalOptions="Center" VerticalOptions="Center" Margin="20" />
+                </CollectionView.EmptyView>
+
+            </CollectionView>
+            
+</Grid>
+
     </Grid>
 </ContentPage>

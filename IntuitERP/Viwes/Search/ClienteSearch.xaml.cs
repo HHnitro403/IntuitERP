@@ -4,9 +4,11 @@ using IntuitERP.Services;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
+using Microsoft.Maui.Controls.Internals;
 
 namespace IntuitERP.Viwes.Search
 {
+    [Preserve(AllMembers = true)]
     public partial class ClienteSearch : ContentPage
     {
         private readonly ClienteService _clienteService;
@@ -48,6 +50,7 @@ namespace IntuitERP.Viwes.Search
 
         private async Task LoadClientesAsync()
         {
+
             if (_clienteService == null)
             {
                 await DisplayAlert("Erro", "Serviço de cliente não inicializado. A página não pode carregar dados.", "OK");

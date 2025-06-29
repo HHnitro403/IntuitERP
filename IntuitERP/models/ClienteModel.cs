@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Maui.Controls.Internals;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace IntuitERP.models
 {
     [Table("cliente")]
+    [Preserve(AllMembers = true)]
     public class ClienteModel
     {
         [Key]
