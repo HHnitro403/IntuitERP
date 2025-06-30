@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="IntuitERP.Viwes.Search.FornecedorSearch"
              xmlns:models="clr-namespace:IntuitERP.models"
              xmlns:converters="clr-namespace:IntuitERP.Helpers"
+             x:Class="IntuitERP.Viwes.Search.FornecedorSearch"
              Shell.NavBarIsVisible="False"
-             Title="Pesquisa de Fornecedores"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
+             Title="Clientes">
 
     <ContentPage.Resources>
         <ResourceDictionary>
+
             <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
 
-            <!-- Action Button Colors -->
-            <Color x:Key="SuccessColor">#28A745</Color>
-            <Color x:Key="WarningColor">#FFC107</Color>
-            <Color x:Key="DangerColor">#DC3545</Color>
+            <!-- Base Palette -->
+            <Color x:Key="PrimaryDarkBlue">#1B4F83</Color>
+            <Color x:Key="PrimaryMidBlue">#55A2D3</Color>
+            <Color x:Key="PrimaryLightBlue">#84B8DB</Color>
+            <Color x:Key="White">#FFFFFF</Color>
+            <Color x:Key="SuccessColor">#34A853</Color>
+            <Color x:Key="WarningColor">#FF9800</Color>
             <Color x:Key="WarningTextColor">#212529</Color>
+            <Color x:Key="ErrorColor">#D32F2F</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
 
             <!-- Base Style for Action Buttons -->
             <Style x:Key="ActionButton" TargetType="Button">
@@ -42,83 +47,107 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *" 
+          
+          RowSpacing="15">
 
-        <!-- Top header -->
         <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
-            <Label Text="Fornecedores Cadastrados" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <Label Grid.Row="0"
+               Text="Clientes Cadastrados"
+               FontSize="24"
+               
+               FontAttributes="Bold"
+               
+               HorizontalOptions="Center" />
         </Grid>
 
-        <!-- Actions: Search Bar and Action Buttons -->
-        <Border Grid.Row="1" 
-                StrokeThickness="0" 
-                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
-                Padding="15">
-            <VerticalStackLayout Spacing="15">
-                <SearchBar x:Name="FornecedorSearchBar" Placeholder="Buscar por Razão Social, Nome Fantasia ou CNPJ..." TextChanged="FornecedorSearchBar_TextChanged"/>
-                <Grid ColumnSpacing="10" ColumnDefinitions="*,*,*">
-                    <Button Grid.Column="0" x:Name="NovoFornecedorButton" Text="Novo" Clicked="NovoFornecedorButton_Clicked" Style="{StaticResource SuccessButton}"/>
-                    <Button Grid.Column="1" x:Name="EditarFornecedorButton" Text="Editar" Clicked="EditarFornecedorSelecionadoButton_Clicked" IsEnabled="False" Style="{StaticResource WarningButton}"/>
-                    <Button Grid.Column="2" x:Name="ExcluirFornecedorButton" Text="Excluir" Clicked="ExcluirFornecedorSelecionadoButton_Clicked" IsEnabled="False" Style="{StaticResource DangerButton}"/>
-                </Grid>
-            </VerticalStackLayout>
-        </Border>
+        <Grid Padding="5" Grid.Row="1" RowDefinitions="Auto,Auto" ColumnSpacing="15">
 
-        <!-- Suppliers List -->
+            <SearchBar x:Name="FornecedorSearchBar"
+                       Grid.Row="0"
+                       Placeholder="Buscar cliente por nome, email ou CPF..."
+                       TextChanged="FornecedorSearchBar_TextChanged" />
+
+            <Grid Grid.Row="1"  ColumnDefinitions="*,*,*" ColumnSpacing="10">
+
+                <Button x:Name="NovoFornecedorButton" 
+                        Grid.Column="0"
+                        Text="Novo" 
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Green"
+                        Clicked="NovoFornecedorButton_Clicked" />
+
+                <Button x:Name="EditarFornecedorButton" 
+                        Grid.Column="1"
+                        Text="Editar" 
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Yellow"
+                        Clicked="EditarFornecedorSelecionadoButton_Clicked" 
+                        IsEnabled="False" />
+
+                <Button x:Name="ExcluirFornecedorButton" 
+                        Grid.Column="2"
+                        Text="Excluir" 
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Red"
+                        Clicked="ExcluirFornecedorSelecionadoButton_Clicked" 
+                        IsEnabled="False" />
+            </Grid>
+        </Grid>
+
         <CollectionView x:Name="FornecedoresCollectionView"
                         Grid.Row="2"
-                        ItemsSource="{Binding _listaFornecedoresDisplay}"
+                        Margin="0,10,0,0"
                         SelectionMode="Single"
-                        SelectionChanged="FornecedoresCollectionView_SelectionChanged"
                         EmptyView="Nenhum fornecedor encontrado."
-                        Margin="10,0">
+                        SelectionChanged="FornecedoresCollectionView_SelectionChanged">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal" />
+                    <VisualState Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightBlue}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+                
+            </VisualStateManager.VisualStateGroups>
             <CollectionView.ItemTemplate>
+                
                 <DataTemplate x:DataType="models:FornecedorModel">
-                    <Border Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
-                            StrokeShape="RoundRectangle 8"
-                            Padding="15" 
-                            Margin="5">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup Name="CommonStates">
-                                <VisualState Name="Normal" />
-                                <VisualState Name="Selected">
-                                    <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightBlue}" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
+                    <StackLayout Padding="5" Spacing="8">
+                        <!-- Supplier Name -->
+                        <Label FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding CodFornecedor, StringFormat='Cód: {0} - '}"/>
+                                    <Span Text="{Binding NomeFantasia}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
 
-                        <VerticalStackLayout Spacing="8">
-                            <!-- Supplier Name -->
-                            <Label FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}">
-                                <Label.FormattedText>
-                                    <FormattedString>
-                                        <Span Text="{Binding CodFornecedor, StringFormat='Cód: {0} - '}"/>
-                                        <Span Text="{Binding NomeFantasia}"/>
-                                    </FormattedString>
-                                </Label.FormattedText>
-                            </Label>
-
-                            <!-- Supplier Details -->
-                            <VerticalStackLayout Spacing="5">
-                                <Label Text="{Binding RazaoSocial, StringFormat='Razão Social: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}"/>
-                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                    <Label Grid.Column="0" Text="{Binding CNPJ, StringFormat='CNPJ: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}"/>
-                                    <Label Grid.Column="1" HorizontalTextAlignment="End" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="Status: "/>
-                                                <Span Text="{Binding Ativo, Converter={StaticResource BoolToStatusConverter}}" FontAttributes="Bold"/>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
-                                </Grid>
-                            </VerticalStackLayout>
-                        </VerticalStackLayout>
-                    </Border>
+                        <!-- Supplier Details -->
+                        <StackLayout Spacing="5">
+                            <Label Text="{Binding RazaoSocial, StringFormat='Razão Social: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}"/>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Label Grid.Column="0" Text="{Binding CNPJ, StringFormat='CNPJ: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}"/>
+                                <Label Grid.Column="1" HorizontalTextAlignment="End" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Status: "/>
+                                            <Span Text="{Binding Ativo, Converter={StaticResource BoolToStatusConverter}}" FontAttributes="Bold"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                        </StackLayout>
+                    </StackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
     </Grid>
 </ContentPage>

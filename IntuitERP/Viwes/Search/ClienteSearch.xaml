@@ -77,7 +77,7 @@
                         Text="Editar" 
                         TextColor="White"
                         FontAttributes="Bold"
-                        BackgroundColor="Gold"
+                        BackgroundColor="Yellow"
                         Clicked="EditarClienteSelecionadoButton_Clicked" 
                         IsEnabled="False" />
 

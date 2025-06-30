@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="IntuitERP.Viwes.Search.UsuarioSearch"
              xmlns:models="clr-namespace:IntuitERP.models"
+             xmlns:converters="clr-namespace:IntuitERP.Helpers"
+             x:Class="IntuitERP.Viwes.Search.UsuarioSearch"
              Shell.NavBarIsVisible="False"
-             Title="Pesquisa de Usuários"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
+             Title="Clientes">
 
     <ContentPage.Resources>
         <!-- These styles should ideally be in a global ResourceDictionary -->
         <ResourceDictionary>
-            <!-- Action Button Colors -->
-            <Color x:Key="SuccessColor">#28A745</Color>
-            <Color x:Key="WarningColor">#FFC107</Color>
-            <Color x:Key="DangerColor">#DC3545</Color>
+           
+            <!-- Base Palette -->
+            <Color x:Key="PrimaryDarkBlue">#1B4F83</Color>
+            <Color x:Key="PrimaryMidBlue">#55A2D3</Color>
+            <Color x:Key="PrimaryLightBlue">#84B8DB</Color>
+            <Color x:Key="White">#FFFFFF</Color>
+            <Color x:Key="SuccessColor">#34A853</Color>
+            <Color x:Key="WarningColor">#FF9800</Color>
             <Color x:Key="WarningTextColor">#212529</Color>
-
+            <Color x:Key="ErrorColor">#D32F2F</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
             <!-- Base Style for Action Buttons -->
             <Style x:Key="ActionButton" TargetType="Button">
                 <Setter Property="TextColor" Value="{StaticResource White}" />
@@ -39,52 +44,78 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, Auto, *">
 
-        <!-- Top header -->
+    <Grid RowDefinitions="Auto, Auto, *" 
+          
+          RowSpacing="15">
+
         <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
-            <Label Text="Usuários Cadastrados" TextColor="{StaticResource White}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <Label Grid.Row="0"
+               Text="Usuaris cadastrados"
+               FontSize="24"
+               
+               FontAttributes="Bold"
+               
+               HorizontalOptions="Center" />
         </Grid>
 
-        <!-- Actions: Search Bar and Action Buttons -->
-        <Border Grid.Row="1" 
-                StrokeThickness="0" 
-                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
-                Padding="15">
-            <VerticalStackLayout Spacing="15">
-                <SearchBar x:Name="UsuarioSearchBar" Placeholder="Buscar por nome de usuário..." TextChanged="UsuarioSearchBar_TextChanged"/>
-                <Grid ColumnSpacing="10" ColumnDefinitions="*,*,*">
-                    <Button Grid.Column="0" x:Name="NovoUsuarioButton" Text="Novo" Clicked="NovoUsuarioButton_Clicked" Style="{StaticResource SuccessButton}"/>
-                    <Button Grid.Column="1" x:Name="EditarUsuarioButton" Text="Editar" Clicked="EditarUsuarioSelecionadoButton_Clicked" IsEnabled="False" Style="{StaticResource WarningButton}"/>
-                    <Button Grid.Column="2" x:Name="ExcluirUsuarioButton" Text="Excluir" Clicked="ExcluirUsuarioSelecionadoButton_Clicked" IsEnabled="False" Style="{StaticResource DangerButton}"/>
-                </Grid>
-            </VerticalStackLayout>
-        </Border>
+        <Grid Padding="5" Grid.Row="1" RowDefinitions="Auto,Auto" ColumnSpacing="15">
 
-        <!-- Usuarios List -->
+            <SearchBar x:Name="UsuarioSearchBar"
+                       Grid.Row="0"
+                       Placeholder="Buscar usuario por nome ou codigo"
+                       TextChanged="UsuarioSearchBar_TextChanged" />
+
+            <Grid Grid.Row="1"  ColumnDefinitions="*,*,*" ColumnSpacing="10">
+
+                <Button x:Name="NovoUsuarioButton" 
+                        Grid.Column="0"
+                        Text="Novo" 
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Green"
+                        Clicked="NovoUsuarioButton_Clicked" />
+
+                <Button x:Name="EditarUsuarioButton" 
+                        Grid.Column="1"
+                        Text="Editar" 
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Yellow"
+                        Clicked="EditarUsuarioSelecionadoButton_Clicked" 
+                        IsEnabled="False" />
+
+                <Button x:Name="ExcluirUsuarioButton" 
+                        Grid.Column="2"
+                        Text="Excluir" 
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Red"
+                        Clicked="ExcluirUsuarioSelecionadoButton_Clicked" 
+                        IsEnabled="False" />
+            </Grid>
+        </Grid>
+
         <CollectionView x:Name="UsuariosCollectionView"
                         Grid.Row="2"
+                        Margin="0,10,0,0"
                         SelectionMode="Single"
-                        SelectionChanged="UsuariosCollectionView_SelectionChanged"
-                        EmptyView="Nenhum usuário encontrado."
-                        Margin="10,0">
+                        SelectionChanged="UsuariosCollectionView_SelectionChanged">
+
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal" />
+                    <VisualState Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightBlue}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:UsuarioModel">
-                    <Border Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
-                            StrokeShape="RoundRectangle 8"
-                            Padding="15" 
-                            Margin="5">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup Name="CommonStates">
-                                <VisualState Name="Normal" />
-                                <VisualState Name="Selected">
-                                    <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightBlue}" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-
+                    <Frame Padding="10" Margin="0,0,0,5" CornerRadius="5" BorderColor="LightGray" HasShadow="True">
                         <Label FontAttributes="Bold" 
                                FontSize="16" 
                                VerticalOptions="Center"
@@ -96,9 +127,11 @@
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
-                    </Border>
+
+                    </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
     </Grid>
 </ContentPage>

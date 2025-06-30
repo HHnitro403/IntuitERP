@@ -3,77 +3,135 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:IntuitERP.models"
              x:Class="IntuitERP.Viwes.Search.VendaSearch"
+             Shell.NavBarIsVisible="False"
              Title="VendaSearch">
-    <Grid RowSpacing="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="Auto"/>
-            <!-- Actions -->
-            <RowDefinition Height="*"/>
-            <!-- List -->
-        </Grid.RowDefinitions>
+    <ContentPage.Resources>
+        <ResourceDictionary>
 
-        <!-- Top header -->
-        <Grid Grid.Row="0" BackgroundColor="{AppThemeBinding Light=#FFE4C4, Dark=#1A1C20}" Padding="10,15">
-            <Label Text="Vendas Registradas" TextColor="White" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <Color x:Key="PrimaryDarkBlue">#1B4F83</Color>
+            <Color x:Key="PrimaryMidBlue">#55A2D3</Color>
+            <Color x:Key="PrimaryLightBlue">#84B8DB</Color>
+            <Color x:Key="White">#FFFFFF</Color>
+            <Color x:Key="SuccessColor">#34A853</Color>
+            <Color x:Key="WarningColor">#FF9800</Color>
+            <Color x:Key="WarningTextColor">#212529</Color>
+            <Color x:Key="ErrorColor">#D32F2F</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
+
+            <Style x:Key="ActionButton" TargetType="Button">
+                <Setter Property="TextColor" Value="{StaticResource White}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="HeightRequest" Value="45" />
+                <Setter Property="Padding" Value="15,0" />
+            </Style>
+
+            <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+            </Style>
+            <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+                <Setter Property="TextColor" Value="{StaticResource WarningTextColor}" />
+            </Style>
+            <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, *" RowSpacing="15">
+
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label Text="Vendas Cadastradas"
+                   FontSize="24"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
         </Grid>
 
-        <!-- Actions: Search Bar and Action Buttons -->
-        <VerticalStackLayout Grid.Row="1" Padding="10" Spacing="10">
-            <SearchBar x:Name="VendaSearchBar" Placeholder="Buscar por cód. venda, cliente ou vendedor..." TextChanged="VendaSearchBar_TextChanged"/>
-            <Grid ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="NovaVendaButton" Text="Nova" Clicked="NovaVendaButton_Clicked" BackgroundColor="ForestGreen" TextColor="White"/>
-                <Button Grid.Column="1" x:Name="EditarVendaButton" Text="Editar Selecionada" Clicked="EditarVendaSelecionadaButton_Clicked" IsEnabled="True" BackgroundColor="Orange" TextColor="White"/>
-                <Button Grid.Column="2" x:Name="ExcluirVendaButton" Text="Excluir Selecionada" Clicked="ExcluirVendaSelecionadaButton_Clicked" IsEnabled="True" BackgroundColor="Red" TextColor="White"/>
-            </Grid>
-        </VerticalStackLayout>
+        <Grid Padding="5" Grid.Row="1" RowDefinitions="Auto,Auto" ColumnSpacing="15">
 
-        <!-- Vendas List -->
+            <SearchBar x:Name="VendaSearchBar"
+                       Grid.Row="0"
+                       Placeholder="Buscar por cód. venda, cliente ou vendedor..."
+                       TextChanged="VendaSearchBar_TextChanged" />
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+
+                <Button x:Name="NovaVendaButton" 
+                        Grid.Column="0"
+                        Text="Novo" 
+                        Clicked="NovaVendaButton_Clicked"
+                        Style="{StaticResource SuccessButton}" />
+
+                <Button x:Name="EditarVendaButton" 
+                        Grid.Column="1"
+                        Text="Editar" 
+                        Clicked="EditarVendaSelecionadaButton_Clicked" 
+                        IsEnabled="False"
+                        Style="{StaticResource WarningButton}" />
+
+                <Button x:Name="ExcluirVendaButton" 
+                        Grid.Column="2"
+                        Text="Excluir" 
+                        Clicked="ExcluirVendaSelecionadaButton_Clicked" 
+                        IsEnabled="False"
+                        Style="{StaticResource DangerButton}" />
+            </Grid>
+        </Grid>
+
         <CollectionView x:Name="VendasCollectionView"
                         Grid.Row="2"
+                        Margin="0,10,0,0"
                         SelectionMode="Single"
                         SelectionChanged="VendasCollectionView_SelectionChanged"
                         EmptyView="Nenhuma venda encontrada.">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal" />
+                    <VisualState Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightBlue}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
             <CollectionView.ItemTemplate>
-                <!-- Using a local "DisplayModel" as the DataType -->
                 <DataTemplate>
-                    <Frame Padding="10" Margin="5" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="5">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup Name="CommonStates">
-                                <VisualState Name="Normal" />
-                                <VisualState Name="Selected">
-                                    <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkSlateBlue}" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        <Grid RowSpacing="5" ColumnDefinitions="*,*">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+                    <Frame Padding="10" Margin="0,0,0,5" CornerRadius="5" BorderColor="LightGray" HasShadow="True">
+                        <StackLayout>
+                            <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="8">
+                                <Grid Grid.Row="0" ColumnDefinitions="*,*">
+                                    <Label Grid.Column="0" FontAttributes="Bold" FontSize="16"
+                                           Text="{Binding CodVenda, StringFormat='Venda Cód: {0}'}" />
+                                    <Label Grid.Column="1" Text="{Binding DataVenda, StringFormat='{0:dd/MM/yyyy}'}" FontSize="12" HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                </Grid>
 
-                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="Medium" FontAttributes="Bold" Text="{Binding CodVenda, StringFormat='Venda Cód: {0}'}"/>
+                                <Grid Grid.Row="1" ColumnDefinitions="*,*">
+                                    <Label Grid.Column="0" Text="{Binding NomeCliente, StringFormat='Cliente: {0}'}" FontSize="12"/>
+                                    <Label Grid.Column="1" Text="{Binding ValorTotal, StringFormat='R$ {0:N2}'}" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="End"
+                                           TextColor="{StaticResource PrimaryMidBlue}" />
+                                </Grid>
 
-                            <Label Grid.Row="1" Grid.Column="0" FontSize="Small" Text="{Binding DataVenda, StringFormat='{0:dd/MM/yyyy}'}"/>
-                            <Label Grid.Row="1" Grid.Column="1" FontSize="Small" FontAttributes="Bold" HorizontalTextAlignment="End" Text="{Binding ValorTotal, StringFormat='R$ {0:N2}'}"/>
-
-                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" FontSize="Small" Text="{Binding NomeCliente, StringFormat='Cliente: {0}'}"/>
-                            <Label Grid.Row="3" Grid.Column="0" FontSize="Small" Text="{Binding NomeVendedor, StringFormat='Vendedor: {0}'}"/>
-                            <Label Grid.Row="3" Grid.Column="1" FontSize="Small" HorizontalTextAlignment="End" Text="{Binding Status, StringFormat='Status: {0}'}"/>
-                        </Grid>
+                                <Grid Grid.Row="2" ColumnDefinitions="*,*">
+                                    <Label Grid.Column="0" Text="{Binding NomeVendedor, StringFormat='Vendedor: {0}'}" FontSize="12"/>
+                                    <Label Grid.Column="1" HorizontalTextAlignment="End" FontSize="12">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Status: " />
+                                                <Span Text="{Binding Status}" FontAttributes="Bold" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </Grid>
+                            </Grid>
+                        </StackLayout>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
     </Grid>
 </ContentPage>
