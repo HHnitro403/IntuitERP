@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Microsoft.Maui.ApplicationModel.Permissions;
 
-
 namespace IntuitERP.models
 {
     [Table("fornecedor")]
@@ -58,5 +57,10 @@ namespace IntuitERP.models
         public virtual ICollection<CompraModel>? Compras { get; set; }
 
         public virtual ICollection<ProdutoModel>? Produtos { get; set; }
+
+        public override string ToString()
+        {
+            return $"{CodFornecedor}: {RazaoSocial}/{NomeFantasia} - {CNPJ}";
+        }
     }
 }

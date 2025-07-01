@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
 namespace IntuitERP.models
 {
     [Table("cliente")]
@@ -67,5 +66,10 @@ namespace IntuitERP.models
         public virtual CidadeModel? Cidade { get; set; }
 
         public virtual ICollection<VendaModel>? Vendas { get; set; }
+
+        public override string ToString()
+        {
+            return $"{CodCliente}: {Nome} - {CPF}";
+        }
     }
 }

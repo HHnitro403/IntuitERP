@@ -128,11 +128,12 @@
                     <!-- Cidade -->
                     <VerticalStackLayout>
                         <Label Text="Cidade:" Style="{StaticResource FormLabel}" />
-                        <Border Style="{StaticResource FormField}">
-                            <Picker x:Name="CidadePicker" Title="Selecione a Cidade" Style="{StaticResource InputPicker}">
-                                <!-- ItemsSource should be bound from C# code-behind -->
-                            </Picker>
-                        </Border>
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                            <Border Grid.Column="0" Style="{StaticResource FormField}">
+                                <Entry x:Name="CidadeDisplayEntry" Placeholder="Selecione a Cidade" IsReadOnly="True" Style="{StaticResource InputField}" />
+                            </Border>
+                            <Button x:Name="SelectCidadeButton" Grid.Column="1" Text="Selecionar" Clicked="SelectCidadeButton_Clicked" Style="{StaticResource PrimaryActionButton}" HeightRequest="50" CornerRadius="8" />
+                        </Grid>
                     </VerticalStackLayout>
 
                     <!-- Data de Cadastro & Status -->

@@ -30,5 +30,10 @@ namespace IntuitERP.models
         public virtual ICollection<VendaModel>? Vendas { get; set; }
 
         public virtual ICollection<CompraModel>? Compras { get; set; }
+
+        public override string ToString()
+        {
+            return $"{CodVendedor}: {NomeVendedor}";
+        }
     }
 }

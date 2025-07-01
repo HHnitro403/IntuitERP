@@ -75,5 +75,10 @@ namespace IntuitERP.models
         public bool? Ativo { get; set; }
         public bool comparativo { get; set; } = false;
         public bool positivo { get; set; } = true;
+
+        public override string ToString()
+        {
+            return $"{CodProduto}: {Descricao} - {PrecoUnitario} - {SaldoEst}";
+        }
     }
 }

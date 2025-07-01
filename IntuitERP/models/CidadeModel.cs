@@ -17,5 +17,19 @@ namespace IntuitERP.models
         [Column("UF")]
         [StringLength(2)]
         public string? UF { get; set; }
+
+        /// <summary>
+        /// Returns a string representation of the CidadeModel object.
+        /// </summary>
+        /// <returns>A formatted string with the city's code, name, and state.</returns>
+        public override string ToString()
+        {
+            return $"{CodCIdade}: {Cidade} - {UF}";
+        }
+
+        public string ToStringList()
+        {
+            return $"{Cidade} - {UF}";
+        }
     }
 }

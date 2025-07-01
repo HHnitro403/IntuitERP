@@ -9,7 +9,7 @@ using TableAttribute = SQLite.TableAttribute;
 
 namespace DBconfigurator.Models
 {
-    [Table("Configurations")]
+    [Table("Connection")]
     public class Configuration
     {
         [PrimaryKey, AutoIncrement]

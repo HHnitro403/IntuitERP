@@ -1,5 +1,6 @@
 using IntuitERP.models;
 using IntuitERP.Services;
+using IntuitERP.Viwes.Modals;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 
@@ -7,11 +8,12 @@ namespace IntuitERP.Viwes;
 
 public partial class CadastrodeFornecedor : ContentPage
 {
-
     private readonly FornecedorService _fornecedorService;
     private readonly CidadeService _cidadeService;
     private ObservableCollection<CidadeModel> _listaCidades;
     private readonly int _fornecedorId;
+    private int _cidadeId = 0;
+
     public CadastrodeFornecedor(FornecedorService fornecedorService, CidadeService cidadeService, int fornecedorId = 0)
     {
         InitializeComponent();
@@ -19,8 +21,6 @@ public partial class CadastrodeFornecedor : ContentPage
         _cidadeService = cidadeService;
 
         _listaCidades = new ObservableCollection<CidadeModel>();
-        CidadePicker.ItemsSource = _listaCidades;
-        CidadePicker.ItemDisplayBinding = new Binding("Nome"); // Display city name in Picker
 
         // Set default date for DataCadastroPicker
         DataCadastroPicker.Date = DateTime.Today;
@@ -48,11 +48,10 @@ public partial class CadastrodeFornecedor : ContentPage
                 EmailEntry.Text = fornecedor.Email;
                 TelefoneEntry.Text = fornecedor.Telefone;
                 EnderecoEntry.Text = fornecedor.Endereco;
-                CidadePicker.SelectedItem = _listaCidades.FirstOrDefault(c => c.CodCIdade == fornecedor.CodCidade);
+                CidadeDisplayEntry.Text = _listaCidades.First(c => c.CodCIdade == fornecedor.CodCidade).ToStringList();
                 DataCadastroPicker.Date = (DateTime)fornecedor.DataCadastro;
                 AtivoSwitch.IsToggled = (bool)fornecedor.Ativo;
             }
-
         }
     }
 
@@ -84,6 +83,7 @@ public partial class CadastrodeFornecedor : ContentPage
             await DisplayAlert("Erro", "Não foi possível carregar a lista de cidades.", "OK");
         }
     }
+
     private void ClearForm()
     {
         RazaoSocialEntry.Text = string.Empty;
@@ -92,7 +92,7 @@ public partial class CadastrodeFornecedor : ContentPage
         EmailEntry.Text = string.Empty;
         TelefoneEntry.Text = string.Empty;
         EnderecoEntry.Text = string.Empty;
-        CidadePicker.SelectedItem = null; // Clear selection
+        CidadeDisplayEntry.Text = string.Empty; // Clear selection
         DataCadastroPicker.Date = DateTime.Today; // Reset
         AtivoSwitch.IsToggled = true;
 
@@ -123,16 +123,6 @@ public partial class CadastrodeFornecedor : ContentPage
             return;
         }
 
-        if (CidadePicker.SelectedItem == null)
-        {
-            await DisplayAlert("Campo Obrigatório", "Por favor, selecione uma cidade.", "OK");
-            CidadePicker.Focus();
-            return;
-        }
-        // Add more validation as needed (Telefone, Endereço)
-
-        var selectedCidade = (CidadeModel)CidadePicker.SelectedItem;
-
         // --- Create FornecedorModel ---
         var Fornecedor = new FornecedorModel
         {
@@ -142,7 +132,7 @@ public partial class CadastrodeFornecedor : ContentPage
             Email = EmailEntry.Text.Trim(),
             Telefone = SanitizePhoneNumber(TelefoneEntry.Text),
             Endereco = EnderecoEntry.Text?.Trim(),
-            CodCidade = selectedCidade.CodCIdade, // Get ID from selected city object
+            CodCidade = _cidadeId, // Get ID from selected city object
             DataCadastro = DateTime.Now, // Service layer also defaults this
             Ativo = AtivoSwitch.IsToggled
             // DataUltimaCompra is typically not set when creating a new supplier
@@ -204,6 +194,26 @@ public partial class CadastrodeFornecedor : ContentPage
         }
     }
 
+    private async void SelectCidadeButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var cidadelist = await _cidadeService.GetAllAsync();
+            var selectedCidade = await ModalPicker.Show<CidadeModel>(Navigation, "Selecione a Cidade", cidadelist);
+            if (selectedCidade != null)
+            {
+                {
+                    CidadeDisplayEntry.Text = selectedCidade.Cidade;
+                    _cidadeId = selectedCidade.CodCIdade; // Store the selected city code
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro Inesperado", $"Ocorreu um erro ao Selecionar a Cidade: {ex.Message}", "OK");
+        }
+    }
+
     #region Input Formatting and Validation Helpers
 
     private bool IsValidEmail(string email)
@@ -227,7 +237,6 @@ public partial class CadastrodeFornecedor : ContentPage
         if (string.IsNullOrWhiteSpace(cnpjDigits) || cnpjDigits.Length != 14) return cnpjDigits;
         return $"{cnpjDigits.Substring(0, 2)}.{cnpjDigits.Substring(2, 3)}.{cnpjDigits.Substring(5, 3)}/{cnpjDigits.Substring(8, 4)}-{cnpjDigits.Substring(12, 2)}";
     }
-
 
     private bool IsValidCnpj(string cnpj)
     {
@@ -335,5 +344,5 @@ public partial class CadastrodeFornecedor : ContentPage
         }
     }
 
-    #endregion
+    #endregion Input Formatting and Validation Helpers
 }

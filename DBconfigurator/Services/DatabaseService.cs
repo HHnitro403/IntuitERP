@@ -13,18 +13,13 @@ namespace DBconfigurator.Services
         private SQLiteAsyncConnection _database;
         private bool _isInitialized = false;
 
-        // The database path provided in your request
+        // The database path remains hardcoded to the C:\ drive.
         private static string DbPath
         {
             get
             {
-                // Define the root path directly.
                 string rootPath = @"C:\";
-
-                // Create the specific subfolder path for your application.
                 string appSpecificFolder = Path.Combine(rootPath, "IntuitERP", "Config");
-
-                // Return the full path to the database file.
                 return Path.Combine(appSpecificFolder, "ConfigsDB.db");
             }
         }
@@ -39,36 +34,51 @@ namespace DBconfigurator.Services
             if (_isInitialized)
                 return;
 
-            // Ensure the directory exists
-            var dbDir = Path.GetDirectoryName(DbPath);
-            if (!Directory.Exists(dbDir))
+            // --- CHANGE: Check if the database file exists before proceeding. ---
+            if (!File.Exists(DbPath))
             {
-                Directory.CreateDirectory(dbDir);
+                // Log an error for debugging. The application will not create the file.
+                Console.WriteLine($"DATABASE NOT FOUND: The database file was not found at {DbPath}");
+                // Keep _isInitialized as false, so methods will return empty/null.
+                return;
             }
 
-            // Create the connection and the table
-            _database = new SQLiteAsyncConnection(DbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache);
-            await _database.CreateTableAsync<Configuration>();
-            _isInitialized = true;
+            try
+            {
+                // --- CHANGE: Removed the 'Create' flag. This will now only open an existing file. ---
+                var flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache;
+                _database = new SQLiteAsyncConnection(DbPath, flags);
+
+                // This will create the table *if it doesn't exist* inside the DB file, but it will not create the file itself.
+                await _database.CreateTableAsync<Configuration>();
+                _isInitialized = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error connecting to database: {ex.Message}");
+                // Ensure we remain uninitialized if an error occurs.
+                _isInitialized = false;
+            }
         }
 
         public async Task<List<Configuration>> GetConfigurationsAsync()
         {
             await InitializeAsync();
-
-            var result = await _database.Table<Configuration>().ToListAsync();
-            return  result;
+            if (!_isInitialized) return new List<Configuration>();
+            return await _database.Table<Configuration>().ToListAsync();
         }
 
         public async Task<Configuration> GetConfigurationAsync(int id)
         {
             await InitializeAsync();
+            if (!_isInitialized) return null;
             return await _database.Table<Configuration>().Where(i => i.ID == id).FirstOrDefaultAsync();
         }
 
         public async Task<int> SaveConfigurationAsync(Configuration config)
         {
             await InitializeAsync();
+            if (!_isInitialized) return -1;
             if (config.ID != 0)
             {
                 // Update an existing configuration
@@ -84,6 +94,7 @@ namespace DBconfigurator.Services
         public async Task<int> DeleteConfigurationAsync(Configuration config)
         {
             await InitializeAsync();
+            if (!_isInitialized) return -1;
             return await _database.DeleteAsync(config);
         }
     }

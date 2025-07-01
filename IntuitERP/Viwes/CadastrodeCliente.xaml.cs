@@ -11,6 +11,7 @@ public partial class CadastrodeCliente : ContentPage
     private readonly ClienteService _clienteService;
     private readonly CidadeService _cidadeService; // Uncomment if you implement a Cidade Picker
     private readonly int _id = 0;
+    private int _codCidade = 0;
 
     // Constructor for Dependency Injection (recommended)
     // Register ClienteService (and CidadeService if used) in MauiProgram.cs
@@ -118,7 +119,7 @@ public partial class CadastrodeCliente : ContentPage
             Numero = NumeroEntry.Text?.Trim(),
             Bairro = BairroEntry.Text?.Trim(),
             CEP = SanitizeCep(CepEntry.Text),
-            //  CodCidade = int.Parse(CodCidadeEntry.Text), // Already validated as int
+            CodCidade = _codCidade, // Already validated as int
             DataCadastro = DateTime.Now, // Service layer also defaults this if null
             Ativo = AtivoSwitch.IsToggled
             // DataUltimaCompra is typically not set when creating a new client
@@ -351,13 +352,11 @@ public partial class CadastrodeCliente : ContentPage
             var selectedCidade = await ModalPicker.Show<CidadeModel>(Navigation, "Selecione a Cidade", cidadelist);
             if (selectedCidade != null)
             {
-                // 4. Use the selected product.
-               
-
-                // You could also show an alert or update a viewmodel property.
-                await DisplayAlert("Success", $"You picked product ID: {selectedCidade.CodCIdade}", "OK");
+                {
+                    CidadeDisplayEntry.Text = selectedCidade.Cidade;
+                    _codCidade = selectedCidade.CodCIdade; // Store the selected city code
+                }
             }
-
         }
         catch (Exception ex)
         {
