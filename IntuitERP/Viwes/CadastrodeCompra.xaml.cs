@@ -1,5 +1,6 @@
 using IntuitERP.models;
 using IntuitERP.Services;
+using IntuitERP.Viwes.Modals;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -82,6 +83,8 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
     { public string DisplayName { get; set; } public byte Value { get; set; } }
 
     private ObservableCollection<StatusCompraItem> _statusCompraList;
+    private int _fornecedorId;
+    private int _vendedorId;
 
     public CadastrodeCompra(
         CompraService compraService, ItemCompraService itemCompraService, FornecedorService fornecedorService,
@@ -101,10 +104,6 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         MasterListaProdutos = new ObservableCollection<ProdutoModel>();
         ItensCompra = new ObservableCollection<CompraItemDisplay>();
 
-        FornecedorPicker.ItemsSource = _listaFornecedores;
-        FornecedorPicker.ItemDisplayBinding = new Binding("NomeFantasia");
-        VendedorPicker.ItemsSource = _listaVendedores;
-        VendedorPicker.ItemDisplayBinding = new Binding("NomeVendedor");
         ProdutoParaAdicionarPicker.ItemsSource = MasterListaProdutos;
         ProdutoParaAdicionarPicker.ItemDisplayBinding = new Binding("Descricao");
         ItensCompraCollectionView.ItemsSource = ItensCompra;
@@ -153,9 +152,10 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         if (compra.data_compra.HasValue) DataCompraPicker.Date = compra.data_compra.Value;
         if (compra.hora_compra.HasValue) HoraCompraPicker.Time = compra.hora_compra.Value;
 
-        FornecedorPicker.SelectedItem = _listaFornecedores.FirstOrDefault(f => f.CodFornecedor == compra.CodFornec);
-        VendedorPicker.SelectedItem = _listaVendedores.FirstOrDefault(v => v.CodVendedor == compra.CodVendedor);
-        // CORRECTED: Comparison is now byte to byte
+        var fornecedor = _listaFornecedores.FirstOrDefault(f => f.CodFornecedor == compra.CodFornec);
+        FornecedorDisplayEntry.Text = fornecedor.RazaoSocial ?? fornecedor.NomeFantasia ?? "Nenhum Fornecedor Foi Selecionado";
+        var vendodor = _listaVendedores.FirstOrDefault(v => v.CodVendedor == compra.CodVendedor);
+        VendedorDisplayEntry.Text = vendodor.NomeVendedor ?? "Nenhum Vendedor Foi Selecionado"; // Corrected: VendedorDisp
         StatusCompraPicker.SelectedItem = _statusCompraList.FirstOrDefault(s => s.Value == compra.status_compra);
         FormaPagamentoPicker.SelectedItem = compra.forma_pagamento;
         DescontoCompraEntry.Text = compra.Desconto?.ToString("F2", CultureInfo.CurrentCulture);
@@ -237,13 +237,12 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
     private async Task SalvarFaturarVenda(int statusVenda)
     {
-        if (FornecedorPicker.SelectedItem == null || VendedorPicker.SelectedItem == null || FormaPagamentoPicker.SelectedItem == null || StatusCompraPicker.SelectedItem == null)
+        if (FornecedorDisplayEntry.Text == string.Empty || VendedorDisplayEntry.Text == string.Empty || FormaPagamentoPicker.SelectedItem == null || StatusCompraPicker.SelectedItem == null)
         { await DisplayAlert("Campos Obrigatórios", "Fornecedor, Vendedor, Forma de Pagamento e Status são obrigatórios.", "OK"); return; }
         if (!ItensCompra.Any()) { await DisplayAlert("Itens da Compra", "Adicione pelo menos um item à compra.", "OK"); return; }
 
         var selectedStatus = (StatusCompraItem)StatusCompraPicker.SelectedItem;
-        var selectedFornecedor = (FornecedorModel)FornecedorPicker.SelectedItem;
-        var selectedVendedor = (VendedorModel)VendedorPicker.SelectedItem;
+
         decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal descontoGeralParsed);
 
         try
@@ -253,8 +252,8 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
                 CodCompra = _compraId ?? 0,
                 data_compra = DataCompraPicker.Date,
                 hora_compra = HoraCompraPicker.Time,
-                CodFornec = selectedFornecedor.CodFornecedor,
-                CodVendedor = selectedVendedor.CodVendedor,
+                CodFornec = _fornecedorId,
+                CodVendedor = _vendedorId,
                 Desconto = descontoGeralParsed,
                 OBS = ObservacoesEditor.Text?.Trim(),
                 forma_pagamento = FormaPagamentoPicker.SelectedItem.ToString(),
@@ -291,7 +290,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
             // CORRECTED: Comparison is now byte to byte
             if (compraModel.status_compra == 2) // 2 = Concluída
             {
-                await _fornecedorService.UpdateUltimaCompraAsync(selectedFornecedor.CodFornecedor);
+                await _fornecedorService.UpdateUltimaCompraAsync(_fornecedorId);
             }
 
             await DisplayAlert("Sucesso", "Compra salva com sucesso!", "OK");
@@ -308,6 +307,42 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         if (await DisplayAlert("Cancelar", "Tem certeza? Informações não salvas serão perdidas.", "Sim", "Não"))
         {
             await Navigation.PopAsync();
+        }
+    }
+
+    private async void SelectFornecedorButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var fornecedorList = await _fornecedorService.GetAllAsync();
+            var selectedFornecedor = await ModalPicker.Show<FornecedorModel>(Navigation, "Selecione o Fornecedor", fornecedorList);
+            if (selectedFornecedor != null)
+            {
+                FornecedorDisplayEntry.Text = selectedFornecedor.NomeFantasia ?? selectedFornecedor.RazaoSocial;
+                _fornecedorId = selectedFornecedor.CodFornecedor;
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Não foi possível carregar fornecedores: {ex.Message}", "OK");
+        }
+    }
+
+    private async void SelectVendedorButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var vendedorList = await _vendedorService.GetAllAsync();
+            var selectedVendedor = await ModalPicker.Show<VendedorModel>(Navigation, "Selecione o Vendedor", vendedorList);
+            if (selectedVendedor != null)
+            {
+                VendedorDisplayEntry.Text = selectedVendedor.NomeVendedor;
+                _vendedorId = selectedVendedor.CodVendedor;
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Não foi possível carregar vendedores: {ex.Message}", "OK");
         }
     }
 }
