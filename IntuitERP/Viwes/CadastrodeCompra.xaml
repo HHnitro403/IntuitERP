@@ -29,30 +29,37 @@
                 <Frame x:Name="DetalhesdaCompraFrame" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Detalhes da Compra" FontSize="18" FontAttributes="Bold" />
-                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,auto,auto" ColumnSpacing="10" RowSpacing="5">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="5">
                             <Label Grid.Row="0" Grid.Column="0" Text="Data da Compra:" FontSize="16" />
-                            <DatePicker Grid.Row="1" Grid.Column="0" x:Name="DataCompraPicker" FontSize="16" Format="dd/MM/yyyy" />
                             <Label Grid.Row="0" Grid.Column="1" Text="Hora da Compra:" FontSize="16" />
+
+                            <DatePicker Grid.Row="1" Grid.Column="0" x:Name="DataCompraPicker" FontSize="16" Format="dd/MM/yyyy" />
                             <TimePicker Grid.Row="1" Grid.Column="1" x:Name="HoraCompraPicker" FontSize="16" Format="HH:mm" />
-                            <Label Text="Fornecedor" />
-                            <Frame Style="{StaticResource FrameStyle}">
+
+                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="Fornecedor" />
+                            <Frame Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource FrameStyle}">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <Entry x:Name="FornecedorDisplayEntry" IsEnabled="False" Placeholder="Selecione um Fornecedor" />
                                     <Button x:Name="SelectFornecedorButton" Text="..." Clicked="SelectFornecedorButton_Clicked" Grid.Column="1" WidthRequest="50" />
                                 </Grid>
                             </Frame>
-                            <Frame Style="{StaticResource FrameStyle}">
+
+                            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Vendedor" />
+                            <Frame Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource FrameStyle}">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <Entry x:Name="VendedorDisplayEntry" IsEnabled="False" Placeholder="Selecione um Vendedor" />
                                     <Button x:Name="SelectVendedorButton" Text="..." Clicked="SelectVendedorButton_Clicked" Grid.Column="1" WidthRequest="50" />
                                 </Grid>
                             </Frame>
-                            <Label Grid.Row="4" Grid.Column="0" Text="Forma de Pagamento:" FontSize="16" />
-                            <Picker Grid.Row="5" Grid.Column="0" x:Name="FormaPagamentoPicker" Title="Selecione..." FontSize="16" />
-                            <Label Grid.Row="4" Grid.Column="1" Text="Status da Compra:" FontSize="16" />
-                            <Picker Grid.Row="5" Grid.Column="1" x:Name="StatusCompraPicker" Title="Selecione..." FontSize="16" />
-                            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="Desconto Geral (R$):" FontSize="16" />
-                            <Entry Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" x:Name="DescontoCompraEntry" Placeholder="0,00" Keyboard="Numeric" FontSize="16" />
+
+                            <Label Grid.Row="6" Grid.Column="0" Text="Forma de Pagamento:" FontSize="16" />
+                            <Label Grid.Row="6" Grid.Column="1" Text="Status da Compra:" FontSize="16" />
+
+                            <Picker Grid.Row="7" Grid.Column="0" x:Name="FormaPagamentoPicker" Title="Selecione..." FontSize="16" />
+                            <Picker Grid.Row="7" Grid.Column="1" x:Name="StatusCompraPicker" Title="Selecione..." FontSize="16" />
+
+                            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="Desconto Geral (R$):" FontSize="16" />
+                            <Entry Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" x:Name="DescontoCompraEntry" Placeholder="0,00" Keyboard="Numeric" FontSize="16" />
                         </Grid>
                         <Label Text="Observações:" FontSize="16" />
                         <Editor x:Name="ObservacoesEditor" Placeholder="Digite observações sobre a compra" HeightRequest="80" AutoSize="TextChanges" FontSize="16" />
@@ -60,22 +67,18 @@
                 </Frame>
 
                 <!-- Add Item Section -->
-                <Frame x:Name="ItemFrame" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
+                <Frame x:Name="ItemFrame" Style="{StaticResource FrameStyle}">
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Adicionar Item à Compra" FontSize="18" FontAttributes="Bold" />
-                        <Label Text="Produto:" FontSize="16" />
-                        <Picker x:Name="ProdutoParaAdicionarPicker" Title="Selecione um produto para adicionar" ItemsSource="{Binding MasterListaProdutos}" ItemDisplayBinding="{Binding Descricao}" FontSize="16" />
-                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="10">
-                            <VerticalStackLayout Grid.Column="0" Spacing="5">
-                                <Label Text="Quantidade:" FontSize="14" />
-                                <Entry x:Name="QuantidadeParaAdicionarEntry" Text="1" Keyboard="Numeric" FontSize="16" />
-                            </VerticalStackLayout>
-                            <VerticalStackLayout Grid.Column="1" Spacing="5">
-                                <Label Text="Desconto (R$):" FontSize="14" />
-                                <Entry x:Name="DescontoParaAdicionarEntry" Placeholder="0,00" Keyboard="Numeric" FontSize="16" />
-                            </VerticalStackLayout>
-                            <Button Grid.Column="2" Text="Adicionar" Clicked="ConfirmarAdicionarItemButton_Clicked" VerticalOptions="End" BackgroundColor="DodgerBlue" TextColor="White" HeightRequest="45" />
+                        <Label Text="Adicionar Item" FontAttributes="Bold" />
+
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Entry x:Name="ProdutoDisplayEntry" IsEnabled="False" Placeholder="Selecione um Produto" />
+                            <Button x:Name="SelectProdutoButton" Text="..." Clicked="SelectProdutoButton_Clicked" Grid.Column="1" WidthRequest="50" />
                         </Grid>
+
+                        <Entry x:Name="QuantidadeParaAdicionarEntry" Placeholder="Quantidade" Keyboard="Numeric" Text="1" />
+                        <Entry x:Name="DescontoParaAdicionarEntry" Placeholder="Desconto (R$)" Keyboard="Numeric" />
+                        <Button x:Name="ConfirmarAdicionarItemButton" Text="Adicionar Item" Clicked="ConfirmarAdicionarItemButton_Clicked" HorizontalOptions="FillAndExpand" />
                     </VerticalStackLayout>
                 </Frame>
 

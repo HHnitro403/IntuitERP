@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace IntuitERP.Viwes.Modals;
 
-public partial class ModalPicker: ContentPage
+public partial class ModalPicker : ContentPage
 {
     // The TaskCompletionSource now works with 'object' internally.
     private readonly TaskCompletionSource<object> _taskCompletionSource;
@@ -28,7 +28,6 @@ public partial class ModalPicker: ContentPage
         SearchResultsListView.ItemsSource = _allItems;
     }
 
-    
     public static async Task<T> Show<T>(INavigation navigation, string title, IEnumerable<T> items)
     {
         // 1. Create an instance of the non-generic ModalPicker.
@@ -37,7 +36,7 @@ public partial class ModalPicker: ContentPage
         // 2. Push the modal onto the navigation stack.
         await navigation.PushModalAsync(modal);
 
-        // 3. Await the internal TaskCompletionSource. This task will only complete 
+        // 3. Await the internal TaskCompletionSource. This task will only complete
         //    when the user selects an item or cancels.
         var result = await modal._taskCompletionSource.Task;
 

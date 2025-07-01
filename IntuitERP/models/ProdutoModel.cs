@@ -57,6 +57,11 @@ namespace IntuitERP.models
         public virtual ICollection<ItemCompraModel>? ItensCompra { get; set; }
 
         public virtual ICollection<ItemVendaModel>? ItensVenda { get; set; }
+
+        public override string ToString()
+        {
+            return $"{CodProduto}: {Descricao} - {PrecoUnitario} - {SaldoEst}";
+        }
     }
 
     public class ProdutoFilterModel

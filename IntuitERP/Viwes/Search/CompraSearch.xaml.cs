@@ -28,6 +28,7 @@ public partial class CompraSearch : ContentPage
     public ObservableCollection<CompraDisplayModel> _listaComprasDisplay { get; set; }
     private List<CompraDisplayModel> _masterListaCompras;
     private CompraDisplayModel _compraSelecionada;
+
     public CompraSearch(CompraService compraService, ItemCompraService itemCompraService, FornecedorService fornecedorService, VendedorService vendedorService, ProdutoService produtoService, EstoqueService estoqueService)
     {
         InitializeComponent();
@@ -49,7 +50,7 @@ public partial class CompraSearch : ContentPage
         base.OnAppearing();
         _compraSelecionada = null;
         ComprasCollectionView.SelectedItem = null;
-        await LoadComprasAsync();               
+        await LoadComprasAsync();
         UpdateActionButtonsState();
     }
 
@@ -169,8 +170,15 @@ public partial class CompraSearch : ContentPage
         bool canEdit = isSelected && _compraSelecionada.Status != "Concluída" && _compraSelecionada.Status != "Cancelada";
         bool canDelete = isSelected;
 
-        if (!canEdit && isSelected) DisplayAlert("Atenção", "Compra: " + _compraSelecionada.CodCompra + " Ja faturada, Não é possivel editar", "OK");
-        
+        if (!canEdit && isSelected)
+        {
+            DisplayAlert("Atenção", "Compra: " + _compraSelecionada.CodCompra + " Ja faturada, Não é possivel editar", "OK");
+        }
+        else
+        {
+            EditarCompraButton.IsEnabled = canEdit;
+            ExcluirCompraButton.IsEnabled = canDelete;
+        }
     }
 
     private void ComprasCollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)

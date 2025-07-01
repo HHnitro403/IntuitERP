@@ -7,7 +7,6 @@ namespace IntuitERP.Viwes.Search;
 
 public partial class VendaSearch : ContentPage
 {
-
     public class VendaDisplayModel
     {
         public int CodVenda { get; set; }
@@ -28,6 +27,7 @@ public partial class VendaSearch : ContentPage
     public ObservableCollection<VendaDisplayModel> _listaVendasDisplay { get; set; }
     private List<VendaDisplayModel> _masterListaVendas;
     private VendaDisplayModel _vendaSelecionada;
+
     public VendaSearch(VendaService vendaService, ItemVendaService itemVendaService, ClienteService clienteService, VendedorService vendedorService, ProdutoService produtoService, EstoqueService estoqueService)
     {
         InitializeComponent();
@@ -49,7 +49,7 @@ public partial class VendaSearch : ContentPage
         base.OnAppearing();
         _vendaSelecionada = null;
         VendasCollectionView.SelectedItem = null;
-        await LoadVendasAsync();       
+        await LoadVendasAsync();
         UpdateActionButtonsState();
     }
 
@@ -158,6 +158,11 @@ public partial class VendaSearch : ContentPage
         if (isSelected && !canEdit)
         {
             DisplayAlert("Atenção", "Esta venda está faturada ou cancelada e não pode ser editada.", "Ok");
+        }
+        else
+        {
+            EditarVendaButton.IsEnabled = canEdit;
+            ExcluirVendaButton.IsEnabled = canDelete; // Enable the ExcluirVe
         }
     }
 

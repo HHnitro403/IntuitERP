@@ -1,5 +1,6 @@
 using IntuitERP.models;
 using IntuitERP.Services;
+using IntuitERP.Viwes.Modals;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -44,6 +45,7 @@ public class VendaItemDisplay : INotifyPropertyChanged
 
     // Read-only properties for display binding
     public string ValorUnitarioDisplay => (Item.valor_unitario ?? 0).ToString("N2");
+
     public string ValorTotalItemDisplay => (Item.valor_total ?? 0).ToString("N2");
 
     public VendaItemDisplay(ItemVendaModel item)
@@ -60,17 +62,18 @@ public class VendaItemDisplay : INotifyPropertyChanged
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
+
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
 
-
 public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 {
     // Services
     private readonly VendaService _vendaService;
+
     private readonly ItemVendaService _itemVendaService;
     private readonly ClienteService _clienteService;
     private readonly VendedorService _vendedorService;
@@ -79,13 +82,18 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
     // Data collections
     private ObservableCollection<ClienteModel> _listaClientes;
+
     private ObservableCollection<VendedorModel> _listaVendedores;
     public ObservableCollection<ProdutoModel> MasterListaProdutos { get; private set; }
     public ObservableCollection<VendaItemDisplay> ItensVenda { get; set; }
     private readonly int? _vendaId;
+    private int _clienteId;
+    private int _vendedorId;
+    private ProdutoModel _produtoSelecionadoParaAdicionar;
 
     // UI State Property
     private bool _hasItems;
+
     public bool HasItems
     {
         get => _hasItems;
@@ -99,7 +107,9 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         }
     }
 
-    public class StatusVendaItem { public string DisplayName { get; set; } public byte Value { get; set; } }
+    public class StatusVendaItem
+    { public string DisplayName { get; set; } public byte Value { get; set; } }
+
     private ObservableCollection<StatusVendaItem> _statusVendaList;
 
     public CadastrodeVenda(
@@ -119,13 +129,6 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         _listaVendedores = new ObservableCollection<VendedorModel>();
         MasterListaProdutos = new ObservableCollection<ProdutoModel>();
         ItensVenda = new ObservableCollection<VendaItemDisplay>();
-
-        ClientePicker.ItemsSource = _listaClientes;
-        ClientePicker.ItemDisplayBinding = new Binding("Nome");
-        VendedorPicker.ItemsSource = _listaVendedores;
-        VendedorPicker.ItemDisplayBinding = new Binding("NomeVendedor");
-        ProdutoParaAdicionarPicker.ItemsSource = MasterListaProdutos;
-        ProdutoParaAdicionarPicker.ItemDisplayBinding = new Binding("Descricao");
         ItensVendaCollectionView.ItemsSource = ItensVenda;
 
         _statusVendaList = new ObservableCollection<StatusVendaItem>
@@ -150,8 +153,9 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         }
 
         // Wire up events
-        
-        ItensVenda.CollectionChanged += (s, e) => {
+
+        ItensVenda.CollectionChanged += (s, e) =>
+        {
             HasItems = ItensVenda.Any();
             RecalculateTotalVenda();
         };
@@ -179,8 +183,10 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
             if (venda.data_venda.HasValue) DataVendaPicker.Date = venda.data_venda.Value;
             if (venda.hora_venda.HasValue) HoraVendaPicker.Time = venda.hora_venda.Value;
 
-            ClientePicker.SelectedItem = _listaClientes.FirstOrDefault(c => c.CodCliente == venda.CodCliente);
-            VendedorPicker.SelectedItem = _listaVendedores.FirstOrDefault(v => v.CodVendedor == venda.CodVendedor);
+            var cliente = _listaClientes.FirstOrDefault(c => c.CodCliente == venda.CodCliente);
+            ClienteDisplayEntry.Text = cliente?.Nome;
+            var vendedor = _listaVendedores.FirstOrDefault(v => v.CodVendedor == venda.CodVendedor);
+            VendedorDisplayEntry.Text = vendedor?.NomeVendedor;
             StatusVendaPicker.SelectedItem = _statusVendaList.FirstOrDefault(s => s.Value == venda.status_venda);
             FormaPagamentoPicker.SelectedItem = venda.forma_pagamento;
             DescontoVendaEntry.Text = venda.Desconto?.ToString("F2", CultureInfo.CurrentCulture);
@@ -204,7 +210,6 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
                 ItensSectionFrame.IsEnabled = false;
                 SalvarVendaButton.IsEnabled = false;
             }
-           
         }
         catch (Exception ex)
         {
@@ -236,7 +241,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
     private void ConfirmarAdicionarItemButton_Clicked(object sender, EventArgs e)
     {
-        var selectedProduto = ProdutoParaAdicionarPicker.SelectedItem as ProdutoModel;
+        var selectedProduto = _produtoSelecionadoParaAdicionar;
         if (selectedProduto == null) { DisplayAlert("Produto Inválido", "Por favor, selecione um produto.", "OK"); return; }
         if (!int.TryParse(QuantidadeParaAdicionarEntry.Text, out int quantidade) || quantidade <= 0) { DisplayAlert("Quantidade Inválida", "A quantidade deve ser um número inteiro maior que zero.", "OK"); return; }
         decimal.TryParse(DescontoParaAdicionarEntry.Text, out decimal desconto);
@@ -252,7 +257,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
         ItensVenda.Add(new VendaItemDisplay(newItemModel));
 
-        ProdutoParaAdicionarPicker.SelectedItem = null;
+        ProdutoDisplayEntry.Text = string.Empty; // Limpa o campo de produto
         QuantidadeParaAdicionarEntry.Text = "1";
         DescontoParaAdicionarEntry.Text = string.Empty;
     }
@@ -278,7 +283,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
     private async void SalvarVendaButton_Clicked(object sender, EventArgs e)
     {
         // Validation logic...
-        if (ClientePicker.SelectedItem == null || VendedorPicker.SelectedItem == null || FormaPagamentoPicker.SelectedItem == null || StatusVendaPicker.SelectedItem == null)
+        if (ClienteDisplayEntry.Text == string.Empty || VendedorDisplayEntry.Text == string.Empty || FormaPagamentoPicker.SelectedItem == null || StatusVendaPicker.SelectedItem == null)
         { await DisplayAlert("Campos Obrigatórios", "Cliente, Vendedor, Forma de Pagamento e Status são obrigatórios.", "OK"); return; }
         if (!ItensVenda.Any()) { await DisplayAlert("Itens da Venda", "Adicione pelo menos um item à venda.", "OK"); return; }
 
@@ -295,8 +300,6 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
             }
         }
 
-        var selectedCliente = (ClienteModel)ClientePicker.SelectedItem;
-        var selectedVendedor = (VendedorModel)VendedorPicker.SelectedItem;
         decimal.TryParse(DescontoVendaEntry.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal descontoGeralParsed);
 
         var vendaModel = new VendaModel
@@ -304,8 +307,8 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
             CodVenda = _vendaId ?? 0,
             data_venda = DataVendaPicker.Date,
             hora_venda = HoraVendaPicker.Time,
-            CodCliente = selectedCliente.CodCliente,
-            CodVendedor = selectedVendedor.CodVendedor,
+            CodCliente = _clienteId,
+            CodVendedor = _vendedorId,
             Desconto = descontoGeralParsed,
             OBS = ObservacoesEditor.Text?.Trim(),
             forma_pagamento = FormaPagamentoPicker.SelectedItem.ToString(),
@@ -342,9 +345,9 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
             if (selectedStatus.Value == 2)
             {
-                await _vendaService.AtualizarClienteUltimaCompraAsync(selectedCliente.CodCliente);
-                await _vendedorService.IncrementVendasAsync(selectedVendedor.CodVendedor);
-                await _vendedorService.IncrementVendasFinalizadasAsync(selectedVendedor.CodVendedor);
+                await _vendaService.AtualizarClienteUltimaCompraAsync(_clienteId);
+                await _vendedorService.IncrementVendasAsync(_vendedorId);
+                await _vendedorService.IncrementVendasFinalizadasAsync(_vendedorId);
             }
 
             await DisplayAlert("Sucesso", "Venda salva com sucesso!", "OK");
@@ -361,6 +364,57 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         if (await DisplayAlert("Cancelar", "Tem certeza? Informações não salvas serão perdidas.", "Sim", "Não") && StatusVendaPicker.SelectedIndex != 2 && StatusVendaPicker.SelectedIndex != 3)
         {
             await Navigation.PopAsync();
+        }
+    }
+
+    private async void SelectClienteButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var selectedCliente = await ModalPicker.Show<ClienteModel>(Navigation, "Selecione o Cliente", _listaClientes);
+            if (selectedCliente != null)
+            {
+                ClienteDisplayEntry.Text = selectedCliente.Nome;
+                _clienteId = selectedCliente.CodCliente;
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Não foi possível carregar clientes: {ex.Message}", "OK");
+        }
+    }
+
+    private async void SelectVendedorButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var selectedVendedor = await ModalPicker.Show<VendedorModel>(Navigation, "Selecione o Vendedor", _listaVendedores);
+            if (selectedVendedor != null)
+            {
+                VendedorDisplayEntry.Text = selectedVendedor.NomeVendedor;
+                _vendedorId = selectedVendedor.CodVendedor;
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Não foi possível carregar vendedores: {ex.Message}", "OK");
+        }
+    }
+
+    private async void SelectProdutoButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var selectedProduto = await ModalPicker.Show<ProdutoModel>(Navigation, "Selecione o Produto", MasterListaProdutos);
+            if (selectedProduto != null)
+            {
+                ProdutoDisplayEntry.Text = selectedProduto.ToString();
+                _produtoSelecionadoParaAdicionar = selectedProduto;
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Não foi possível carregar produtos: {ex.Message}", "OK");
         }
     }
 }

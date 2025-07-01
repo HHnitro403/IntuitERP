@@ -85,6 +85,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
     private ObservableCollection<StatusCompraItem> _statusCompraList;
     private int _fornecedorId;
     private int _vendedorId;
+    private ProdutoModel _produtoSelecionadoParaAdicionar;
 
     public CadastrodeCompra(
         CompraService compraService, ItemCompraService itemCompraService, FornecedorService fornecedorService,
@@ -104,8 +105,6 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         MasterListaProdutos = new ObservableCollection<ProdutoModel>();
         ItensCompra = new ObservableCollection<CompraItemDisplay>();
 
-        ProdutoParaAdicionarPicker.ItemsSource = MasterListaProdutos;
-        ProdutoParaAdicionarPicker.ItemDisplayBinding = new Binding("Descricao");
         ItensCompraCollectionView.ItemsSource = ItensCompra;
 
         _statusCompraList = new ObservableCollection<StatusCompraItem>
@@ -195,7 +194,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
     private void ConfirmarAdicionarItemButton_Clicked(object sender, EventArgs e)
     {
-        var selectedProduto = ProdutoParaAdicionarPicker.SelectedItem as ProdutoModel;
+        var selectedProduto = _produtoSelecionadoParaAdicionar;
         if (selectedProduto == null) { DisplayAlert("Produto Inválido", "Selecione um produto.", "OK"); return; }
         if (!int.TryParse(QuantidadeParaAdicionarEntry.Text, out int quantidade) || quantidade <= 0) { DisplayAlert("Quantidade Inválida", "A quantidade deve ser > 0.", "OK"); return; }
         decimal.TryParse(DescontoParaAdicionarEntry.Text, out decimal desconto);
@@ -209,7 +208,8 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
             desconto = desconto
         }));
 
-        ProdutoParaAdicionarPicker.SelectedItem = null;
+        ProdutoDisplayEntry.Text = string.Empty;
+        _produtoSelecionadoParaAdicionar = null;
         QuantidadeParaAdicionarEntry.Text = "1";
         DescontoParaAdicionarEntry.Text = string.Empty;
     }
@@ -343,6 +343,24 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         catch (Exception ex)
         {
             await DisplayAlert("Erro", $"Não foi possível carregar vendedores: {ex.Message}", "OK");
+        }
+    }
+
+    private async void SelectProdutoButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var produtoslist = await _produtoService.GetAllAsync();
+            var selectedProduto = await ModalPicker.Show<ProdutoModel>(Navigation, "Selecione o Produto", produtoslist);
+            if (selectedProduto != null)
+            {
+                ProdutoDisplayEntry.Text = selectedProduto.Descricao;
+                _produtoSelecionadoParaAdicionar = selectedProduto; // Store the selected product
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Não foi possível carregar produtos: {ex.Message}", "OK");
         }
     }
 }

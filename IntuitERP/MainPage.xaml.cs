@@ -158,12 +158,15 @@ namespace IntuitERP
 
         private async void LoginButton_Clicked(object sender, EventArgs e)
         {
-            // var result =  await LoginAsync();
-            //    if (result)
-            //    {
-            //    }
-
-            await Navigation.PushAsync(new MaenuPage());
+            var result = await LoginAsync();
+            if (result)
+            {
+                await Navigation.PushAsync(new MaenuPage());
+            }
+            else
+            {
+                await DisplayAlert("Login Failed", "Credenciais são Invalidas.", "OK");
+            }
         }
 
         public async Task<bool> LoginAsync()
