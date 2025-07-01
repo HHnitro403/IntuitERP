@@ -69,9 +69,9 @@ namespace DBconfigurator
                 }
 
                 // --- IMPORTANT: This is for demonstration only. ---
-                // In a real-world application, you should use a secure method 
+                // In a real-world application, you should use a secure method
                 // for credential validation (e.g., hashing, authentication service).
-                if (enteredUser == "admin" && enteredPassword == "password")
+                if (enteredUser == "BbAdmin" && enteredPassword == "masterkey")
                 {
                     _isLoggedIn = true;
                     this.Content.IsVisible = true; // Show the main UI
@@ -164,6 +164,7 @@ namespace DBconfigurator
         }
 
         #region INotifyPropertyChanged Implementation
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -181,7 +182,7 @@ namespace DBconfigurator
             OnPropertyChanged(propertyName);
             return true;
         }
-        #endregion
-    }
 
+        #endregion INotifyPropertyChanged Implementation
+    }
 }
