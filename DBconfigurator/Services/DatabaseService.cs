@@ -14,7 +14,20 @@ namespace DBconfigurator.Services
         private bool _isInitialized = false;
 
         // The database path provided in your request
-        private static string DbPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ConfigsDB.db");
+        private static string DbPath
+        {
+            get
+            {
+                // Define the root path directly.
+                string rootPath = @"C:\";
+
+                // Create the specific subfolder path for your application.
+                string appSpecificFolder = Path.Combine(rootPath, "IntuitERP", "Config");
+
+                // Return the full path to the database file.
+                return Path.Combine(appSpecificFolder, "ConfigsDB.db");
+            }
+        }
 
         public DatabaseService()
         {
