@@ -55,7 +55,9 @@ namespace DBconfigurator.Services
         public async Task<List<Configuration>> GetConfigurationsAsync()
         {
             await InitializeAsync();
-            return await _database.Table<Configuration>().ToListAsync();
+
+            var result = await _database.Table<Configuration>().ToListAsync();
+            return  result;
         }
 
         public async Task<Configuration> GetConfigurationAsync(int id)
