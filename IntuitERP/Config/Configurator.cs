@@ -9,7 +9,7 @@ namespace IntuitERP.Config
 {
     public class Configurator
     {
-        private string dbPath;
+        private readonly string dbPath;
         private ConnectionConfig currentConfig;
 
         public Configurator()

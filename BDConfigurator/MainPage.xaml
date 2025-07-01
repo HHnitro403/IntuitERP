@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:BDConfigurator.Models"
+             x:Class="BDConfigurator.MainPage">
+
+    <Grid RowDefinitions="Auto, *" ColumnDefinitions="*" Padding="20">
+
+        <!-- INPUT FORM -->
+        <VerticalStackLayout Grid.Row="0" Spacing="15">
+            <Label Text="Configuration Details" FontSize="Large" FontAttributes="Bold"/>
+
+            <Frame Padding="10" BorderColor="LightGray" CornerRadius="5">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto, *" 
+                      RowSpacing="10" ColumnSpacing="10" VerticalOptions="Center">
+
+                    <Label Grid.Row="0" Grid.Column="0" Text="Server:" VerticalOptions="Center"/>
+                    <Entry Grid.Row="0" Grid.Column="1" Text="{Binding Server}" Placeholder="e.g., localhost" x:Name="ServerEntry"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Text="Database:" VerticalOptions="Center"/>
+                    <Entry Grid.Row="1" Grid.Column="1" Text="{Binding DataBase}" Placeholder="e.g., MyCompanyDB" x:Name="DatabaseEntry"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Text="User:" VerticalOptions="Center"/>
+                    <Entry Grid.Row="2" Grid.Column="1" Text="{Binding User}" Placeholder="e.g., admin" x:Name="UserEntry"/>
+
+                    <Label Grid.Row="3" Grid.Column="0" Text="Password:" VerticalOptions="Center"/>
+                    <Entry Grid.Row="3" Grid.Column="1" Text="{Binding Password}" IsPassword="True" x:Name="PasswordEntry"/>
+                </Grid>
+            </Frame>
+
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Button Text="Save Configuration" Clicked="OnSaveClicked" />
+                <Button Text="Clear Form" Clicked="OnClearClicked" BackgroundColor="Gray"/>
+            </HorizontalStackLayout>
+
+            <BoxView HeightRequest="1" Color="LightGray" Margin="0,10"/>
+        </VerticalStackLayout>
+
+
+        <!-- CONFIGURATIONS LIST -->
+        <VerticalStackLayout Grid.Row="1" Spacing="10">
+            <Label Text="Saved Configurations" FontSize="Large" FontAttributes="Bold"/>
+            <CollectionView ItemsSource="{Binding Configurations}"
+                            SelectionMode="Single"
+                            SelectionChanged="OnCollectionViewSelectionChanged"
+                            x:Name="ConfigsCollectionView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Configuration">
+                        <Frame Padding="15" Margin="0,5" BorderColor="Gainsboro" CornerRadius="8">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label FontSize="Medium" FontAttributes="Bold">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Server: "/>
+                                                <Span Text="{Binding Server}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label>
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Database: "/>
+                                                <Span Text="{Binding DataBase}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" 
+                                        Text="Delete" 
+                                        BackgroundColor="Red"
+                                        Clicked="OnDeleteClicked"
+                                        CommandParameter="{Binding .}"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
