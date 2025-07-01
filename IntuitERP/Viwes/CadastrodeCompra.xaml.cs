@@ -42,6 +42,7 @@ public class CompraItemDisplay : INotifyPropertyChanged
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
+
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -52,6 +53,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 {
     // Services
     private readonly CompraService _compraService;
+
     private readonly ItemCompraService _itemCompraService;
     private readonly FornecedorService _fornecedorService;
     private readonly VendedorService _vendedorService;
@@ -60,6 +62,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
     // Data collections
     private ObservableCollection<FornecedorModel> _listaFornecedores;
+
     private ObservableCollection<VendedorModel> _listaVendedores;
     public ObservableCollection<ProdutoModel> MasterListaProdutos { get; private set; }
     public ObservableCollection<CompraItemDisplay> ItensCompra { get; set; }
@@ -67,6 +70,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
     // UI State Property
     private bool _hasItems;
+
     public bool HasItems
     {
         get => _hasItems;
@@ -74,7 +78,9 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
     }
 
     // CORRECTED: StatusCompraItem now uses byte for its Value to match the database
-    public class StatusCompraItem { public string DisplayName { get; set; } public byte Value { get; set; } }
+    public class StatusCompraItem
+    { public string DisplayName { get; set; } public byte Value { get; set; } }
+
     private ObservableCollection<StatusCompraItem> _statusCompraList;
 
     public CadastrodeCompra(
@@ -163,8 +169,8 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         }
 
         if (compra.status_compra == 2)
-        {        
-            SalvarCompraButton.IsEnabled = false;    
+        {
+            SalvarCompraButton.IsEnabled = false;
             DetalhesdaCompraFrame.IsEnabled = false;
             ItemFrame.IsEnabled = false;
             ItensSectionFrame.IsEnabled = false;
@@ -240,8 +246,6 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         var selectedVendedor = (VendedorModel)VendedorPicker.SelectedItem;
         decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal descontoGeralParsed);
 
-
-
         try
         {
             var compraModel = new CompraModel
@@ -257,7 +261,6 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
                 status_compra = selectedStatus.Value, // Correctly assigns the byte value
                 valor_total = decimal.Parse(ValorTotalCompraLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture)
             };
-
 
             int compraIdParaItens;
             if (compraModel.CodCompra > 0) // UPDATE
@@ -306,10 +309,5 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         {
             await Navigation.PopAsync();
         }
-    }
-
-    private void FinalizarButton_Clicked(object sender, EventArgs e)
-    {
-
     }
 }
