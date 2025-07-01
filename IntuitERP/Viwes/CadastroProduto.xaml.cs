@@ -1,5 +1,6 @@
 using IntuitERP.models;
 using IntuitERP.Services;
+using IntuitERP.Viwes.Modals;
 using System.Collections.ObjectModel;
 using System.Globalization;
 
@@ -11,6 +12,7 @@ public partial class CadastroProduto : ContentPage
     private readonly FornecedorService _fornecedorService;
     private ObservableCollection<FornecedorModel> _listaFornecedores;
     private readonly int _id;
+    private int _CodFornecedor = 0; // Store the selected supplier code
 
     // Constructor for Dependency Injection (recommended)
     public CadastroProduto(ProdutoService produtoService, FornecedorService fornecedorService, int id = 0)
@@ -20,9 +22,8 @@ public partial class CadastroProduto : ContentPage
         _fornecedorService = fornecedorService;
 
         _listaFornecedores = new ObservableCollection<FornecedorModel>();
-        FornecedorPicker.ItemsSource = _listaFornecedores;
+
         // Display a user-friendly name in the Picker, e.g., NomeFantasia or RazaoSocial
-        FornecedorPicker.ItemDisplayBinding = new Binding("NomeFantasia"); // Or RazaoSocial
 
         // Set default date for DataCadastroPicker
         DataCadastroPicker.Date = DateTime.Today;
@@ -40,8 +41,11 @@ public partial class CadastroProduto : ContentPage
             var produto = await _produtoService.GetByIdAsync(_id);
             if (produto != null)
             {
+                var fornecedor = await _fornecedorService.GetByIdAsync((int)produto.FornecedorP_ID);
+
                 DescricaoProdutoEntry.Text = produto.Descricao;
-                FornecedorPicker.SelectedItem = produto.Fornecedor;
+                FornecedorDisplayField.Text = fornecedor.RazaoSocial ?? fornecedor.NomeFantasia;
+                _CodFornecedor = (int)produto.FornecedorP_ID;
                 EstoqueMinimoEntry.Text = produto.EstMinimo.ToString();
                 TipoProdutoEntry.Text = produto.Tipo;
                 CategoriaEntry.Text = produto.Categoria;
@@ -83,7 +87,7 @@ public partial class CadastroProduto : ContentPage
         DescricaoProdutoEntry.Text = string.Empty;
         CategoriaEntry.Text = string.Empty;
         PrecoUnitarioEntry.Text = string.Empty;
-        FornecedorPicker.SelectedItem = null;
+        FornecedorDisplayField.Text = string.Empty; // Clear the FornecedorDisplayF
         EstoqueMinimoEntry.Text = string.Empty;
         TipoProdutoEntry.Text = string.Empty;
         DataCadastroPicker.Date = DateTime.Today;
@@ -122,10 +126,10 @@ public partial class CadastroProduto : ContentPage
             }
         }
 
-        if (FornecedorPicker.SelectedItem == null)
+        if (FornecedorDisplayField.Text == string.Empty)
         {
             await DisplayAlert("Campo Obrigatório", "Por favor, selecione o Fornecedor Principal.", "OK");
-            FornecedorPicker.Focus();
+            SelectFornecedorButton.Focus();
             return;
         }
 
@@ -144,15 +148,13 @@ public partial class CadastroProduto : ContentPage
             return;
         }
 
-        var selectedFornecedor = (FornecedorModel)FornecedorPicker.SelectedItem;
-
         // --- Create ProdutoModel ---
         var Produto = new ProdutoModel
         {
             Descricao = DescricaoProdutoEntry.Text.Trim(),
             Categoria = CategoriaEntry.Text.Trim(),
             PrecoUnitario = preco, // Use the parsed decimal value
-            FornecedorP_ID = selectedFornecedor.CodFornecedor, // Get ID from selected supplier
+            FornecedorP_ID = _CodFornecedor, // Get ID from selected supplier
             EstMinimo = estMinimo,
             Tipo = TipoProdutoEntry.Text.Trim(),
             DataCadastro = DateTime.Now, // Service layer also defaults this
@@ -240,7 +242,26 @@ public partial class CadastroProduto : ContentPage
         }
     }
 
-    private void SalvarProdutoButton_Clicked_1(object sender, EventArgs e)
+    private async void SelectFornecedorButton_Clicked(object sender, EventArgs e)
     {
+        try
+        {
+            var fornecedorlist = await _fornecedorService.GetAllAsync();
+            var selectedfornecedor = await ModalPicker.Show<FornecedorModel>(Navigation, "Selecione a Cidade", fornecedorlist);
+            if (selectedfornecedor != null)
+            {
+                {
+                    await DisplayAlert("Fornecedor Selecionado", selectedfornecedor.ToString(), "Ok");
+                    FornecedorDisplayField.Text = string.Empty;
+                    FornecedorDisplayField.Text = selectedfornecedor.RazaoSocial ?? selectedfornecedor.NomeFantasia;
+                    _CodFornecedor = 0;
+                    _CodFornecedor = selectedfornecedor.CodFornecedor; // Store the selected city code
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro Inesperado", $"Ocorreu um erro ao Selecionar a Cidade: {ex.Message}", "OK");
+        }
     }
 }
