@@ -1,4 +1,5 @@
-﻿using DBconfigurator.Models;
+﻿
+using DBconfigurator.Models;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,9 @@ namespace DBconfigurator.Services
         {
             get
             {
-                string rootPath = @"C:\";
-                string appSpecificFolder = Path.Combine(rootPath, "IntuitERP", "Config");
-                return Path.Combine(appSpecificFolder, "ConfigsDB.db");
+                string rootPath = "C:\\Program Files\\WindowsApps\\com.companyname.intuiterp_1.0.1.0_x86__m5sb2qab8d53c\\Config\\ConfigsDB.db";
+                return rootPath;
+                
             }
         }
 
