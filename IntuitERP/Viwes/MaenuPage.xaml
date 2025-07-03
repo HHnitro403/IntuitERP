@@ -139,7 +139,7 @@
                         <VerticalStackLayout Spacing="10">
                             <Label Text="Relatorios" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
                             <Button x:Name="GeraRelatButton" Text="Relatorios Gerenciais" Clicked="GeraRelatButton_Clicked" Style="{StaticResource ModernMenuButton}" />
-                            <Button x:Name="GeraRelatButtonSintec" Text="Relatorios Gerenciais" Clicked="GeraRelatButtonSintec_Clicked" Style="{StaticResource ModernMenuButton}" />
+                            <!--  <Button x:Name="GeraRelatButtonSintec" Text="Relatorios Gerenciais" Clicked="GeraRelatButtonSintec_Clicked" Style="{StaticResource ModernMenuButton}" />-->
                         </VerticalStackLayout>
                     </Border>
                 </VerticalStackLayout>

@@ -73,8 +73,11 @@ public partial class MaenuPage : ContentPage
             var vendaservice = new VendaService(connection);
             var filter = new VendaFilterModel();
             filter.StatusVenda = 1;
-            var resultVenda = vendaservice.GetAllAsync();
+            var resultVenda = vendaservice.GetAllAsync(filter);
+            //recent orders
            
+
+
 
         }
         catch (Exception ex)

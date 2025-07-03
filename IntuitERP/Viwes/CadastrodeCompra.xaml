@@ -29,7 +29,7 @@
                 <Frame x:Name="DetalhesdaCompraFrame" BorderColor="{AppThemeBinding Light=#CCCCCC, Dark=#555555}" CornerRadius="8" Padding="15">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Detalhes da Compra" FontSize="18" FontAttributes="Bold" />
-                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="5">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="5">
                             <Label Grid.Row="0" Grid.Column="0" Text="Data da Compra:" FontSize="16" />
                             <Label Grid.Row="0" Grid.Column="1" Text="Hora da Compra:" FontSize="16" />
 
