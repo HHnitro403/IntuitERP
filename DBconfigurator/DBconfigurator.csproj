@@ -45,6 +45,7 @@
 		<AppInstallerUri>C:\Releases</AppInstallerUri>
 		<HoursBetweenUpdateChecks>1440</HoursBetweenUpdateChecks>
 		<PackageCertificateKeyFile>DBconfigurator_TemporaryKey.pfx</PackageCertificateKeyFile>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>

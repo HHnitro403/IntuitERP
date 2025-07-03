@@ -30,6 +30,7 @@
 		<AppInstallerUri>C:\Releases</AppInstallerUri>
 		<HoursBetweenUpdateChecks>720</HoursBetweenUpdateChecks>
 		<PackageCertificateKeyFile>IntuitERP_TemporaryKey.pfx</PackageCertificateKeyFile>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -164,18 +165,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-windows10.0.19041.0'">
+		<MtouchLink>SdkOnly</MtouchLink>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Debug|net8.0-windows10.0.19041.0'">
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<WindowsPackageType>None</WindowsPackageType>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<SelfContained>true</SelfContained>
-		<EnableMsixTooling>false</EnableMsixTooling>
-		<AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
-		<GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
-		<Optimize>False</Optimize>
-		<PublishTrimmed>false</PublishTrimmed>
-		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-		<TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-maccatalyst'">
