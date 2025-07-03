@@ -21,16 +21,26 @@ namespace IntuitERP
             InitializeComponent();
 
             // Force light theme regardless of system settings
-            Application.Current.UserAppTheme = AppTheme.Light;
+            //Application.Current.UserAppTheme = AppTheme.Light;
 
             // Force dark theme
             //Application.Current.UserAppTheme = AppTheme.Dark;
 
-            var configurator = new Configurator();
-            _connection = configurator.GetMySqlConnection();
+            try
+            {
+                var configurator = new Configurator();
+                _connection = configurator.GetMySqlConnection();
 
-            // Initialize services that need the connection
-            _usuarioService = new UsuarioService(_connection);
+                // Initialize services that need the connection
+                _usuarioService = new UsuarioService(_connection);
+
+            }
+            catch (Exception ex)
+            {
+                DisplayPromptAsync("Error", $"An error occurred while initializing the application: {ex.Message}", "OK");
+            }
+
+
         }
 
         protected override void OnAppearing()
@@ -188,13 +198,13 @@ namespace IntuitERP
                 else
                 {
                     // User not found or invalid credentials
-                   throw new Exception("Usuario ou Senha Invalidos.");
-                    
+                    throw new Exception("Usuario ou Senha Invalidos.");
+
                 }
             }
             catch (Exception ex)
             {
-                throw;              
+                throw;
             }
         }
     }

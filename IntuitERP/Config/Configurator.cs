@@ -14,8 +14,17 @@ namespace IntuitERP.Config
 
         public Configurator()
         {
-            dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ConfigsDB.db");
-            LoadConfiguration(); // Load configuration from SQLite
+            try
+            {
+                dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ConfigsDB.db");
+                LoadConfiguration(); // Load configuration from SQLite
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
         }
 
         public IDbConnection GetMySqlConnection()
