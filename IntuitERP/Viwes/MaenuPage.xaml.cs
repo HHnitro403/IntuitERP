@@ -3,6 +3,7 @@ using IntuitERP.models;
 using IntuitERP.Services;
 using IntuitERP.Viwes.Reports;
 using IntuitERP.Viwes.Search;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -10,9 +11,14 @@ namespace IntuitERP.Viwes;
 
 public partial class MaenuPage : ContentPage
 {
+    public ObservableCollection<VendaSearch.VendaDisplayModel> RecentOrders { get; set; }
     public MaenuPage()
     {
+
         InitializeComponent();
+        // Initialize the collection
+        RecentOrders = new ObservableCollection<VendaSearch.VendaDisplayModel>();
+
         BindingContext = this;
     }
 
@@ -21,46 +27,36 @@ public partial class MaenuPage : ContentPage
         base.OnAppearing();
         DataLabel.Text = DateTime.Now.ToString("dd/MM/yyyy");
 
-        //calculate total sales this month
-
         try
         {
-            //Venda
             var configurator = new Configurator();
             IDbConnection connection = configurator.GetMySqlConnection();
+
+            // Your existing code for sales and expenses...
             var vendasService = new VendaService(connection);
             var result = await GetMonthlyVendaComparisonDataAsync(vendasService);
-
             TotalVendasMes.Text = result.TotalAtual.ToString("C2");
-
             if (result.Variacao >= 0)
             {
-                // Handles gains and no-change scenarios
                 PorcentagemVendas.Text = $"+{result.Variacao:F2}%";
                 PorcentagemVendas.TextColor = Colors.Green;
             }
             else
             {
-                // Handles loss scenarios
                 PorcentagemVendas.Text = $"{result.Variacao:F2}%";
                 PorcentagemVendas.TextColor = Colors.Red;
             }
 
-            //Compra
             var comprasService = new CompraService(connection);
             var resultCompra = await GetMonthlyCompraComparisonDataAsync(comprasService);
-
             TotalDespesasMes.Text = resultCompra.TotalAtual.ToString("C2");
-
             if (resultCompra.Variacao >= 0)
             {
-                // Handles gains and no-change scenarios
                 PorcentagemDespesas.Text = $"+{resultCompra.Variacao:F2}%";
                 PorcentagemDespesas.TextColor = Colors.Green;
             }
             else
             {
-                // Handles loss scenarios
                 PorcentagemDespesas.Text = $"{resultCompra.Variacao:F2}%";
                 PorcentagemDespesas.TextColor = Colors.Red;
             }
@@ -70,15 +66,34 @@ public partial class MaenuPage : ContentPage
             TotalProdutos.Text = resultProduto.Totalprodutos.ToString();
             ProdEstBaixo.Text = resultProduto.totalprodutosnegativos.ToString();
 
-            var vendaservice = new VendaService(connection);
-            var filter = new VendaFilterModel();
-            filter.StatusVenda = 1;
-            var resultVenda = vendaservice.GetAllAsync(filter);
-            //recent orders
-           
+            // ### This is the updated section for loading recent orders ###
+            var clienteService = new ClienteService(connection);
+            var vendedorService = new VendedorService(connection);
 
+            var vendas = await vendasService.GetAllAsync(new VendaFilterModel { StatusVenda = 1 });
+            var clientes = await clienteService.GetAllAsync();
+            var vendedores = await vendedorService.GetAllAsync();
 
+            var clientesDict = clientes.ToDictionary(c => c.CodCliente, c => c.Nome);
+            var vendedoresDict = vendedores.ToDictionary(v => v.CodVendedor, v => v.NomeVendedor);
 
+            RecentOrders.Clear();
+            foreach (var venda in vendas.OrderByDescending(v => v.data_venda).ThenByDescending(v => v.hora_venda).Take(5))
+            {
+                RecentOrders.Add(new VendaSearch.VendaDisplayModel
+                {
+                    CodVenda = venda.CodVenda,
+                    DataVenda = venda.data_venda,
+                    ValorTotal = venda.valor_total,
+                    Status = "Pendente",
+                    NomeCliente = venda.CodCliente > 0 && clientesDict.ContainsKey(venda.CodCliente)
+                                  ? clientesDict[venda.CodCliente]
+                                  : "Cliente não encontrado",
+                    NomeVendedor = venda.CodVendedor.HasValue && vendedoresDict.ContainsKey(venda.CodVendedor.Value)
+                                   ? vendedoresDict[venda.CodVendedor.Value]
+                                   : "Vendedor não encontrado"
+                });
+            }
         }
         catch (Exception ex)
         {

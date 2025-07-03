@@ -215,39 +215,38 @@
                             <!-- Order Divider -->
                             <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
 
-                            <!-- Order List -->
-                            <VerticalStackLayout Spacing="10">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Padding="10,5">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="1.5*" />
-                                                <ColumnDefinition Width="3*" />
-                                                <ColumnDefinition Width="1.5*" />
-                                                <ColumnDefinition Width="1.5*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label Grid.Column="0" Text="{Binding OrderId}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-                                            <Label Grid.Column="1" Text="{Binding CustomerName}" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-                                            <Label Grid.Column="2" Text="{Binding Amount, StringFormat='R$ {0:N2}'}" HorizontalOptions="End" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-                                            <Label Grid.Column="3" Text="{Binding Status}" TextColor="{StaticResource WarningColor}" HorizontalOptions="End" VerticalOptions="Center" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
+                            <ScrollView>
+                                <VerticalStackLayout Spacing="20" Padding="20">
+                                    <Frame Padding="10" CornerRadius="5">
+                                        <VerticalStackLayout>
+                                            <Label Text="Pedidos Recentes" FontSize="Title" FontAttributes="Bold"/>
+                                            <CollectionView ItemsSource="{Binding RecentOrders}" EmptyView="Nenhum pedido recente.">
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Frame Padding="10" Margin="0,5" CornerRadius="5" BorderColor="LightGray">
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto"/>
+                                                                    <RowDefinition Height="Auto"/>
+                                                                </Grid.RowDefinitions>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding NomeCliente}" FontAttributes="Bold"/>
+                                                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding ValorTotal, StringFormat='{0:C}'}" HorizontalTextAlignment="End"/>
+                                                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding NomeVendedor}" FontSize="Small"/>
+                                                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding DataVenda, StringFormat='{0:dd/MM/yyyy}'}" FontSize="Small" HorizontalTextAlignment="End"/>
+                                                            </Grid>
+                                                        </Frame>
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </VerticalStackLayout>
+                                    </Frame>
 
-                            <!-- Static example if not using data binding -->
-                            <Grid Padding="10,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1.5*" />
-                                    <ColumnDefinition Width="3*" />
-                                    <ColumnDefinition Width="1.5*" />
-                                    <ColumnDefinition Width="1.5*" />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Text="ORD-2584" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-                                <Label Grid.Column="1" Text="Customer XYZ Ltd" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-                                <Label Grid.Column="2" Text="R$ 3,450.00" HorizontalOptions="End" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
-                                <Label Grid.Column="3" Text="In Progress" TextColor="{StaticResource WarningColor}" FontAttributes="Bold" HorizontalOptions="End" VerticalOptions="Center" />
-                            </Grid>
+                                </VerticalStackLayout>
+                            </ScrollView>
                         </VerticalStackLayout>
                     </Border>
                 </VerticalStackLayout>
