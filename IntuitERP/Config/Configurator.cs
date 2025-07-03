@@ -15,110 +15,57 @@ namespace IntuitERP.Config
         public Configurator()
         {
             dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "ConfigsDB.db");
-            InitializeDatabase(); // Ensure the database and table exist
             LoadConfiguration(); // Load configuration from SQLite
         }
 
         public IDbConnection GetMySqlConnection()
         {
-            try
+            if (currentConfig == null)
             {
-                if (currentConfig == null)
-                {
-                    LoadConfiguration();
-                }
-
-                if (currentConfig == null)
-                {
-                    throw new InvalidOperationException("MySQL connection configuration not found.");
-                }
-
-                string connectionString = MySqlConnect.GetConnectionString(
-                    currentConfig.Server,
-                    currentConfig.Database,
-                    currentConfig.User,
-                    currentConfig.Password);
-
-                return new MySqlConnection(connectionString);
+                LoadConfiguration();
             }
-            catch (Exception ex)
+
+            if (currentConfig == null)
             {
-                Console.WriteLine($"Error creating MySQL connection: {ex.Message}");
-                throw; // Rethrow to let caller handle the error
+                throw new InvalidOperationException("MySQL connection configuration not found.");
             }
-        }
 
-        private void InitializeDatabase()
-        {
-            try
-            {
-                // Ensure the directory exists
-                Directory.CreateDirectory(Path.GetDirectoryName(dbPath));
+            string connectionString = MySqlConnect.GetConnectionString(
+                currentConfig.Server,
+                currentConfig.Database,
+                currentConfig.User,
+                currentConfig.Password);
 
-                bool databaseExists = File.Exists(dbPath);
+            var connection = new MySqlConnection(connectionString);
 
-                using (var connection = CreateSqliteConnection())
-                {
-                    connection.Open();
+            // **Attempt to connect to the database to validate credentials.**
+            // This will throw a MySqlException if the connection fails,
+            // which must be handled by the method's caller.
+            connection.Open();
+            connection.Close();
 
-                    // Create the Connection table if it doesn't exist
-                    var createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS Connection (
-                        ID INTEGER PRIMARY KEY,
-                        Server TEXT,
-                        Database TEXT,
-                        User TEXT,
-                        Password TEXT
-                    )";
-                    connection.Execute(createTableQuery);
-
-                    // Insert default configuration if no data exists
-                    var count = connection.QuerySingle<int>("SELECT COUNT(*) FROM Connection");
-                    if (count == 0)
-                    {
-                        var insertQuery = @"
-                        INSERT INTO Connection (ID, Server, Database, User, Password)
-                        VALUES (@ID, @Server, @Database, @User, @Password)";
-                        connection.Execute(insertQuery, new
-                        {
-                            ID = 1,
-                            Server = "localhost",
-                            Database = "default_db",
-                            User = "root",
-                            Password = "password"
-                        });
-                    }
-                }
-
-                Console.WriteLine("Database initialized successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error initializing database: {ex.Message}");
-                throw;
-            }
+            // Return the connection object (in a closed state) for the caller to use.
+            return connection;
         }
 
         private void LoadConfiguration()
         {
-            try
+            // Throw an exception if the database file does not exist.
+            if (!File.Exists(dbPath))
             {
-                using (var connection = CreateSqliteConnection())
-                {
-                    connection.Open();
-                    var query = "SELECT * FROM Connection WHERE ID = @ID";
-                    currentConfig = connection.QuerySingleOrDefault<ConnectionConfig>(query, new { ID = 1 });
-
-                    if (currentConfig == null)
-                    {
-                        Console.WriteLine("No connection configuration found in the database.");
-                    }
-                }
+                throw new FileNotFoundException("Configuration database not found.", dbPath);
             }
-            catch (Exception ex)
+
+            using (var connection = CreateSqliteConnection())
             {
-                Console.WriteLine($"Error loading configuration: {ex.Message}");
-                throw;
+                connection.Open();
+                var query = "SELECT * FROM Connection WHERE ID = @ID";
+                currentConfig = connection.QuerySingleOrDefault<ConnectionConfig>(query, new { ID = 1 });
+
+                if (currentConfig == null)
+                {
+                    throw new InvalidDataException("No connection configuration with ID = 1 found in the database.");
+                }
             }
         }
 
@@ -127,35 +74,22 @@ namespace IntuitERP.Config
             return new SqliteConnection($"Data Source={dbPath}");
         }
 
-        // Added method to update configuration
         public void SaveConfiguration(ConnectionConfig config)
         {
-            try
+            using (var connection = CreateSqliteConnection())
             {
-                using (var connection = CreateSqliteConnection())
-                {
-                    connection.Open();
-                    var updateQuery = @"
-                    UPDATE Connection 
-                    SET Server = @Server, Database = @Database, User = @User, Password = @Password
-                    WHERE ID = @ID";
+                connection.Open();
+                var updateQuery = @"
+                UPDATE Connection 
+                SET Server = @Server, Database = @Database, User = @User, Password = @Password
+                WHERE ID = @ID";
 
-                    connection.Execute(updateQuery, new
-                    {
-                        ID = 1,
-                        config.Server,
-                        config.Database,
-                        config.User,
-                        config.Password
-                    });
+                // Pass the config object directly, ensuring the ID is set for the WHERE clause.
+                config.ID = 1;
+                connection.Execute(updateQuery, config);
 
-                    currentConfig = config;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving configuration: {ex.Message}");
-                throw;
+                // Update the in-memory configuration
+                currentConfig = config;
             }
         }
     }
@@ -165,7 +99,7 @@ namespace IntuitERP.Config
     {
         public int ID { get; set; }
         public string Server { get; set; }
-        public string Database { get; set; } // Changed from DataBase to match DB column
+        public string Database { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
     }
@@ -185,10 +119,5 @@ namespace IntuitERP.Config
             return $"Server={server};Database={database};User={user};Password={password};";
         }
 
-        public void OpenConnection()
-        {
-            // Simulate opening a connection (replace with actual MySQL logic)
-            Console.WriteLine($"Connecting to MySQL with: {connectionString}");
-        }
     }
 }

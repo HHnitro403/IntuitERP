@@ -46,9 +46,7 @@ namespace DBconfigurator.Services
             if (!File.Exists(DbPath))
             {
                 // Log an error for debugging. The application will not create the file.
-                Console.WriteLine($"DATABASE NOT FOUND: The database file was not found at {DbPath}");
-                // Keep _isInitialized as false, so methods will return empty/null.
-                return;
+               throw new FileNotFoundException($"Database file not found at {DbPath}");
             }
 
             try
@@ -63,9 +61,9 @@ namespace DBconfigurator.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error connecting to database: {ex.Message}");
                 // Ensure we remain uninitialized if an error occurs.
                 _isInitialized = false;
+                throw;
             }
         }
 

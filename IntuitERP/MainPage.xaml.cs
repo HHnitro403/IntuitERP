@@ -158,15 +158,21 @@ namespace IntuitERP
 
         private async void LoginButton_Clicked(object sender, EventArgs e)
         {
-            var result = await LoginAsync();
-            if (result)
+            try
             {
-                await Navigation.PushAsync(new MaenuPage());
+                var result = await LoginAsync();
+                if (result)
+                {
+                    await Navigation.PushAsync(new MaenuPage());
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await DisplayAlert("Login Failed", "Credenciais são Invalidas.", "OK");
+                await DisplayAlert("Login Failed", ex.Message, "OK");
+                Console.WriteLine($"Login error: {ex.Message}");
+
             }
+
         }
 
         public async Task<bool> LoginAsync()
@@ -182,13 +188,13 @@ namespace IntuitERP
                 else
                 {
                     // User not found or invalid credentials
-                    await DisplayAlert("Login Failed", "Username or password is incorrect.", "OK");
+                   throw new Exception("Usuario ou Senha Invalidos.");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Login Failed", "Username or password is incorrect.", "OK");
+                await DisplayAlert("Login Failed", ex.Message, "OK");
                 return false;
             }
         }
