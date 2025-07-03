@@ -19,7 +19,7 @@ namespace DBconfigurator.Services
         {
             get
             {
-                string rootPath = "C:\\Program Files\\WindowsApps\\com.companyname.intuiterp_1.0.1.0_x86__m5sb2qab8d53c\\Config\\ConfigsDB.db";
+                string rootPath = "C:\\IntuitERP\\Config\\ConfigsDB.db";
                 return rootPath;
                 
             }
