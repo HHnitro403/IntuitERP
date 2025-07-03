@@ -22,7 +22,7 @@ namespace IntuitERP.Config
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
 
         }
