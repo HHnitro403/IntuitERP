@@ -19,13 +19,6 @@ namespace IntuitERP
         public MainPage()
         {
             InitializeComponent();
-
-            // Force light theme regardless of system settings
-            //Application.Current.UserAppTheme = AppTheme.Light;
-
-            // Force dark theme
-            //Application.Current.UserAppTheme = AppTheme.Dark;
-
             try
             {
                 var configurator = new Configurator();
