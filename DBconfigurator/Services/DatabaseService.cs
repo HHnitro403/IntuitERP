@@ -19,9 +19,16 @@ namespace DBconfigurator.Services
         {
             get
             {
-                string rootPath = "C:\\IntuitERP\\Config\\ConfigsDB.db";
+                if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+                {
+                    string rootPath = "C:\\IntuitERP\\Config\\ConfigsDB.db";
                 return rootPath;
-                
+                }else if (DeviceInfo.Current.Platform == DevicePlatform.MacCatalyst)
+                {
+                    return null;
+                }
+
+                return null;
             }
         }
 

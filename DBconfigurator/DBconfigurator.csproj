@@ -76,4 +76,28 @@
 	  <Folder Include="Resources\Images\" />
 	</ItemGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-android'">
+		<AndroidLinkSkip>DbConfigurator</AndroidLinkSkip>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-ios'">
+		<MtouchLink>SdkOnly</MtouchLink>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-windows10.0.19041.0'">
+		<WindowsPackageType>None</WindowsPackageType>
+
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Debug|net8.0-windows10.0.19041.0'">
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-maccatalyst'">
+		<MtouchLink>SdkOnly</MtouchLink>
+	</PropertyGroup>
+
 </Project>

@@ -165,8 +165,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-windows10.0.19041.0'">
-		<MtouchLink>SdkOnly</MtouchLink>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<WindowsPackageType>None</WindowsPackageType>
+
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Debug|net8.0-windows10.0.19041.0'">
