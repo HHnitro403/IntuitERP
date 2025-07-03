@@ -1,82 +1,137 @@
 IntuitERP - Sistema de Gestão Empresarial
 
-IntuitERP é um sistema de gestão simples, desenvolvido como um aplicativo desktop multiplataforma usando .NET MAUI. O objetivo do projeto é fornecer uma base para um sistema de Ponto de Venda (PDV) e Planejamento de Recursos Empresariais (ERP), cobrindo as operações essenciais de um pequeno negócio.
+IntuitERP é um sistema de gestão de código aberto, desenvolvido como um aplicativo de desktop multiplataforma usando .NET MAUI. O projeto nasceu da necessidade de criar uma alternativa mais intuitiva e amigável aos sistemas ERP tradicionais, que são frequentemente complexos e difíceis de usar. O objetivo é fornecer uma base sólida para um sistema de Ponto de Venda (PDV) e Planejamento de Recursos Empresariais (ERP) que seja poderoso, mas sem sacrificar a experiência do usuário.
+
 🚀 Funcionalidades Principais
 
-O sistema é modularizado para gerenciar diferentes aspectos do negócio:
+O sistema é modularizado para gerenciar diferentes aspectos do negócio, com uma interface centrada no usuário, facilitando a manutenção e a implementação.
 
     Cadastros:
-        Gestão completa de Clientes.
-        Gestão de Fornecedores.
-        Cadastro e manutenção de Produtos.
-        Gerenciamento de Vendedores.
-        Gerenciamento de Usuários do sistema com senhas.
-        Cadastro de Cidades e UF para uso em outros módulos.
+
+        Gestão de Clientes: Cadastro completo, incluindo informações de contato, endereço e histórico.
+
+        Gestão de Fornecedores: Gerenciamento de fornecedores com dados cadastrais e de contato.
+
+        Cadastro de Produtos: Manutenção de produtos, incluindo descrição, categoria, preço e controle de estoque.
+
+        Gerenciamento de Vendedores: Cadastro e acompanhamento de vendedores.
+
+        Gerenciamento de Usuários: Controle de acesso ao sistema com usuários e senhas, além de um sistema de permissões detalhado.
+
+        Cadastro de Cidades: Gerenciamento de cidades e UF para uso em outros módulos.
+
     Operações:
-        Lançamento de Vendas, com seleção de cliente, vendedor e múltiplos itens.
-        Registro de Compras de fornecedores.
-        Controle de Estoque com movimentações de entrada e saída.
-    Interface:
-        Telas de busca dedicadas para cada módulo principal (Clientes, Produtos, Vendas, etc.).
-        Formulários intuitivos para criação e edição de registros.
-        Interface responsiva construída com .NET MAUI.
+
+        Lançamento de Vendas: Permite o lançamento de vendas com seleção de cliente, vendedor e múltiplos itens, além de controle de status (orçamento, pendente, faturada).
+
+        Registro de Compras: Registro de compras de fornecedores, com atualização automática do estoque na conclusão.
+
+        Controle de Estoque: Movimentações manuais de entrada e saída, com um registro de todo o histórico.
+
+    Interface e Relatórios:
+
+        Telas de Busca: Interfaces dedicadas para busca e filtragem em todos os módulos principais.
+
+        Geração de Relatórios: Capacidade de gerar relatórios em PDF para os principais módulos, como Vendas, Compras e Produtos.
+
+        Dashboard Intuitivo: Uma tela inicial que apresenta um resumo das atividades recentes e principais indicadores.
 
 🛠️ Tecnologias Utilizadas
 
-    Framework: .NET MAUI (Multi-platform App UI)
+    Framework: .NET MAUI (.NET 8) para uma experiência de aplicativo de desktop multiplataforma.
+
     Linguagem: C#
-    Interface: XAML
-    Banco de Dados Principal: MySQL
-    Banco de Dados de Configuração: SQLite (usado para armazenar a string de conexão do MySQL)
-    ORM: Dapper (um micro-ORM de alta performance)
+
+    Banco de Dados Principal: MySQL.
+
+    Banco de Dados de Configuração: SQLite para armazenar de forma segura a string de conexão do MySQL.
+
+    ORM: Dapper, um micro-ORM de alta performance para acesso a dados.
+
+    Geração de PDF: Biblioteca QuestPDF para a criação de relatórios.
 
 ⚙️ Como Executar o Projeto
 
 Siga os passos abaixo para configurar e executar o IntuitERP em seu ambiente de desenvolvimento.
+
 1. Pré-requisitos
 
-    .NET 8 SDK (ou superior).
+    .NET 8 SDK (versão 8.0.411 ou superior).
+
     Visual Studio 2022 com a carga de trabalho ".NET Multi-platform App UI development" instalada.
-    Um servidor de banco de dados MySQL instalado e em execução.
+
+    Um servidor de banco de dados MySQL local ou remoto.
 
 2. Configuração do Banco de Dados MySQL
 
-Use o arquivo DatabaseDump(structure).sql para a estrutura e o DatabaseDump.sql que vira com dados Mockup
+    Crie um novo banco de dados no seu servidor MySQL.
+
+    Utilize o arquivo DatabaseDump(structure).sql para criar a estrutura das tabelas.
+
+    Opcionalmente, use DatabaseDump.sql para popular o banco de dados com dados de exemplo.
 
 3. Configuração da Conexão
 
-O projeto utiliza um banco de dados SQLite para armazenar a string de conexão do MySQL. Ao executar o aplicativo pela primeira vez, ele criará um arquivo ConfigsDB.db no diretório de saída (ex: bin/Debug/.../Config/).
+O projeto utiliza um aplicativo configurador (DBconfigurator) para gerenciar a string de conexão de forma segura.
 
-Você precisa atualizar a conexão neste arquivo:
+    Execute o projeto DBconfigurator primeiro.
 
-    Use uma ferramenta de gerenciamento de SQLite (como o DB Browser for SQLite) para abrir o arquivo ConfigsDB.db(em breve teré uma ferramneta de configuração propria junto do projeto).
-    Abra a tabela Connection.
-    Edite o único registro (ID = 1) e insira as informações do seu banco de dados MySQL:
-        Server: O endereço do seu servidor (ex: localhost ou 127.0.0.1).
-        Database: O nome do banco de dados que você criou (ex: intuiterp_db).
-        User: Seu usuário do MySQL (ex: root).
+    Faça o login com as credenciais padrão:
+
+        Usuário: BbAdmin
+
+        Senha: masterkey
+
+    Na tela de configuração, insira os detalhes do seu banco de dados MySQL:
+
+        Server: O endereço do seu servidor (ex: localhost).
+
+        DataBase: O nome do banco de dados criado (ex: intuiterp_db).
+
+        User: Seu usuário do MySQL.
+
         Password: Sua senha do MySQL.
-    Salve as alterações.
 
-4. Executando a Aplicação
+    Salve a configuração. Isso irá armazenar a conexão de forma segura em um arquivo SQLite.
 
-    Clone este repositório.
-    Abra o arquivo da solução (.sln) no Visual Studio 2022.
-    Selecione a plataforma de destino (ex: "Windows Machine" ou um emulador Android).
-    Pressione F5 ou clique no botão de "play" para compilar e executar o projeto.
-    A tela de login deve aparecer, pronta para ser usada.
+4. Executando a Aplicação Principal
+
+    Abra a solução IntuitERP.sln no Visual Studio 2022.
+
+    Defina o projeto IntuitERP como o projeto de inicialização.
+
+    Selecione a plataforma de destino (ex: "Windows Machine").
+
+    Pressione F5 ou o botão de execução para compilar e iniciar a aplicação.
+
+    A tela de login aparecerá, pronta para uso com os usuários cadastrados no banco.
 
 📂 Estrutura do Projeto
 
-    BCK/: Contém classes para operações de backup (atualmente vazias).
-    Config/: Responsável pela configuração da conexão com o banco de dados.
+    BCK/: Classes para futuras operações de backup (atualmente em desenvolvimento).
+
+    Config/: Contém a classe Configurator, responsável por carregar a conexão do banco de dados a partir do arquivo SQLite.
+
     DataBase/: Classes de ajuda para a conexão com o MySQL.
+
     Helpers/: Contém conversores e outras classes auxiliares para a UI.
-    models/: Define as entidades do sistema (Cliente, Produto, Venda, etc.).
-    Platforms/: Código específico para cada plataforma (.NET MAUI).
+
+    models/: Define as entidades do sistema (ex: ClienteModel, ProdutoModel, VendaModel).
+
+    Platforms/: Código específico para cada plataforma suportada pelo .NET MAUI (Windows, Android, iOS, MacCatalyst).
+
     Properties/: Configurações de inicialização do projeto.
+
     Resources/: Ativos do aplicativo como imagens, fontes e arquivos brutos.
-    Services/: Lida com a lógica de negócios e as operações de banco de dados para cada entidade.
-    validators/: Classes que contêm a lógica para validar os modelos de dados.
+
+    Services/: Contém a lógica de negócios e as operações de banco de dados para cada entidade (ex: ClienteService, VendaService).
+
+    validators/: Classes que contêm a lógica para validar os modelos de dados antes de serem salvos no banco.
+
     Viwes/: Contém as páginas XAML e o code-behind que compõem a interface do usuário.
-        Search/: Páginas especializadas para buscar e listar registros.
+
+        Search/: Páginas especializadas para buscar, listar, editar e excluir registros de cada módulo.
+
+        Reports/: Visualizador de relatórios em PDF.
+
+        Modals/: Componentes modais reutilizáveis, como o seletor de itens.
