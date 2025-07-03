@@ -9,54 +9,96 @@ namespace IntuitERP
 {
     public partial class MainPage : ContentPage
     {
-        // Track validation state
         private bool _isUserValid = false;
-
         private bool _isPasswordValid = false;
-        private IDbConnection _connection;
         private UsuarioService _usuarioService;
 
         public MainPage()
         {
             InitializeComponent();
+        }
+
+        // The logic is now in the Loaded event handler
+        private async void MainPage_Loaded(object sender, EventArgs e)
+        {
+            UserEntry.Text = string.Empty;
+            PasswordEntry.Text = string.Empty;
+            LoginButton.IsEnabled = false;
+
+            await InitializeServicesAsync();
+        }
+
+        private async Task InitializeServicesAsync()
+        {
             try
             {
                 var configurator = new Configurator();
-                _connection = configurator.GetMySqlConnection();
+                IDbConnection connection = configurator.GetMySqlConnection();
+                _usuarioService = new UsuarioService(connection);
 
-                // Initialize services that need the connection
-                _usuarioService = new UsuarioService(_connection);
-
+                LoginGrid.IsEnabled = true;
             }
             catch (Exception ex)
             {
-                DisplayPromptAsync("Error", $"An error occurred while initializing the application: {ex.Message}", "OK");
+                // This will now fire reliably after the page has loaded
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await DisplayAlert("Configuration Error", ex.Message, "OK");
+                    LoginGrid.IsEnabled = false;
+                    await DisplayAlert("Configuration Error", "Exiting Aplication", "OK");
+                    App.Current.Quit();
+                });
             }
-
-
         }
 
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            UserEntry.Text = string.Empty;
-            PasswordEntry.Text = string.Empty;
+        // ... (The rest of your methods remain the same)
 
-            // Only initialize if it hasn't been done already
+        private async void LoginButton_Clicked(object sender, EventArgs e)
+        {
             if (_usuarioService == null)
             {
-                // Get the existing connection from Configurator
-                var configurator = new Configurator();
-                _connection = configurator.GetMySqlConnection();
+                await DisplayAlert("Error", "The application is not connected to the database. Please restart.", "OK");
+                return;
+            }
 
-                // Initialize services that need the connection
-                _usuarioService = new UsuarioService(_connection);
+            try
+            {
+                var result = await LoginAsync();
+                if (result)
+                {
+                    await Navigation.PushAsync(new MaenuPage());
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Login Failed", ex.Message, "OK");
+                Console.WriteLine($"Login error: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> LoginAsync()
+        {
+            try
+            {
+                var usuario = await _usuarioService.AuthenticateAsync(UserEntry.Text, PasswordEntry.Text);
+                if (usuario != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("Invalid username or password.");
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
         private void OnUserTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (UserEntry.IsFocused == true)
+            if (UserEntry.IsFocused)
             {
                 ValidateUser();
                 UpdateLoginButtonState();
@@ -65,7 +107,7 @@ namespace IntuitERP
 
         private void OnPasswordTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (PasswordEntry.IsFocused == true)
+            if (PasswordEntry.IsFocused)
             {
                 ValidatePassword();
                 UpdateLoginButtonState();
@@ -75,57 +117,46 @@ namespace IntuitERP
         private void ValidateUser()
         {
             string username = UserEntry.Text?.Trim() ?? string.Empty;
-
             if (string.IsNullOrEmpty(username))
             {
                 ShowUserError("Username is required");
                 _isUserValid = false;
-                return;
             }
-
-            if (username.Length < 3)
+            else if (username.Length < 3)
             {
                 ShowUserError("Username must be at least 3 characters");
                 _isUserValid = false;
-                return;
             }
-
-            // Only allow alphanumeric characters and underscores
-            var usernamePattern = @"^[a-zA-Z0-9_]+$";
-            if (!Regex.IsMatch(username, usernamePattern))
+            else if (!Regex.IsMatch(username, @"^[a-zA-Z0-9_]+$"))
             {
                 ShowUserError("Username can only contain letters, numbers, and underscores");
                 _isUserValid = false;
-                return;
             }
-
-            // Username is valid
-            HideUserError();
-            _isUserValid = true;
+            else
+            {
+                HideUserError();
+                _isUserValid = true;
+            }
         }
 
         private void ValidatePassword()
         {
             string password = PasswordEntry.Text ?? string.Empty;
-
             if (string.IsNullOrEmpty(password))
             {
                 ShowPasswordError("Password is required");
                 _isPasswordValid = false;
-                return;
             }
-
-            // Only check for minimum length of 4 characters
-            if (password.Length < 6)
+            else if (password.Length < 6)
             {
-                ShowPasswordError("Password must be at least  characters");
+                ShowPasswordError("Password must be at least 6 characters");
                 _isPasswordValid = false;
-                return;
             }
-
-            // Password is valid
-            HidePasswordError();
-            _isPasswordValid = true;
+            else
+            {
+                HidePasswordError();
+                _isPasswordValid = true;
+            }
         }
 
         private void ShowUserError(string message)
@@ -157,48 +188,6 @@ namespace IntuitERP
         private void UpdateLoginButtonState()
         {
             LoginButton.IsEnabled = _isUserValid && _isPasswordValid;
-        }
-
-        private async void LoginButton_Clicked(object sender, EventArgs e)
-        {
-            try
-            {
-                var result = await LoginAsync();
-                if (result)
-                {
-                    await Navigation.PushAsync(new MaenuPage());
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Login Failed", ex.Message, "OK");
-                Console.WriteLine($"Login error: {ex.Message}");
-
-            }
-
-        }
-
-        public async Task<bool> LoginAsync()
-        {
-            try
-            {
-                var usuario = await _usuarioService.AuthenticateAsync(UserEntry.Text, PasswordEntry.Text);
-                if (usuario != null)
-                {
-                    // Authentication successful
-                    return true;
-                }
-                else
-                {
-                    // User not found or invalid credentials
-                    throw new Exception("Usuario ou Senha Invalidos.");
-
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
         }
     }
 }

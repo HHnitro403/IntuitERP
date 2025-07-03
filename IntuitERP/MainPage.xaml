@@ -4,10 +4,11 @@
              x:Class="IntuitERP.MainPage"
              NavigationPage.HasNavigationBar="False"
              Shell.NavBarIsVisible="False"
+             Loaded="MainPage_Loaded"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundColorLight}, Dark={StaticResource PageBackgroundColorDark}}">
 
     <!-- Main layout centered on the page -->
-    <Grid VerticalOptions="Center" HorizontalOptions="Center">
+    <Grid x:Name="LoginGrid" VerticalOptions="Center" HorizontalOptions="Center">
 
         <!-- Login Card with modern styling -->
         <Border StrokeShape="RoundRectangle 20"
