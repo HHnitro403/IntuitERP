@@ -189,16 +189,13 @@ namespace IntuitERP
                 {
                     // User not found or invalid credentials
                    throw new Exception("Usuario ou Senha Invalidos.");
-                    return false;
+                    
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Login Failed", ex.Message, "OK");
-                return false;
+                throw;              
             }
         }
-
-        // The method containing this code needs to be async
     }
 }

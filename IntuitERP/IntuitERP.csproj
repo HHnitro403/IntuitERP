@@ -40,7 +40,15 @@
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 		<MauiFont Include="Resources\Fonts\*" />
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-		<MauiAsset Include="Views\Reports\PDFs\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidResource Remove="Views\**" />
+	  <Compile Remove="Views\**" />
+	  <EmbeddedResource Remove="Views\**" />
+	  <MauiCss Remove="Views\**" />
+	  <MauiXaml Remove="Views\**" />
+	  <None Remove="Views\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -69,85 +77,6 @@
 		<MauiAsset Include="Config\ConfigsDB.db">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</MauiAsset>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Update="Views\Reports\ReportsPage.xaml.cs">
-			<DependentUpon>ReportsPage.xaml</DependentUpon>
-		</Compile>
-		<Compile Update="Views\Search\CompraSearch.xaml.cs">
-			<DependentUpon>CompraSearch.xaml</DependentUpon>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-		<MauiXaml Update="Views\CadastrodeCidade.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\CadastrodeCliente.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\CadastrodeCompra.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\CadastrodeFornecedor.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\CadastrodeUsuario.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\CadastrodeVenda.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\CadastrodeVendedor.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\CadastroProduto.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\CadstroEstoque.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\MaenuPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\MenuPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Modals\ModalPicker.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Reports\PdfViewerPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Reports\ReportsPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Search\ClienteSearch.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Search\CompraSearch.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Search\FornecedorSearch.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Search\ProdutoSearch.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Search\UsuarioSearch.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Search\VendaSearch.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\Search\VendedorSearch.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Views\Reports\PDFs\" />
 	</ItemGroup>
 
 	<ItemGroup>
