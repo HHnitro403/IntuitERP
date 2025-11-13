@@ -274,6 +274,57 @@ namespace IntuitERP.Services
             return $"Você não tem permissão para {action}. Entre em contato com o administrador do sistema.";
         }
 
+        /// <summary>
+        /// Checks if user has administrative privileges (all permissions)
+        /// User management requires admin privileges
+        /// </summary>
+        public bool IsAdministrator()
+        {
+            if (!_userContext.IsAuthenticated || _userContext.CurrentUser == null)
+            {
+                return false;
+            }
+
+            var user = _userContext.CurrentUser;
+
+            // Check if user has all major permissions
+            return user.PermissaoProdutosCreate > 0 &&
+                   user.PermissaoProdutosRead > 0 &&
+                   user.PermissaoProdutosUpdate > 0 &&
+                   user.PermissaoProdutosDelete > 0 &&
+                   user.PermissaoVendasCreate > 0 &&
+                   user.PermissaoVendasRead > 0 &&
+                   user.PermissaoVendasUpdate > 0 &&
+                   user.PermissaoVendasDelete > 0 &&
+                   user.PermissaoClientesCreate > 0 &&
+                   user.PermissaoClientesRead > 0 &&
+                   user.PermissaoClientesUpdate > 0 &&
+                   user.PermissaoClientesDelete > 0 &&
+                   user.PermissaoFornecedoresCreate > 0 &&
+                   user.PermissaoFornecedoresRead > 0 &&
+                   user.PermissaoFornecedoresUpdate > 0 &&
+                   user.PermissaoFornecedoresDelete > 0 &&
+                   user.PermissaoVendedoresCreate > 0 &&
+                   user.PermissaoVendedoresRead > 0 &&
+                   user.PermissaoVendedoresUpdate > 0 &&
+                   user.PermissaoVendedoresDelete > 0 &&
+                   user.PermissaoRelatoriosGenerate > 0;
+        }
+
+        /// <summary>
+        /// Requires user to be an administrator
+        /// </summary>
+        /// <exception cref="UnauthorizedAccessException">When user is not an administrator</exception>
+        public void RequireAdministrator()
+        {
+            RequireAuthentication();
+
+            if (!IsAdministrator())
+            {
+                throw new UnauthorizedAccessException("Esta operação requer privilégios de administrador. Apenas administradores podem gerenciar usuários do sistema.");
+            }
+        }
+
         #endregion
     }
 }

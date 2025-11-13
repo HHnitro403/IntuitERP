@@ -11,11 +11,17 @@ namespace IntuitERP.Viwes;
 
 public partial class MaenuPage : ContentPage
 {
+    private readonly PermissionService _permissionService;
+    private readonly UserContext _userContext;
     public ObservableCollection<VendaSearch.VendaDisplayModel> RecentOrders { get; set; }
+
     public MaenuPage()
     {
-
         InitializeComponent();
+
+        _permissionService = new PermissionService();
+        _userContext = UserContext.Instance;
+
         // Initialize the collection
         RecentOrders = new ObservableCollection<VendaSearch.VendaDisplayModel>();
 
@@ -88,10 +94,10 @@ public partial class MaenuPage : ContentPage
                     Status = "Pendente",
                     NomeCliente = venda.CodCliente > 0 && clientesDict.ContainsKey(venda.CodCliente)
                                   ? clientesDict[venda.CodCliente]
-                                  : "Cliente não encontrado",
+                                  : "Cliente nï¿½o encontrado",
                     NomeVendedor = venda.CodVendedor.HasValue && vendedoresDict.ContainsKey(venda.CodVendedor.Value)
                                    ? vendedoresDict[venda.CodVendedor.Value]
-                                   : "Vendedor não encontrado"
+                                   : "Vendedor nï¿½o encontrado"
                 });
             }
         }
@@ -183,6 +189,15 @@ public partial class MaenuPage : ContentPage
     // Navigation methods for Cadastros
     private async void OnProdutosClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadProduct())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar produtos"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -217,6 +232,15 @@ public partial class MaenuPage : ContentPage
 
     private async void OnClientesClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadClient())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar clientes"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -234,6 +258,15 @@ public partial class MaenuPage : ContentPage
 
     private async void OnFornecedoresClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadSupplier())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar fornecedores"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -251,6 +284,16 @@ public partial class MaenuPage : ContentPage
 
     private async void OnUsuariosClicked(object sender, EventArgs e)
     {
+        // User management requires administrator privileges
+        if (!_permissionService.IsAdministrator())
+        {
+            await DisplayAlert("Acesso Negado",
+                "Apenas administradores podem gerenciar usuÃ¡rios do sistema. " +
+                "Entre em contato com um administrador para alteraÃ§Ãµes de usuÃ¡rios e permissÃµes.",
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -261,12 +304,21 @@ public partial class MaenuPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Falha ao abrir cadastro de usuários: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Falha ao abrir cadastro de usuï¿½rios: {ex.Message}", "OK");
         }
     }
 
     private async void OnVendedoresClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadSeller())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar vendedores"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -281,9 +333,18 @@ public partial class MaenuPage : ContentPage
         }
     }
 
-    // Navigation methods for Operações
+    // Navigation methods for Operaï¿½ï¿½es
     private async void OnComprasClicked(object sender, EventArgs e)
     {
+        // Note: Purchase permissions use Supplier permissions as purchases are from suppliers
+        if (!_permissionService.CanReadSupplier())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar compras"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -305,6 +366,15 @@ public partial class MaenuPage : ContentPage
 
     private async void OnVendasClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadSale())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar vendas"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -345,6 +415,15 @@ public partial class MaenuPage : ContentPage
 
     private async void GeraRelatButton_Clicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanGenerateReports())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("gerar relatÃ³rios"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -355,7 +434,7 @@ public partial class MaenuPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Falha ao gerar relatório: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Falha ao gerar relatï¿½rio: {ex.Message}", "OK");
         }
     }
 
