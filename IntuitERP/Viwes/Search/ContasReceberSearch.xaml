@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:IntuitERP.models"
+             x:Class="IntuitERP.Viwes.Search.ContasReceberSearch"
+             Shell.NavBarIsVisible="False"
+             Title="Contas a Receber">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="PrimaryDarkBlue">#1B4F83</Color>
+            <Color x:Key="PrimaryMidBlue">#55A2D3</Color>
+            <Color x:Key="PrimaryLightBlue">#84B8DB</Color>
+            <Color x:Key="White">#FFFFFF</Color>
+            <Color x:Key="SuccessColor">#34A853</Color>
+            <Color x:Key="WarningColor">#FF9800</Color>
+            <Color x:Key="WarningTextColor">#212529</Color>
+            <Color x:Key="ErrorColor">#D32F2F</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
+            <Color x:Key="PendingColor">#6C757D</Color>
+            <Color x:Key="PartialColor">#FFA500</Color>
+
+            <Style x:Key="ActionButton" TargetType="Button">
+                <Setter Property="TextColor" Value="{StaticResource White}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="HeightRequest" Value="45" />
+                <Setter Property="Padding" Value="15,0" />
+            </Style>
+
+            <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+            </Style>
+            <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+                <Setter Property="TextColor" Value="{StaticResource WarningTextColor}" />
+            </Style>
+            <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *" RowSpacing="10">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label Text="Contas a Receber"
+                   FontSize="24"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+        </Grid>
+
+        <!-- Dashboard Cards -->
+        <Grid Grid.Row="1" Padding="10" ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+            <!-- Pendente Card -->
+            <Frame Grid.Column="0" BackgroundColor="{StaticResource PendingColor}" CornerRadius="10" Padding="10" HasShadow="True">
+                <StackLayout>
+                    <Label Text="{Binding TotalPendente, StringFormat='R$ {0:N2}'}"
+                           FontSize="18" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="Pendente" FontSize="12" TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding CountPendente, StringFormat='{0} contas'}"
+                           FontSize="10" TextColor="White" HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Vencido Card -->
+            <Frame Grid.Column="1" BackgroundColor="{StaticResource ErrorColor}" CornerRadius="10" Padding="10" HasShadow="True">
+                <StackLayout>
+                    <Label Text="{Binding TotalVencido, StringFormat='R$ {0:N2}'}"
+                           FontSize="18" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="Vencido" FontSize="12" TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding CountVencido, StringFormat='{0} contas'}"
+                           FontSize="10" TextColor="White" HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Parcial Card -->
+            <Frame Grid.Column="2" BackgroundColor="{StaticResource PartialColor}" CornerRadius="10" Padding="10" HasShadow="True">
+                <StackLayout>
+                    <Label Text="{Binding TotalParcial, StringFormat='R$ {0:N2}'}"
+                           FontSize="18" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="Parcial" FontSize="12" TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding CountParcial, StringFormat='{0} contas'}"
+                           FontSize="10" TextColor="White" HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Pago Card -->
+            <Frame Grid.Column="3" BackgroundColor="{StaticResource SuccessColor}" CornerRadius="10" Padding="10" HasShadow="True">
+                <StackLayout>
+                    <Label Text="{Binding TotalPago, StringFormat='R$ {0:N2}'}"
+                           FontSize="18" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="Pago" FontSize="12" TextColor="White" HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding CountPago, StringFormat='{0} contas'}"
+                           FontSize="10" TextColor="White" HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </Frame>
+        </Grid>
+
+        <!-- Search and Actions -->
+        <Grid Padding="10" Grid.Row="2" RowDefinitions="Auto,Auto" ColumnSpacing="10">
+            <SearchBar x:Name="ContasSearchBar"
+                       Grid.Row="0"
+                       Placeholder="Buscar por cliente, venda ou valor..."
+                       TextChanged="ContasSearchBar_TextChanged" />
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" ColumnSpacing="8" Margin="0,10,0,0">
+                <Button x:Name="NovaContaButton"
+                        Grid.Column="0"
+                        Text="Nova Conta"
+                        Clicked="NovaContaButton_Clicked"
+                        Style="{StaticResource SuccessButton}" />
+
+                <Button x:Name="VerParcelasButton"
+                        Grid.Column="1"
+                        Text="Ver Parcelas"
+                        Clicked="VerParcelasButton_Clicked"
+                        IsEnabled="False"
+                        Style="{StaticResource WarningButton}" />
+
+                <Button x:Name="EditarContaButton"
+                        Grid.Column="2"
+                        Text="Editar"
+                        Clicked="EditarContaButton_Clicked"
+                        IsEnabled="False"
+                        Style="{StaticResource WarningButton}" />
+
+                <Button x:Name="ExcluirContaButton"
+                        Grid.Column="3"
+                        Text="Excluir"
+                        Clicked="ExcluirContaButton_Clicked"
+                        IsEnabled="False"
+                        Style="{StaticResource DangerButton}" />
+            </Grid>
+        </Grid>
+
+        <!-- Contas List -->
+        <CollectionView x:Name="ContasCollectionView"
+                        Grid.Row="3"
+                        Margin="10,0"
+                        SelectionMode="Single"
+                        SelectionChanged="ContasCollectionView_SelectionChanged"
+                        EmptyView="Nenhuma conta a receber encontrada.">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal" />
+                    <VisualState Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryLightBlue}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="12" Margin="0,0,0,8" CornerRadius="8" BorderColor="LightGray" HasShadow="True">
+                        <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="8">
+                            <!-- Row 0: ID and Date -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*,*">
+                                <Label Grid.Column="0" FontAttributes="Bold" FontSize="16"
+                                       Text="{Binding Id, StringFormat='Conta #{0}'}" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding DataEmissao, StringFormat='{0:dd/MM/yyyy}'}"
+                                       FontSize="12" HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                            </Grid>
+
+                            <!-- Row 1: Client and Sale -->
+                            <Grid Grid.Row="1" ColumnDefinitions="2*,*">
+                                <Label Grid.Column="0" Text="{Binding ClienteNome, StringFormat='Cliente: {0}'}" FontSize="13"/>
+                                <Label Grid.Column="1" Text="{Binding CodVenda, StringFormat='Venda #{0}'}" FontSize="11" HorizontalTextAlignment="End" TextColor="Gray"/>
+                            </Grid>
+
+                            <!-- Row 2: Values -->
+                            <Grid Grid.Row="2" ColumnDefinitions="*,*,*">
+                                <StackLayout Grid.Column="0">
+                                    <Label Text="Total:" FontSize="10" TextColor="Gray"/>
+                                    <Label Text="{Binding ValorTotal, StringFormat='R$ {0:N2}'}" FontSize="13" FontAttributes="Bold"/>
+                                </StackLayout>
+                                <StackLayout Grid.Column="1">
+                                    <Label Text="Pago:" FontSize="10" TextColor="Gray"/>
+                                    <Label Text="{Binding ValorPago, StringFormat='R$ {0:N2}'}" FontSize="13" TextColor="{StaticResource SuccessColor}"/>
+                                </StackLayout>
+                                <StackLayout Grid.Column="2">
+                                    <Label Text="Pendente:" FontSize="10" TextColor="Gray"/>
+                                    <Label Text="{Binding ValorPendente, StringFormat='R$ {0:N2}'}" FontSize="13" TextColor="{StaticResource ErrorColor}"/>
+                                </StackLayout>
+                            </Grid>
+
+                            <!-- Row 3: Installments and Status -->
+                            <Grid Grid.Row="3" ColumnDefinitions="*,*">
+                                <Label Grid.Column="0" Text="{Binding NumParcelas, StringFormat='{0}x parcelas'}" FontSize="12" TextColor="Gray"/>
+                                <Label Grid.Column="1" HorizontalTextAlignment="End" FontSize="13" FontAttributes="Bold">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding Status}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>
