@@ -9,7 +9,9 @@ namespace DBconfigurator
     public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
         private readonly DatabaseService _databaseService;
+        private readonly AdminCredentialsService _adminCredentialsService;
         private bool _isLoggedIn = false;
+        private string _loggedInUsername;
         private string _server;
         private string _dataBase;
         private string _user;
@@ -26,6 +28,7 @@ namespace DBconfigurator
         {
             InitializeComponent();
             _databaseService = databaseService;
+            _adminCredentialsService = new AdminCredentialsService();
             BindingContext = this;
             // Hide the main content until the user is logged in
             this.Content.IsVisible = false;
@@ -68,14 +71,29 @@ namespace DBconfigurator
                     return;
                 }
 
-                // --- IMPORTANT: This is for demonstration only. ---
-                // In a real-world application, you should use a secure method
-                // for credential validation (e.g., hashing, authentication service).
-                if (enteredUser == "BbAdmin" && enteredPassword == "masterkey")
+                // Validate credentials using secure hashing
+                // DEFAULT CREDENTIALS: username: "admin", password: "ChangeMe123!"
+                // IMPORTANT: Change the default password on first run!
+                if (_adminCredentialsService.ValidateCredentials(enteredUser, enteredPassword))
                 {
                     _isLoggedIn = true;
+                    _loggedInUsername = enteredUser;
                     this.Content.IsVisible = true; // Show the main UI
                     await LoadConfigurations();
+
+                    // Check if using default password and warn user
+                    if (_adminCredentialsService.IsDefaultPassword(enteredUser))
+                    {
+                        bool changePassword = await DisplayAlert(
+                            "Security Warning",
+                            "You are using the default password. For security reasons, you should change it immediately. Would you like to change it now?",
+                            "Yes", "Later");
+
+                        if (changePassword)
+                        {
+                            await PromptPasswordChange(enteredUser);
+                        }
+                    }
                 }
                 else
                 {
@@ -93,6 +111,38 @@ namespace DBconfigurator
         {
             await DisplayAlert("Login Required", "Access denied. The application will close.", "OK");
             Application.Current.Quit();
+        }
+
+        private async Task PromptPasswordChange(string username)
+        {
+            string oldPassword = await DisplayPromptAsync("Change Password", "Enter current password:", "OK", "Cancel", placeholder: "Current Password");
+            if (string.IsNullOrWhiteSpace(oldPassword))
+            {
+                return;
+            }
+
+            string newPassword = await DisplayPromptAsync("Change Password", "Enter new password (min 8 characters):", "OK", "Cancel", placeholder: "New Password");
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 8)
+            {
+                await DisplayAlert("Error", "New password must be at least 8 characters long.", "OK");
+                return;
+            }
+
+            string confirmPassword = await DisplayPromptAsync("Change Password", "Confirm new password:", "OK", "Cancel", placeholder: "Confirm Password");
+            if (newPassword != confirmPassword)
+            {
+                await DisplayAlert("Error", "Passwords do not match.", "OK");
+                return;
+            }
+
+            if (_adminCredentialsService.ChangePassword(username, oldPassword, newPassword))
+            {
+                await DisplayAlert("Success", "Password changed successfully.", "OK");
+            }
+            else
+            {
+                await DisplayAlert("Error", "Failed to change password. Please check your current password.", "OK");
+            }
         }
 
         private async Task LoadConfigurations()

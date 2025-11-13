@@ -10,6 +10,7 @@ public partial class CadastroProduto : ContentPage
 {
     private readonly ProdutoService _produtoService;
     private readonly FornecedorService _fornecedorService;
+    private readonly PermissionService _permissionService;
     private ObservableCollection<FornecedorModel> _listaFornecedores;
     private readonly int _id;
     private int _CodFornecedor = 0; // Store the selected supplier code
@@ -20,6 +21,7 @@ public partial class CadastroProduto : ContentPage
         InitializeComponent();
         _produtoService = produtoService;
         _fornecedorService = fornecedorService;
+        _permissionService = new PermissionService();
 
         _listaFornecedores = new ObservableCollection<FornecedorModel>();
 
@@ -34,10 +36,32 @@ public partial class CadastroProduto : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        // Check if user has read permission
+        if (!_permissionService.CanReadProduct())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("visualizar produtos"),
+                "OK");
+            await Navigation.PopAsync();
+            return;
+        }
+
         await LoadFornecedoresAsync();
         HeaderLabel.Text = this.Title;
+
+        // Control visibility of Save button based on permissions
         if (_id != 0)
         {
+            // Editing existing product - need update permission
+            SalvarProdutoButton.IsVisible = _permissionService.CanUpdateProduct();
+            if (!SalvarProdutoButton.IsVisible)
+            {
+                await DisplayAlert("Modo Somente Leitura",
+                    "VocÃª nÃ£o tem permissÃ£o para editar produtos. A visualizaÃ§Ã£o Ã© somente leitura.",
+                    "OK");
+            }
+
             var produto = await _produtoService.GetByIdAsync(_id);
             if (produto != null)
             {
@@ -52,8 +76,39 @@ public partial class CadastroProduto : ContentPage
                 PrecoUnitarioEntry.Text = produto.PrecoUnitario.ToString();
                 DataCadastroPicker.Date = (DateTime)produto.DataCadastro;
                 AtivoSwitch.IsToggled = (bool)produto.Ativo;
+
+                // Disable form controls if no update permission
+                if (!_permissionService.CanUpdateProduct())
+                {
+                    DisableFormControls();
+                }
             }
         }
+        else
+        {
+            // Creating new product - need create permission
+            SalvarProdutoButton.IsVisible = _permissionService.CanCreateProduct();
+            if (!SalvarProdutoButton.IsVisible)
+            {
+                await DisplayAlert("Acesso Negado",
+                    _permissionService.GetPermissionDeniedMessage("criar produtos"),
+                    "OK");
+                await Navigation.PopAsync();
+                return;
+            }
+        }
+    }
+
+    private void DisableFormControls()
+    {
+        DescricaoProdutoEntry.IsEnabled = false;
+        CategoriaEntry.IsEnabled = false;
+        PrecoUnitarioEntry.IsEnabled = false;
+        SelectFornecedorButton.IsEnabled = false;
+        EstoqueMinimoEntry.IsEnabled = false;
+        TipoProdutoEntry.IsEnabled = false;
+        DataCadastroPicker.IsEnabled = false;
+        AtivoSwitch.IsEnabled = false;
     }
 
     private async Task LoadFornecedoresAsync()
@@ -72,13 +127,13 @@ public partial class CadastroProduto : ContentPage
             }
             else
             {
-                await DisplayAlert("Atenção", "Nenhum fornecedor encontrado para carregar no seletor. Cadastre fornecedores primeiro.", "OK");
+                await DisplayAlert("Atenï¿½ï¿½o", "Nenhum fornecedor encontrado para carregar no seletor. Cadastre fornecedores primeiro.", "OK");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading suppliers: {ex.Message}");
-            await DisplayAlert("Erro", "Não foi possível carregar a lista de fornecedores.", "OK");
+            await DisplayAlert("Erro", "Nï¿½o foi possï¿½vel carregar a lista de fornecedores.", "OK");
         }
     }
 
@@ -98,17 +153,37 @@ public partial class CadastroProduto : ContentPage
 
     private async void SalvarProdutoButton_Clicked(object sender, EventArgs e)
     {
+        // Check permissions before saving
+        try
+        {
+            if (_id != 0)
+            {
+                // Updating existing product
+                _permissionService.RequireProductUpdate();
+            }
+            else
+            {
+                // Creating new product
+                _permissionService.RequireProductCreate();
+            }
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            await DisplayAlert("Acesso Negado", ex.Message, "OK");
+            return;
+        }
+
         // --- Basic Validation ---
         if (string.IsNullOrWhiteSpace(DescricaoProdutoEntry.Text))
         {
-            await DisplayAlert("Campo Obrigatório", "Por favor, preencha a Descrição do Produto.", "OK");
+            await DisplayAlert("Campo Obrigatï¿½rio", "Por favor, preencha a Descriï¿½ï¿½o do Produto.", "OK");
             DescricaoProdutoEntry.Focus();
             return;
         }
 
         if (string.IsNullOrWhiteSpace(CategoriaEntry.Text))
         {
-            await DisplayAlert("Campo Obrigatório", "Por favor, preencha a Categoria.", "OK");
+            await DisplayAlert("Campo Obrigatï¿½rio", "Por favor, preencha a Categoria.", "OK");
             CategoriaEntry.Focus();
             return;
         }
@@ -120,7 +195,7 @@ public partial class CadastroProduto : ContentPage
             // Attempt to parse with InvariantCulture as a fallback if CurrentCulture fails (e.g. for '.')
             if (!decimal.TryParse(PrecoUnitarioEntry.Text, NumberStyles.Currency, CultureInfo.InvariantCulture, out preco) || preco <= 0)
             {
-                await DisplayAlert("Preço Inválido", "Por favor, insira um Preço Unitário válido e maior que zero.", "OK");
+                await DisplayAlert("Preï¿½o Invï¿½lido", "Por favor, insira um Preï¿½o Unitï¿½rio vï¿½lido e maior que zero.", "OK");
                 PrecoUnitarioEntry.Focus();
                 return;
             }
@@ -128,7 +203,7 @@ public partial class CadastroProduto : ContentPage
 
         if (FornecedorDisplayField.Text == string.Empty)
         {
-            await DisplayAlert("Campo Obrigatório", "Por favor, selecione o Fornecedor Principal.", "OK");
+            await DisplayAlert("Campo Obrigatï¿½rio", "Por favor, selecione o Fornecedor Principal.", "OK");
             SelectFornecedorButton.Focus();
             return;
         }
@@ -136,14 +211,14 @@ public partial class CadastroProduto : ContentPage
         if (string.IsNullOrWhiteSpace(EstoqueMinimoEntry.Text) ||
             !int.TryParse(EstoqueMinimoEntry.Text, out int estMinimo) || estMinimo < 0)
         {
-            await DisplayAlert("Estoque Mínimo Inválido", "Por favor, insira um Estoque Mínimo válido (número inteiro não negativo).", "OK");
+            await DisplayAlert("Estoque Mï¿½nimo Invï¿½lido", "Por favor, insira um Estoque Mï¿½nimo vï¿½lido (nï¿½mero inteiro nï¿½o negativo).", "OK");
             EstoqueMinimoEntry.Focus();
             return;
         }
 
         if (string.IsNullOrWhiteSpace(TipoProdutoEntry.Text))
         {
-            await DisplayAlert("Campo Obrigatório", "Por favor, preencha o Tipo do Produto.", "OK");
+            await DisplayAlert("Campo Obrigatï¿½rio", "Por favor, preencha o Tipo do Produto.", "OK");
             TipoProdutoEntry.Focus();
             return;
         }
@@ -188,7 +263,7 @@ public partial class CadastroProduto : ContentPage
             }
             else
             {
-                await DisplayAlert("Erro", "Não foi possível cadastrar o produto. Verifique os dados e tente novamente.", "OK");
+                await DisplayAlert("Erro", "Nï¿½o foi possï¿½vel cadastrar o produto. Verifique os dados e tente novamente.", "OK");
             }
         }
         catch (Exception ex)
@@ -200,7 +275,7 @@ public partial class CadastroProduto : ContentPage
 
     private async void CancelarButton_Clicked(object sender, EventArgs e)
     {
-        bool confirm = await DisplayAlert("Cancelar Cadastro", "Tem certeza que deseja cancelar o cadastro? Todas as informações não salvas serão perdidas.", "Sim", "Não");
+        bool confirm = await DisplayAlert("Cancelar Cadastro", "Tem certeza que deseja cancelar o cadastro? Todas as informaï¿½ï¿½es nï¿½o salvas serï¿½o perdidas.", "Sim", "Nï¿½o");
         if (confirm)
         {
             ClearForm();
