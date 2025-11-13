@@ -77,10 +77,10 @@ public partial class CompraSearch : ContentPage
                     Status = GetStatusCompraString(compra.status_compra), // CORRECTED LOGIC
                     NomeFornecedor = compra.CodFornec.HasValue && fornecedoresDict.ContainsKey(compra.CodFornec.Value)
                                      ? fornecedoresDict[compra.CodFornec.Value]
-                                     : "Fornecedor não encontrado",
+                                     : "Fornecedor nï¿½o encontrado",
                     NomeVendedor = compra.CodVendedor.HasValue && vendedoresDict.ContainsKey(compra.CodVendedor.Value)
                                    ? vendedoresDict[compra.CodVendedor.Value]
-                                   : "Vendedor não encontrado"
+                                   : "Vendedor nï¿½o encontrado"
                 });
             }
 
@@ -89,7 +89,7 @@ public partial class CompraSearch : ContentPage
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading purchases: {ex.ToString()}");
-            await DisplayAlert("Erro", $"Não foi possível carregar a lista de compras: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel carregar a lista de compras: {ex.Message}", "OK");
         }
     }
 
@@ -105,7 +105,7 @@ public partial class CompraSearch : ContentPage
             {
                 case 0: return "Em Processamento";
                 case 1: return "Pendente";
-                case 2: return "Concluída";
+                case 2: return "Concluï¿½da";
                 case 3: return "Cancelada";
                 default: return "Desconhecido";
             }
@@ -116,7 +116,7 @@ public partial class CompraSearch : ContentPage
         {
             case "Pendente": return "Pendente";
             case "Em Processamento": return "Em Processamento";
-            case "Concluída": return "Concluída";
+            case "Concluï¿½da": return "Concluï¿½da";
             case "Cancelada": return "Cancelada";
             default: return statusValue.ToString(); // Show the raw value if it's an unknown string
         }
@@ -167,12 +167,12 @@ public partial class CompraSearch : ContentPage
     private void UpdateActionButtonsState()
     {
         bool isSelected = _compraSelecionada != null;
-        bool canEdit = isSelected && _compraSelecionada.Status != "Concluída" && _compraSelecionada.Status != "Cancelada";
+        bool canEdit = isSelected && _compraSelecionada.Status != "Concluï¿½da" && _compraSelecionada.Status != "Cancelada";
         bool canDelete = isSelected;
 
         if (!canEdit && isSelected)
         {
-            DisplayAlert("Atenção", "Compra: " + _compraSelecionada.CodCompra + " Ja faturada, Não é possivel editar", "OK");
+            DisplayAlert("Atenï¿½ï¿½o", "Compra: " + _compraSelecionada.CodCompra + " Ja faturada, Nï¿½o ï¿½ possivel editar", "OK");
         }
         else
         {
@@ -200,6 +200,8 @@ public partial class CompraSearch : ContentPage
             IDbConnection newPageConnection = configurator.GetMySqlConnection();
             if (newPageConnection.State == ConnectionState.Closed) newPageConnection.Open();
 
+            var connectionFactory = new MySqlConnectionFactory();
+            var transactionService = new TransactionService(connectionFactory);
             var compraService = new CompraService(newPageConnection);
             var itemCompraService = new ItemCompraService(newPageConnection);
             var fornecedorService = new FornecedorService(newPageConnection);
@@ -207,11 +209,11 @@ public partial class CompraSearch : ContentPage
             var produtoService = new ProdutoService(newPageConnection);
             var estoqueService = new EstoqueService(newPageConnection);
 
-            await Navigation.PushAsync(new CadastrodeCompra(compraService, itemCompraService, fornecedorService, vendedorService, produtoService, estoqueService, null));
+            await Navigation.PushAsync(new CadastrodeCompra(compraService, itemCompraService, fornecedorService, vendedorService, produtoService, estoqueService, transactionService, null));
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível abrir a tela de nova compra: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel abrir a tela de nova compra: {ex.Message}", "OK");
         }
     }
 
@@ -229,6 +231,8 @@ public partial class CompraSearch : ContentPage
             IDbConnection editPageConnection = configurator.GetMySqlConnection();
             if (editPageConnection.State == ConnectionState.Closed) editPageConnection.Open();
 
+            var connectionFactory = new MySqlConnectionFactory();
+            var transactionService = new TransactionService(connectionFactory);
             var compraService = new CompraService(editPageConnection);
             var itemCompraService = new ItemCompraService(editPageConnection);
             var fornecedorService = new FornecedorService(editPageConnection);
@@ -236,11 +240,11 @@ public partial class CompraSearch : ContentPage
             var produtoService = new ProdutoService(editPageConnection);
             var estoqueService = new EstoqueService(editPageConnection);
 
-            await Navigation.PushAsync(new CadastrodeCompra(compraService, itemCompraService, fornecedorService, vendedorService, produtoService, estoqueService, _compraSelecionada.CodCompra));
+            await Navigation.PushAsync(new CadastrodeCompra(compraService, itemCompraService, fornecedorService, vendedorService, produtoService, estoqueService, transactionService, _compraSelecionada.CodCompra));
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível abrir a tela de edição: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel abrir a tela de ediï¿½ï¿½o: {ex.Message}", "OK");
         }
     }
 
@@ -252,9 +256,9 @@ public partial class CompraSearch : ContentPage
             return;
         }
 
-        bool confirm = await DisplayAlert("Confirmar Exclusão",
-            $"ATENÇÃO: Esta ação é PERMANENTE e não pode ser desfeita. Se a compra foi 'Concluída', o estoque NÃO será revertido automaticamente.\n\nDeseja excluir a compra Cód: {_compraSelecionada.CodCompra}?",
-            "Sim, Excluir Permanentemente", "Não");
+        bool confirm = await DisplayAlert("Confirmar Exclusï¿½o",
+            $"ATENï¿½ï¿½O: Esta aï¿½ï¿½o ï¿½ PERMANENTE e nï¿½o pode ser desfeita. Se a compra foi 'Concluï¿½da', o estoque Nï¿½O serï¿½ revertido automaticamente.\n\nDeseja excluir a compra Cï¿½d: {_compraSelecionada.CodCompra}?",
+            "Sim, Excluir Permanentemente", "Nï¿½o");
 
         if (confirm)
         {
@@ -265,12 +269,12 @@ public partial class CompraSearch : ContentPage
 
                 if (rowsAffected > 0)
                 {
-                    await DisplayAlert("Sucesso", "Compra e seus itens foram excluídos permanentemente.", "OK");
+                    await DisplayAlert("Sucesso", "Compra e seus itens foram excluï¿½dos permanentemente.", "OK");
                     await LoadComprasAsync();
                 }
                 else
                 {
-                    await DisplayAlert("Erro", "Não foi possível excluir o registro principal da compra (os itens podem ter sido excluídos).", "OK");
+                    await DisplayAlert("Erro", "Nï¿½o foi possï¿½vel excluir o registro principal da compra (os itens podem ter sido excluï¿½dos).", "OK");
                 }
             }
             catch (Exception ex)

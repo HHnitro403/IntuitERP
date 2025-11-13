@@ -73,12 +73,12 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 {
     // Services
     private readonly VendaService _vendaService;
-
     private readonly ItemVendaService _itemVendaService;
     private readonly ClienteService _clienteService;
     private readonly VendedorService _vendedorService;
     private readonly ProdutoService _produtoService;
     private readonly EstoqueService _estoqueService;
+    private readonly TransactionService _transactionService;
 
     // Data collections
     private ObservableCollection<ClienteModel> _listaClientes;
@@ -114,7 +114,8 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
     public CadastrodeVenda(
         VendaService vendaService, ItemVendaService itemVendaService, ClienteService clienteService,
-        VendedorService vendedorService, ProdutoService produtoService, EstoqueService estoqueService, int? vendaId = null)
+        VendedorService vendedorService, ProdutoService produtoService, EstoqueService estoqueService,
+        TransactionService transactionService, int? vendaId = null)
     {
         InitializeComponent();
 
@@ -124,6 +125,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         _vendedorService = vendedorService;
         _produtoService = produtoService;
         _estoqueService = estoqueService;
+        _transactionService = transactionService;
 
         _listaClientes = new ObservableCollection<ClienteModel>();
         _listaVendedores = new ObservableCollection<VendedorModel>();
@@ -133,14 +135,14 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
         _statusVendaList = new ObservableCollection<StatusVendaItem>
         {
-            new StatusVendaItem { DisplayName = "Orçamento", Value = 0 },
+            new StatusVendaItem { DisplayName = "Orï¿½amento", Value = 0 },
             new StatusVendaItem { DisplayName = "Pendente", Value = 1 },
             new StatusVendaItem { DisplayName = "Faturada", Value = 2 },
             new StatusVendaItem { DisplayName = "Cancelada", Value = 3 }
         };
         StatusVendaPicker.ItemsSource = _statusVendaList;
         StatusVendaPicker.ItemDisplayBinding = new Binding("DisplayName");
-        FormaPagamentoPicker.ItemsSource = new List<string> { "Dinheiro", "Cartão de Crédito", "Cartão de Débito", "PIX", "Boleto Bancário" };
+        FormaPagamentoPicker.ItemsSource = new List<string> { "Dinheiro", "Cartï¿½o de Crï¿½dito", "Cartï¿½o de Dï¿½bito", "PIX", "Boleto Bancï¿½rio" };
 
         DataVendaPicker.Date = DateTime.Today;
         HoraVendaPicker.Time = DateTime.Now.TimeOfDay;
@@ -148,7 +150,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
         if (_vendaId.HasValue && _vendaId > 0)
         {
-            this.Title = $"Editar Venda Cód: {_vendaId}";
+            this.Title = $"Editar Venda Cï¿½d: {_vendaId}";
             HeaderLabel.Text = $"Editar Venda #{_vendaId}";
         }
 
@@ -178,7 +180,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         try
         {
             var venda = await _vendaService.GetByIdAsync(vendaId);
-            if (venda == null) { await DisplayAlert("Erro", "Venda não encontrada.", "OK"); await Navigation.PopAsync(); return; }
+            if (venda == null) { await DisplayAlert("Erro", "Venda nï¿½o encontrada.", "OK"); await Navigation.PopAsync(); return; }
 
             if (venda.data_venda.HasValue) DataVendaPicker.Date = venda.data_venda.Value;
             if (venda.hora_venda.HasValue) HoraVendaPicker.Time = venda.hora_venda.Value;
@@ -203,17 +205,12 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
                 }
             }
 
-            if (venda.status_venda == 2 || venda.status_venda == 3)
-            {
-                DetailsFrame.IsEnabled = false;
-                AddItemFrame.IsEnabled = false;
-                ItensSectionFrame.IsEnabled = false;
-                SalvarVendaButton.IsEnabled = false;
-            }
+            // Allow editing of all sales - stock reversion is handled automatically
+            // Users can re-open or cancel invoiced sales, and stock will be restored properly
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro ao Carregar", $"Não foi possível carregar os dados da venda: {ex.Message}", "OK");
+            await DisplayAlert("Erro ao Carregar", $"Nï¿½o foi possï¿½vel carregar os dados da venda: {ex.Message}", "OK");
         }
     }
 
@@ -235,15 +232,15 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro de Dados", $"Não foi possível carregar listas: {ex.Message}", "OK");
+            await DisplayAlert("Erro de Dados", $"Nï¿½o foi possï¿½vel carregar listas: {ex.Message}", "OK");
         }
     }
 
     private void ConfirmarAdicionarItemButton_Clicked(object sender, EventArgs e)
     {
         var selectedProduto = _produtoSelecionadoParaAdicionar;
-        if (selectedProduto == null) { DisplayAlert("Produto Inválido", "Por favor, selecione um produto.", "OK"); return; }
-        if (!int.TryParse(QuantidadeParaAdicionarEntry.Text, out int quantidade) || quantidade <= 0) { DisplayAlert("Quantidade Inválida", "A quantidade deve ser um número inteiro maior que zero.", "OK"); return; }
+        if (selectedProduto == null) { DisplayAlert("Produto Invï¿½lido", "Por favor, selecione um produto.", "OK"); return; }
+        if (!int.TryParse(QuantidadeParaAdicionarEntry.Text, out int quantidade) || quantidade <= 0) { DisplayAlert("Quantidade Invï¿½lida", "A quantidade deve ser um nï¿½mero inteiro maior que zero.", "OK"); return; }
         decimal.TryParse(DescontoParaAdicionarEntry.Text, out decimal desconto);
 
         var newItemModel = new ItemVendaModel
@@ -284,21 +281,10 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
     {
         // Validation logic...
         if (ClienteDisplayEntry.Text == string.Empty || VendedorDisplayEntry.Text == string.Empty || FormaPagamentoPicker.SelectedItem == null || StatusVendaPicker.SelectedItem == null)
-        { await DisplayAlert("Campos Obrigatórios", "Cliente, Vendedor, Forma de Pagamento e Status são obrigatórios.", "OK"); return; }
-        if (!ItensVenda.Any()) { await DisplayAlert("Itens da Venda", "Adicione pelo menos um item à venda.", "OK"); return; }
+        { await DisplayAlert("Campos ObrigatÃ³rios", "Cliente, Vendedor, Forma de Pagamento e Status sÃ£o obrigatÃ³rios.", "OK"); return; }
+        if (!ItensVenda.Any()) { await DisplayAlert("Itens da Venda", "Adicione pelo menos um item Ã  venda.", "OK"); return; }
 
         var selectedStatus = (StatusVendaItem)StatusVendaPicker.SelectedItem;
-        foreach (var displayItem in ItensVenda)
-        {
-            if (selectedStatus.Value == 2)
-            {
-                var produtoAtual = await _produtoService.GetByIdAsync(displayItem.Item.CodProduto.Value);
-                if (produtoAtual == null || produtoAtual.SaldoEst < displayItem.Item.quantidade)
-                {
-                    await DisplayAlert("Estoque Insuficiente", $"Estoque para '{displayItem.Item.Descricao}' insuficiente.", "OK"); return;
-                }
-            }
-        }
 
         decimal.TryParse(DescontoVendaEntry.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal descontoGeralParsed);
 
@@ -318,37 +304,97 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
         try
         {
-            int vendaIdParaItens;
-            if (vendaModel.CodVenda > 0) // UPDATE
+            // Use transaction to ensure all-or-nothing behavior
+            await _transactionService.ExecuteInTransactionAsync(async (conn, trans) =>
             {
-                await _vendaService.UpdateAsync(vendaModel);
-                vendaIdParaItens = vendaModel.CodVenda;
-                await _itemVendaService.DeleteByVendaAsync(vendaIdParaItens);
-            }
-            else // INSERT
-            {
-                vendaIdParaItens = await _vendaService.InsertAsync(vendaModel);
-                if (vendaIdParaItens <= 0) { await DisplayAlert("Erro", "Falha ao criar o registro da venda.", "OK"); return; }
-            }
+                byte oldStatus = 0; // Default for new sales
+                List<ItemVendaModel> oldItems = new List<ItemVendaModel>();
 
-            foreach (var displayItem in ItensVenda)
-            {
-                displayItem.Item.CodVenda = vendaIdParaItens;
-                await _itemVendaService.InsertAsync(displayItem.Item);
+                int vendaIdParaItens;
 
-                if (selectedStatus.Value == 2) // Faturada
+                if (vendaModel.CodVenda > 0) // UPDATE
                 {
-                    await _estoqueService.InsertAsync(new EstoqueModel { CodProduto = displayItem.Item.CodProduto.Value, Tipo = 'S', Qtd = displayItem.Item.quantidade, Data = vendaModel.data_venda.Value });
-                    await _produtoService.AtualizarEstoqueAsync(displayItem.Item.CodProduto.Value, (int)(-1 * displayItem.Item.quantidade.Value));
-                }
-            }
+                    // Get old sale state to detect status changes
+                    var oldVenda = await _vendaService.GetByIdAsync(vendaModel.CodVenda);
+                    if (oldVenda != null)
+                    {
+                        oldStatus = oldVenda.status_venda;
+                        oldItems = (await _itemVendaService.GetByVendaAsync(vendaModel.CodVenda)).ToList();
+                    }
 
-            if (selectedStatus.Value == 2)
-            {
-                await _vendaService.AtualizarClienteUltimaCompraAsync(_clienteId);
-                await _vendedorService.IncrementVendasAsync(_vendedorId);
-                await _vendedorService.IncrementVendasFinalizadasAsync(_vendedorId);
-            }
+                    // CRITICAL FIX #1: Restore stock if changing FROM Faturada (2) TO anything else
+                    if (oldStatus == 2 && selectedStatus.Value != 2)
+                    {
+                        foreach (var oldItem in oldItems)
+                        {
+                            // Restore stock (reverse the exit)
+                            await _estoqueService.InsertAsync(new EstoqueModel
+                            {
+                                CodProduto = oldItem.CodProduto.Value,
+                                Tipo = 'E',  // Entry to reverse the exit
+                                Qtd = oldItem.quantidade,
+                                Data = DateTime.Now
+                            });
+                            await _produtoService.AtualizarEstoqueAsync(oldItem.CodProduto.Value, (int)oldItem.quantidade.Value);
+                        }
+                    }
+
+                    await _vendaService.UpdateAsync(vendaModel);
+                    vendaIdParaItens = vendaModel.CodVenda;
+                    await _itemVendaService.DeleteByVendaAsync(vendaIdParaItens);
+                }
+                else // INSERT
+                {
+                    vendaIdParaItens = await _vendaService.InsertAsync(vendaModel);
+                    if (vendaIdParaItens <= 0)
+                        throw new Exception("Falha ao criar o registro da venda.");
+                }
+
+                // CRITICAL FIX #2: Only deduct stock if NEW status is Faturada AND old was NOT
+                bool shouldDeductStock = (selectedStatus.Value == 2) && (oldStatus != 2);
+
+                // Validate stock BEFORE deducting (if needed)
+                if (shouldDeductStock)
+                {
+                    foreach (var displayItem in ItensVenda)
+                    {
+                        var produtoAtual = await _produtoService.GetByIdAsync(displayItem.Item.CodProduto.Value);
+                        if (produtoAtual == null || produtoAtual.SaldoEst < displayItem.Item.quantidade)
+                        {
+                            throw new Exception($"Estoque insuficiente para '{displayItem.Item.Descricao}'. DisponÃ­vel: {produtoAtual?.SaldoEst ?? 0}");
+                        }
+                    }
+                }
+
+                // Insert new items
+                foreach (var displayItem in ItensVenda)
+                {
+                    displayItem.Item.CodVenda = vendaIdParaItens;
+                    await _itemVendaService.InsertAsync(displayItem.Item);
+
+                    if (shouldDeductStock)
+                    {
+                        await _estoqueService.InsertAsync(new EstoqueModel
+                        {
+                            CodProduto = displayItem.Item.CodProduto.Value,
+                            Tipo = 'S',  // Exit
+                            Qtd = displayItem.Item.quantidade,
+                            Data = vendaModel.data_venda.Value
+                        });
+                        await _produtoService.AtualizarEstoqueAsync(displayItem.Item.CodProduto.Value, (int)(-1 * displayItem.Item.quantidade.Value));
+                    }
+                }
+
+                // Update statistics only if newly invoiced
+                if (shouldDeductStock)
+                {
+                    await _vendaService.AtualizarClienteUltimaCompraAsync(_clienteId);
+                    await _vendedorService.IncrementVendasAsync(_vendedorId);
+                    await _vendedorService.IncrementVendasFinalizadasAsync(_vendedorId);
+                }
+
+                return vendaIdParaItens;
+            });
 
             await DisplayAlert("Sucesso", "Venda salva com sucesso!", "OK");
             await Navigation.PopAsync();
@@ -361,7 +407,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
 
     private async void CancelarButton_Clicked(object sender, EventArgs e)
     {
-        if (await DisplayAlert("Cancelar", "Tem certeza? Informações não salvas serão perdidas.", "Sim", "Não") && StatusVendaPicker.SelectedIndex != 2 && StatusVendaPicker.SelectedIndex != 3)
+        if (await DisplayAlert("Cancelar", "Tem certeza? Informaï¿½ï¿½es nï¿½o salvas serï¿½o perdidas.", "Sim", "Nï¿½o") && StatusVendaPicker.SelectedIndex != 2 && StatusVendaPicker.SelectedIndex != 3)
         {
             await Navigation.PopAsync();
         }
@@ -380,7 +426,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível carregar clientes: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel carregar clientes: {ex.Message}", "OK");
         }
     }
 
@@ -397,7 +443,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível carregar vendedores: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel carregar vendedores: {ex.Message}", "OK");
         }
     }
 
@@ -414,7 +460,7 @@ public partial class CadastrodeVenda : ContentPage, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível carregar produtos: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel carregar produtos: {ex.Message}", "OK");
         }
     }
 }
