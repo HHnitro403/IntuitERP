@@ -35,6 +35,16 @@ public static class MauiProgram
         builder.Services.AddSingleton<PasswordHashingService>();
         builder.Services.AddSingleton<PermissionService>();
 
+        // Settings Services (Singleton for caching and session management)
+        builder.Services.AddSingleton<SystemSettingsService>(sp =>
+            new SystemSettingsService(sp.GetRequiredService<IDbConnectionFactory>().CreateConnection()));
+        builder.Services.AddSingleton<UserSettingsService>(sp =>
+            new UserSettingsService(sp.GetRequiredService<IDbConnectionFactory>().CreateConnection()));
+        builder.Services.AddSingleton<SessionTimeoutService>(sp =>
+            new SessionTimeoutService(
+                sp.GetRequiredService<SystemSettingsService>(),
+                UserContext.Instance));
+
         // Data Services (Transient - new instance per request for proper connection management)
         builder.Services.AddTransient<UsuarioService>(sp =>
             new UsuarioService(sp.GetRequiredService<IDbConnectionFactory>().CreateConnection()));

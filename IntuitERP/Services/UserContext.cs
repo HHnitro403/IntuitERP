@@ -12,6 +12,7 @@ namespace IntuitERP.Services
         private static readonly object _lock = new object();
 
         private UsuarioModel? _currentUser;
+        private DateTime _lastActivity = DateTime.Now;
 
         /// <summary>
         /// Gets the singleton instance of UserContext
@@ -146,6 +147,23 @@ namespace IntuitERP.Services
             {
                 throw new UnauthorizedAccessException($"User does not have permission: {permissionProperty}");
             }
+        }
+
+        /// <summary>
+        /// Records user activity for session timeout tracking
+        /// </summary>
+        public void RecordActivity()
+        {
+            _lastActivity = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Gets the time since last user activity
+        /// </summary>
+        /// <returns>TimeSpan representing idle time</returns>
+        public TimeSpan GetIdleTime()
+        {
+            return DateTime.Now - _lastActivity;
         }
     }
 }
