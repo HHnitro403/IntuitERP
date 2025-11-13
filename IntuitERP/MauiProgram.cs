@@ -69,6 +69,24 @@ public static class MauiProgram
         builder.Services.AddTransient<ItemCompraService>(sp =>
             new ItemCompraService(sp.GetRequiredService<IDbConnectionFactory>().CreateConnection()));
 
+        // Financial Services (Contas a Pagar e Contas a Receber)
+        builder.Services.AddTransient<ContaReceberService>(sp =>
+            new ContaReceberService(sp.GetRequiredService<IDbConnectionFactory>().CreateConnection()));
+        builder.Services.AddTransient<ParcelaReceberService>(sp =>
+        {
+            var connection = sp.GetRequiredService<IDbConnectionFactory>().CreateConnection();
+            var contaService = new ContaReceberService(connection);
+            return new ParcelaReceberService(connection, contaService);
+        });
+        builder.Services.AddTransient<ContaPagarService>(sp =>
+            new ContaPagarService(sp.GetRequiredService<IDbConnectionFactory>().CreateConnection()));
+        builder.Services.AddTransient<ParcelaPagarService>(sp =>
+        {
+            var connection = sp.GetRequiredService<IDbConnectionFactory>().CreateConnection();
+            var contaService = new ContaPagarService(connection);
+            return new ParcelaPagarService(connection, contaService);
+        });
+
         // Report Services
         builder.Services.AddTransient<ReportsPage>();
         builder.Services.AddTransient<ReportsService>();
