@@ -402,14 +402,14 @@ public partial class MaenuPage : ContentPage
         {
             var configurator = new Configurator();
             IDbConnection connection = configurator.GetMySqlConnection();
-            var estoqueService = new EstoqueService(connection); // Assuming EstoqueService exists
+            var estoqueService = new EstoqueService(connection);
             var produtosService = new ProdutoService(connection);
-            var cadastroEstoquePage = new CadstroEstoque(estoqueService, produtosService); // Assuming CadstroEstoque constructor takes EstoqueService
-            await Navigation.PushAsync(cadastroEstoquePage);
+            var estoqueSearchPage = new IntuitERP.Viwes.Search.EstoqueSearch(estoqueService, produtosService);
+            await Navigation.PushAsync(estoqueSearchPage);
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Falha ao abrir cadastro de estoque: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Falha ao abrir histórico de estoque: {ex.Message}", "OK");
         }
     }
 
