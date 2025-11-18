@@ -169,6 +169,7 @@ public partial class CompraSearch : ContentPage
         bool isSelected = _compraSelecionada != null;
         bool canEdit = isSelected && _compraSelecionada.Status != "Conclu�da" && _compraSelecionada.Status != "Cancelada";
         bool canDelete = isSelected;
+        bool canGerarConta = isSelected && _compraSelecionada.Status == "Concluída";
 
         if (!canEdit && isSelected)
         {
@@ -179,6 +180,8 @@ public partial class CompraSearch : ContentPage
             EditarCompraButton.IsEnabled = canEdit;
             ExcluirCompraButton.IsEnabled = canDelete;
         }
+
+        GerarContaPagarButton.IsEnabled = canGerarConta;
     }
 
     private void ComprasCollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -281,6 +284,55 @@ public partial class CompraSearch : ContentPage
             {
                 await DisplayAlert("Erro", $"Ocorreu um erro ao excluir a compra: {ex.Message}", "OK");
             }
+        }
+    }
+
+    private async void GerarContaPagarButton_Clicked(object sender, EventArgs e)
+    {
+        if (_compraSelecionada == null)
+        {
+            await DisplayAlert("Aviso", "Selecione uma compra para gerar a conta a pagar", "OK");
+            return;
+        }
+
+        if (_compraSelecionada.Status != "Concluída")
+        {
+            await DisplayAlert("Aviso", "Apenas compras concluídas podem gerar contas a pagar.", "OK");
+            return;
+        }
+
+        try
+        {
+            var connectionFactory = new MySqlConnectionFactory();
+            var connection = connectionFactory.CreateConnection();
+            var contaPagarService = new ContaPagarService(connection);
+
+            // Check if conta already exists for this compra
+            var contaExistente = await contaPagarService.GetByCompraAsync(_compraSelecionada.CodCompra);
+            if (contaExistente != null)
+            {
+                await DisplayAlert("Aviso",
+                    $"Já existe uma conta a pagar para esta compra (Conta #{contaExistente.Id})",
+                    "OK");
+                return;
+            }
+
+            // Get full compra object
+            var compra = await _compraService.GetByIdAsync(_compraSelecionada.CodCompra);
+
+            // Navigate to CadastroContaPagar
+            var parcelaPagarService = new ParcelaPagarService(connection, contaPagarService);
+
+            await Navigation.PushAsync(new CadastroContaPagar(
+                contaPagarService,
+                parcelaPagarService,
+                _compraService,
+                compra,
+                null));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Erro ao gerar conta a pagar: {ex.Message}", "OK");
         }
     }
 }

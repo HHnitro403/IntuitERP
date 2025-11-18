@@ -126,6 +126,15 @@
                         </VerticalStackLayout>
                     </Border>
 
+                    <!-- Financial Management -->
+                    <Border Padding="15" StrokeShape="RoundRectangle 8" Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Financeiro" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}" />
+                            <Button Text="Contas a Receber" Clicked="OnContasReceberClicked" Style="{StaticResource ModernMenuButton}" />
+                            <Button Text="Contas a Pagar" Clicked="OnContasPagarClicked" Style="{StaticResource ModernMenuButton}" />
+                        </VerticalStackLayout>
+                    </Border>
+
                     <!-- Stock Management -->
                     <Border Padding="15" StrokeShape="RoundRectangle 8" Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}">
                         <VerticalStackLayout Spacing="10">

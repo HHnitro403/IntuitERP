@@ -395,6 +395,56 @@ public partial class MaenuPage : ContentPage
         }
     }
 
+    // Navigation method for Contas a Receber
+    private async void OnContasReceberClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var connectionFactory = new MySqlConnectionFactory();
+            var connection = connectionFactory.CreateConnection();
+            var contaReceberService = new ContaReceberService(connection);
+            var parcelaReceberService = new ParcelaReceberService(connection, contaReceberService);
+            var vendaService = new VendaService(connection);
+            var settingsService = new SystemSettingsService(connection);
+
+            var contasReceberPage = new ContasReceberSearch(
+                contaReceberService,
+                parcelaReceberService,
+                vendaService,
+                settingsService);
+            await Navigation.PushAsync(contasReceberPage);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Falha ao abrir Contas a Receber: {ex.Message}", "OK");
+        }
+    }
+
+    // Navigation method for Contas a Pagar
+    private async void OnContasPagarClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var connectionFactory = new MySqlConnectionFactory();
+            var connection = connectionFactory.CreateConnection();
+            var contaPagarService = new ContaPagarService(connection);
+            var parcelaPagarService = new ParcelaPagarService(connection, contaPagarService);
+            var compraService = new CompraService(connection);
+            var settingsService = new SystemSettingsService(connection);
+
+            var contasPagarPage = new ContasPagarSearch(
+                contaPagarService,
+                parcelaPagarService,
+                compraService,
+                settingsService);
+            await Navigation.PushAsync(contasPagarPage);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Falha ao abrir Contas a Pagar: {ex.Message}", "OK");
+        }
+    }
+
     // Navigation method for Estoque
     private async void OnEstoqueClicked(object sender, EventArgs e)
     {

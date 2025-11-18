@@ -67,32 +67,41 @@
                        Placeholder="Buscar cliente por nome, email ou CPF..."
                        TextChanged="CompraSearchBar_TextChanged" />
 
-            <Grid Grid.Row="1"  ColumnDefinitions="*,*,*" ColumnSpacing="10">
+            <Grid Grid.Row="1"  ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
 
-                <Button x:Name="NovaCompraButton" 
+                <Button x:Name="NovaCompraButton"
                         Grid.Column="0"
-                        Text="Novo" 
+                        Text="Novo"
                         TextColor="White"
                         FontAttributes="Bold"
                         BackgroundColor="Green"
                         Clicked="NovaCompraButton_Clicked" />
 
-                <Button x:Name="EditarCompraButton" 
+                <Button x:Name="EditarCompraButton"
                         Grid.Column="1"
-                        Text="Editar" 
+                        Text="Editar"
                         TextColor="White"
                         FontAttributes="Bold"
                         BackgroundColor="Yellow"
-                        Clicked="EditarCompraSelecionadaButton_Clicked" 
+                        Clicked="EditarCompraSelecionadaButton_Clicked"
                         IsEnabled="False" />
 
-                <Button x:Name="ExcluirCompraButton" 
+                <Button x:Name="GerarContaPagarButton"
                         Grid.Column="2"
-                        Text="Excluir" 
+                        Text="Gerar Conta"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="#6F42C1"
+                        Clicked="GerarContaPagarButton_Clicked"
+                        IsEnabled="False" />
+
+                <Button x:Name="ExcluirCompraButton"
+                        Grid.Column="3"
+                        Text="Excluir"
                         TextColor="White"
                         FontAttributes="Bold"
                         BackgroundColor="Red"
-                        Clicked="ExcluirCompraSelecionadaButton_Clicked" 
+                        Clicked="ExcluirCompraSelecionadaButton_Clicked"
                         IsEnabled="False" />
             </Grid>
         </Grid>

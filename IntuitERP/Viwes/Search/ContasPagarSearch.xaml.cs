@@ -6,16 +6,16 @@ using System.Runtime.CompilerServices;
 
 namespace IntuitERP.Viwes.Search;
 
-public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
+public partial class ContasPagarSearch : ContentPage, INotifyPropertyChanged
 {
-    private readonly ContaReceberService _contaService;
-    private readonly ParcelaReceberService _parcelaService;
-    private readonly VendaService _vendaService;
+    private readonly ContaPagarService _contaService;
+    private readonly ParcelaPagarService _parcelaService;
+    private readonly CompraService _compraService;
     private readonly SystemSettingsService _settingsService;
 
-    public ObservableCollection<ContaReceberModel> _listaContas { get; set; }
-    private List<ContaReceberModel> _masterListaContas;
-    private ContaReceberModel _contaSelecionada;
+    public ObservableCollection<ContaPagarModel> _listaContas { get; set; }
+    private List<ContaPagarModel> _masterListaContas;
+    private ContaPagarModel _contaSelecionada;
 
     // Dashboard properties
     private decimal _totalPendente;
@@ -75,10 +75,10 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
         set { _countPago = value; OnPropertyChanged(); }
     }
 
-    public ContasReceberSearch(
-        ContaReceberService contaService,
-        ParcelaReceberService parcelaService,
-        VendaService vendaService,
+    public ContasPagarSearch(
+        ContaPagarService contaService,
+        ParcelaPagarService parcelaService,
+        CompraService compraService,
         SystemSettingsService settingsService)
     {
         InitializeComponent();
@@ -86,11 +86,11 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
 
         _contaService = contaService ?? throw new ArgumentNullException(nameof(contaService));
         _parcelaService = parcelaService ?? throw new ArgumentNullException(nameof(parcelaService));
-        _vendaService = vendaService ?? throw new ArgumentNullException(nameof(vendaService));
+        _compraService = compraService ?? throw new ArgumentNullException(nameof(compraService));
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
 
-        _listaContas = new ObservableCollection<ContaReceberModel>();
-        _masterListaContas = new List<ContaReceberModel>();
+        _listaContas = new ObservableCollection<ContaPagarModel>();
+        _masterListaContas = new List<ContaPagarModel>();
         ContasCollectionView.ItemsSource = _listaContas;
     }
 
@@ -127,7 +127,7 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
         }
     }
 
-    private async Task UpdateDashboardAsync(List<ContaReceberModel> contas)
+    private async Task UpdateDashboardAsync(List<ContaPagarModel> contas)
     {
         try
         {
@@ -166,8 +166,8 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
             // Filter
             _listaContas.Clear();
             var filtered = _masterListaContas.Where(c =>
-                (c.ClienteNome?.ToLower().Contains(searchText) ?? false) ||
-                c.CodVenda.ToString().Contains(searchText) ||
+                (c.FornecedorNome?.ToLower().Contains(searchText) ?? false) ||
+                c.CodCompra.ToString().Contains(searchText) ||
                 c.ValorTotal.ToString().Contains(searchText) ||
                 c.Id.ToString().Contains(searchText)
             );
@@ -181,7 +181,7 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
 
     private void ContasCollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        _contaSelecionada = e.CurrentSelection.FirstOrDefault() as ContaReceberModel;
+        _contaSelecionada = e.CurrentSelection.FirstOrDefault() as ContaPagarModel;
         UpdateActionButtonsState();
     }
 
@@ -198,7 +198,7 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
         try
         {
             await DisplayAlert("Aviso",
-                "Para criar uma conta a receber, acesse a tela de Vendas e use o botão 'Gerar Conta a Receber' em uma venda faturada.",
+                "Para criar uma conta a pagar, acesse a tela de Compras e use o botão 'Gerar Conta a Pagar' em uma compra concluída.",
                 "OK");
         }
         catch (Exception ex)
@@ -221,15 +221,10 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
                 return;
             }
 
-            // Navigate to VerParcelasConta page
-            var verParcelasPage = new VerParcelasConta(
-                _contaService,
-                _parcelaService,
-                _settingsService,
-                _vendaService,
-                _contaSelecionada);
-
-            await Navigation.PushAsync(verParcelasPage);
+            // Navigate to VerParcelasConta page (will be created separately for Pagar)
+            await DisplayAlert("Em Desenvolvimento",
+                "A visualização detalhada de parcelas a pagar está em desenvolvimento.",
+                "OK");
         }
         catch (Exception ex)
         {
@@ -243,8 +238,10 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
 
         try
         {
-            var page = new CadastroContaReceber(_contaService, _parcelaService, _vendaService, null, _contaSelecionada);
-            await Navigation.PushAsync(page);
+            // Will be implemented with CadastroContaPagar
+            await DisplayAlert("Em Desenvolvimento",
+                "A edição de contas a pagar está em desenvolvimento.",
+                "OK");
         }
         catch (Exception ex)
         {
@@ -261,7 +258,7 @@ public partial class ContasReceberSearch : ContentPage, INotifyPropertyChanged
             bool confirm = await DisplayAlert(
                 "Confirmar Exclusão",
                 $"Deseja realmente excluir a conta #{_contaSelecionada.Id}?\n" +
-                $"Cliente: {_contaSelecionada.ClienteNome}\n" +
+                $"Fornecedor: {_contaSelecionada.FornecedorNome}\n" +
                 $"Valor: R$ {_contaSelecionada.ValorTotal:N2}",
                 "Sim", "Não");
 

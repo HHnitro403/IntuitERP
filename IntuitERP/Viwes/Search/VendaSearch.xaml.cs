@@ -154,16 +154,11 @@ public partial class VendaSearch : ContentPage
         // You may want to prevent editing/deleting of already Faturada/Cancelada sales
         bool canEdit = isSelected && _vendaSelecionada.Status != "Faturada" && _vendaSelecionada.Status != "Cancelada";
         bool canDelete = isSelected; // Or add similar logic for deletion
+        bool canGerarConta = isSelected && _vendaSelecionada.Status == "Faturada";
 
-        if (isSelected && !canEdit)
-        {
-            DisplayAlert("Aten��o", "Esta venda est� faturada ou cancelada e n�o pode ser editada.", "Ok");
-        }
-        else
-        {
-            EditarVendaButton.IsEnabled = canEdit;
-            ExcluirVendaButton.IsEnabled = canDelete; // Enable the ExcluirVe
-        }
+        EditarVendaButton.IsEnabled = canEdit;
+        ExcluirVendaButton.IsEnabled = canDelete;
+        GerarContaReceberButton.IsEnabled = canGerarConta;
     }
 
     private void VendasCollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -271,6 +266,63 @@ public partial class VendaSearch : ContentPage
             {
                 await DisplayAlert("Erro", $"Ocorreu um erro ao excluir a venda: {ex.Message}", "OK");
             }
+        }
+    }
+
+    private async void GerarContaReceberButton_Clicked(object sender, EventArgs e)
+    {
+        if (_vendaSelecionada == null)
+        {
+            await DisplayAlert("Aviso", "Selecione uma venda para gerar a conta a receber.", "OK");
+            return;
+        }
+
+        if (_vendaSelecionada.Status != "Faturada")
+        {
+            await DisplayAlert("Aviso", "Apenas vendas faturadas podem gerar contas a receber.", "OK");
+            return;
+        }
+
+        try
+        {
+            // Create services
+            var connectionFactory = new MySqlConnectionFactory();
+            var connection = connectionFactory.CreateConnection();
+
+            var contaReceberService = new ContaReceberService(connection);
+
+            // Check if conta already exists
+            var contaExistente = await contaReceberService.GetByVendaAsync(_vendaSelecionada.CodVenda);
+            if (contaExistente != null)
+            {
+                await DisplayAlert("Aviso",
+                    $"Já existe uma conta a receber para esta venda (Conta #{contaExistente.Id})",
+                    "OK");
+                return;
+            }
+
+            // Get venda details
+            var venda = await _vendaService.GetByIdAsync(_vendaSelecionada.CodVenda);
+            if (venda == null)
+            {
+                await DisplayAlert("Erro", "Venda não encontrada.", "OK");
+                return;
+            }
+
+            // Navigate to cadastro page
+            var parcelaReceberService = new ParcelaReceberService(connection, contaReceberService);
+            var vendaService = new VendaService(connection);
+
+            await Navigation.PushAsync(new CadastroContaReceber(
+                contaReceberService,
+                parcelaReceberService,
+                vendaService,
+                venda,
+                null));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Erro ao gerar conta a receber: {ex.Message}", "OK");
         }
     }
 }
