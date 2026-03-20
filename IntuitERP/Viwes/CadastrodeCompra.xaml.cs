@@ -54,12 +54,12 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 {
     // Services
     private readonly CompraService _compraService;
-
     private readonly ItemCompraService _itemCompraService;
     private readonly FornecedorService _fornecedorService;
     private readonly VendedorService _vendedorService;
     private readonly ProdutoService _produtoService;
     private readonly EstoqueService _estoqueService;
+    private readonly TransactionService _transactionService;
 
     // Data collections
     private ObservableCollection<FornecedorModel> _listaFornecedores;
@@ -89,7 +89,8 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
     public CadastrodeCompra(
         CompraService compraService, ItemCompraService itemCompraService, FornecedorService fornecedorService,
-        VendedorService vendedorService, ProdutoService produtoService, EstoqueService estoqueService, int? compraId = null)
+        VendedorService vendedorService, ProdutoService produtoService, EstoqueService estoqueService,
+        TransactionService transactionService, int? compraId = null)
     {
         InitializeComponent();
 
@@ -99,6 +100,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         _vendedorService = vendedorService;
         _produtoService = produtoService;
         _estoqueService = estoqueService;
+        _transactionService = transactionService;
 
         _listaFornecedores = new ObservableCollection<FornecedorModel>();
         _listaVendedores = new ObservableCollection<VendedorModel>();
@@ -111,12 +113,12 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         {
             new StatusCompraItem { DisplayName = "Em Processamento", Value = 0 },
             new StatusCompraItem { DisplayName = "Pendente", Value = 1 },
-            new StatusCompraItem { DisplayName = "Concluída", Value = 2 },
+            new StatusCompraItem { DisplayName = "Concluï¿½da", Value = 2 },
             new StatusCompraItem { DisplayName = "Cancelada", Value = 3 }
         };
         StatusCompraPicker.ItemsSource = _statusCompraList;
         StatusCompraPicker.ItemDisplayBinding = new Binding("DisplayName");
-        FormaPagamentoPicker.ItemsSource = new List<string> { "Dinheiro", "Cartão de Crédito", "Cartão de Débito", "PIX", "Boleto Bancário" };
+        FormaPagamentoPicker.ItemsSource = new List<string> { "Dinheiro", "Cartï¿½o de Crï¿½dito", "Cartï¿½o de Dï¿½bito", "PIX", "Boleto Bancï¿½rio" };
 
         DataCompraPicker.Date = DateTime.Today;
         HoraCompraPicker.Time = DateTime.Now.TimeOfDay;
@@ -124,7 +126,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
         if (_compraId.HasValue && _compraId > 0)
         {
-            this.Title = $"Editar Compra Cód: {_compraId}";
+            this.Title = $"Editar Compra Cï¿½d: {_compraId}";
             HeaderLabel.Text = $"Editar Compra #{_compraId}";
         }
 
@@ -146,7 +148,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
     private async Task LoadCompraAsync(int compraId)
     {
         var compra = await _compraService.GetByIdAsync(compraId);
-        if (compra == null) { await DisplayAlert("Erro", "Compra não encontrada.", "OK"); await Navigation.PopAsync(); return; }
+        if (compra == null) { await DisplayAlert("Erro", "Compra nï¿½o encontrada.", "OK"); await Navigation.PopAsync(); return; }
 
         if (compra.data_compra.HasValue) DataCompraPicker.Date = compra.data_compra.Value;
         if (compra.hora_compra.HasValue) HoraCompraPicker.Time = compra.hora_compra.Value;
@@ -167,14 +169,8 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
             ItensCompra.Add(new CompraItemDisplay(item));
         }
 
-        if (compra.status_compra == 2)
-        {
-            SalvarCompraButton.IsEnabled = false;
-            DetalhesdaCompraFrame.IsEnabled = false;
-            ItemFrame.IsEnabled = false;
-            ItensSectionFrame.IsEnabled = false;
-            SalvarCompraButton.IsEnabled = false;
-        }
+        // Allow editing of all purchases - stock reversion is handled automatically
+        // Users can re-open or cancel completed purchases, and stock will be restored properly
     }
 
     private async Task LoadInitialDataAsync()
@@ -195,8 +191,8 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
     private void ConfirmarAdicionarItemButton_Clicked(object sender, EventArgs e)
     {
         var selectedProduto = _produtoSelecionadoParaAdicionar;
-        if (selectedProduto == null) { DisplayAlert("Produto Inválido", "Selecione um produto.", "OK"); return; }
-        if (!int.TryParse(QuantidadeParaAdicionarEntry.Text, out int quantidade) || quantidade <= 0) { DisplayAlert("Quantidade Inválida", "A quantidade deve ser > 0.", "OK"); return; }
+        if (selectedProduto == null) { DisplayAlert("Produto Invï¿½lido", "Selecione um produto.", "OK"); return; }
+        if (!int.TryParse(QuantidadeParaAdicionarEntry.Text, out int quantidade) || quantidade <= 0) { DisplayAlert("Quantidade Invï¿½lida", "A quantidade deve ser > 0.", "OK"); return; }
         decimal.TryParse(DescontoParaAdicionarEntry.Text, out decimal desconto);
 
         ItensCompra.Add(new CompraItemDisplay(new ItemCompraModel
@@ -238,60 +234,105 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
     private async Task SalvarFaturarVenda(int statusVenda)
     {
         if (FornecedorDisplayEntry.Text == string.Empty || VendedorDisplayEntry.Text == string.Empty || FormaPagamentoPicker.SelectedItem == null || StatusCompraPicker.SelectedItem == null)
-        { await DisplayAlert("Campos Obrigatórios", "Fornecedor, Vendedor, Forma de Pagamento e Status são obrigatórios.", "OK"); return; }
-        if (!ItensCompra.Any()) { await DisplayAlert("Itens da Compra", "Adicione pelo menos um item à compra.", "OK"); return; }
+        { await DisplayAlert("Campos Obrigatï¿½rios", "Fornecedor, Vendedor, Forma de Pagamento e Status sï¿½o obrigatï¿½rios.", "OK"); return; }
+        if (!ItensCompra.Any()) { await DisplayAlert("Itens da Compra", "Adicione pelo menos um item ï¿½ compra.", "OK"); return; }
 
         var selectedStatus = (StatusCompraItem)StatusCompraPicker.SelectedItem;
 
         decimal.TryParse(DescontoCompraEntry.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal descontoGeralParsed);
 
+        var compraModel = new CompraModel
+        {
+            CodCompra = _compraId ?? 0,
+            data_compra = DataCompraPicker.Date,
+            hora_compra = HoraCompraPicker.Time,
+            CodFornec = _fornecedorId,
+            CodVendedor = _vendedorId,
+            Desconto = descontoGeralParsed,
+            OBS = ObservacoesEditor.Text?.Trim(),
+            forma_pagamento = FormaPagamentoPicker.SelectedItem.ToString(),
+            status_compra = selectedStatus.Value,
+            valor_total = decimal.Parse(ValorTotalCompraLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture)
+        };
+
         try
         {
-            var compraModel = new CompraModel
+            // Use transaction to ensure all-or-nothing behavior
+            await _transactionService.ExecuteInTransactionAsync(async (conn, trans) =>
             {
-                CodCompra = _compraId ?? 0,
-                data_compra = DataCompraPicker.Date,
-                hora_compra = HoraCompraPicker.Time,
-                CodFornec = _fornecedorId,
-                CodVendedor = _vendedorId,
-                Desconto = descontoGeralParsed,
-                OBS = ObservacoesEditor.Text?.Trim(),
-                forma_pagamento = FormaPagamentoPicker.SelectedItem.ToString(),
-                status_compra = selectedStatus.Value, // Correctly assigns the byte value
-                valor_total = decimal.Parse(ValorTotalCompraLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture)
-            };
+                byte oldStatus = 0; // Default for new purchases
+                List<ItemCompraModel> oldItems = new List<ItemCompraModel>();
 
-            int compraIdParaItens;
-            if (compraModel.CodCompra > 0) // UPDATE
-            {
-                await _compraService.UpdateAsync(compraModel);
-                compraIdParaItens = compraModel.CodCompra;
-                await _itemCompraService.DeleteByCompraAsync(compraIdParaItens);
-            }
-            else // INSERT
-            {
-                compraIdParaItens = await _compraService.InsertAsync(compraModel);
-                if (compraIdParaItens <= 0) { await DisplayAlert("Erro", "Falha ao criar o registro da compra.", "OK"); return; }
-            }
+                int compraIdParaItens;
 
-            foreach (var displayItem in ItensCompra)
-            {
-                displayItem.Item.CodCompra = compraIdParaItens;
-                await _itemCompraService.InsertAsync(displayItem.Item);
-
-                // CORRECTED: Comparison is now byte to byte
-                if (compraModel.status_compra == 2) // 2 = Concluída
+                if (compraModel.CodCompra > 0) // UPDATE
                 {
-                    await _estoqueService.InsertAsync(new EstoqueModel { CodProduto = displayItem.Item.CodProduto.Value, Tipo = 'E', Qtd = displayItem.Item.quantidade, Data = compraModel.data_compra.Value });
-                    await _produtoService.AtualizarEstoqueAsync(displayItem.Item.CodProduto.Value, (int)(displayItem.Item.quantidade ?? 0));
-                }
-            }
+                    // Get old purchase state to detect status changes
+                    var oldCompra = await _compraService.GetByIdAsync(compraModel.CodCompra);
+                    if (oldCompra != null)
+                    {
+                        oldStatus = oldCompra.status_compra;
+                        oldItems = (await _itemCompraService.GetByCompraAsync(compraModel.CodCompra)).ToList();
+                    }
 
-            // CORRECTED: Comparison is now byte to byte
-            if (compraModel.status_compra == 2) // 2 = Concluída
-            {
-                await _fornecedorService.UpdateUltimaCompraAsync(_fornecedorId);
-            }
+                    // CRITICAL FIX #1: Restore stock if changing FROM ConcluÃ­da (2) TO anything else
+                    if (oldStatus == 2 && selectedStatus.Value != 2)
+                    {
+                        foreach (var oldItem in oldItems)
+                        {
+                            // Restore stock (reverse the entry)
+                            await _estoqueService.InsertAsync(new EstoqueModel
+                            {
+                                CodProduto = oldItem.CodProduto.Value,
+                                Tipo = 'S',  // Exit to reverse the entry
+                                Qtd = oldItem.quantidade,
+                                Data = DateTime.Now
+                            });
+                            await _produtoService.AtualizarEstoqueAsync(oldItem.CodProduto.Value, (int)(-1 * oldItem.quantidade.Value));
+                        }
+                    }
+
+                    await _compraService.UpdateAsync(compraModel);
+                    compraIdParaItens = compraModel.CodCompra;
+                    await _itemCompraService.DeleteByCompraAsync(compraIdParaItens);
+                }
+                else // INSERT
+                {
+                    compraIdParaItens = await _compraService.InsertAsync(compraModel);
+                    if (compraIdParaItens <= 0)
+                        throw new Exception("Falha ao criar o registro da compra.");
+                }
+
+                // CRITICAL FIX #2: Only add stock if NEW status is ConcluÃ­da AND old was NOT
+                bool shouldAddStock = (selectedStatus.Value == 2) && (oldStatus != 2);
+
+                // Insert new items
+                foreach (var displayItem in ItensCompra)
+                {
+                    displayItem.Item.CodCompra = compraIdParaItens;
+                    await _itemCompraService.InsertAsync(displayItem.Item);
+
+                    if (shouldAddStock)
+                    {
+                        await _estoqueService.InsertAsync(new EstoqueModel
+                        {
+                            CodProduto = displayItem.Item.CodProduto.Value,
+                            Tipo = 'E',  // Entry
+                            Qtd = displayItem.Item.quantidade,
+                            Data = compraModel.data_compra.Value
+                        });
+                        await _produtoService.AtualizarEstoqueAsync(displayItem.Item.CodProduto.Value, (int)(displayItem.Item.quantidade ?? 0));
+                    }
+                }
+
+                // Update statistics only if newly completed
+                if (shouldAddStock)
+                {
+                    await _fornecedorService.UpdateUltimaCompraAsync(_fornecedorId);
+                }
+
+                return compraIdParaItens;
+            });
 
             await DisplayAlert("Sucesso", "Compra salva com sucesso!", "OK");
             await Navigation.PopAsync();
@@ -304,7 +345,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
 
     private async void CancelarButton_Clicked(object sender, EventArgs e)
     {
-        if (await DisplayAlert("Cancelar", "Tem certeza? Informações não salvas serão perdidas.", "Sim", "Não"))
+        if (await DisplayAlert("Cancelar", "Tem certeza? Informaï¿½ï¿½es nï¿½o salvas serï¿½o perdidas.", "Sim", "Nï¿½o"))
         {
             await Navigation.PopAsync();
         }
@@ -324,7 +365,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível carregar fornecedores: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel carregar fornecedores: {ex.Message}", "OK");
         }
     }
 
@@ -342,7 +383,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível carregar vendedores: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel carregar vendedores: {ex.Message}", "OK");
         }
     }
 
@@ -360,7 +401,7 @@ public partial class CadastrodeCompra : ContentPage, INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível carregar produtos: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel carregar produtos: {ex.Message}", "OK");
         }
     }
 }

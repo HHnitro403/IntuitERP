@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IntuitERP.Viwes.CadastroContaPagar"
+             Shell.NavBarIsVisible="False"
+             Title="Cadastro de Conta a Pagar">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="PrimaryDarkBlue">#1B4F83</Color>
+            <Color x:Key="SuccessColor">#34A853</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
+            <Color x:Key="White">#FFFFFF</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <StackLayout Padding="15" Spacing="15">
+            <!-- Header -->
+            <Frame BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="15" CornerRadius="8">
+                <Label x:Name="TituloLabel"
+                       Text="Nova Conta a Pagar"
+                       FontSize="20"
+                       TextColor="White"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center" />
+            </Frame>
+
+            <!-- Compra Info -->
+            <Frame Padding="15" CornerRadius="8" BorderColor="LightGray">
+                <StackLayout Spacing="10">
+                    <Label Text="Informações da Compra" FontSize="16" FontAttributes="Bold" />
+
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Compra:" FontAttributes="Bold" />
+                        <Label Grid.Row="0" Grid.Column="1" x:Name="CompraLabel" Text="-" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Fornecedor:" FontAttributes="Bold" />
+                        <Label Grid.Row="1" Grid.Column="1" x:Name="FornecedorLabel" Text="-" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Valor Total:" FontAttributes="Bold" />
+                        <Label Grid.Row="2" Grid.Column="1" x:Name="ValorTotalLabel" Text="-" TextColor="{StaticResource PrimaryDarkBlue}" FontAttributes="Bold" />
+                    </Grid>
+                </StackLayout>
+            </Frame>
+
+            <!-- Parcelamento -->
+            <Frame Padding="15" CornerRadius="8" BorderColor="LightGray">
+                <StackLayout Spacing="12">
+                    <Label Text="Configuração de Parcelas" FontSize="16" FontAttributes="Bold" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" RowSpacing="10">
+                        <StackLayout Grid.Column="0">
+                            <Label Text="Número de Parcelas:" FontSize="13" />
+                            <Picker x:Name="NumParcelasPicker"
+                                    Title="Selecione"
+                                    SelectedIndexChanged="NumParcelasPicker_SelectedIndexChanged">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>1</x:String>
+                                        <x:String>2</x:String>
+                                        <x:String>3</x:String>
+                                        <x:String>4</x:String>
+                                        <x:String>5</x:String>
+                                        <x:String>6</x:String>
+                                        <x:String>10</x:String>
+                                        <x:String>12</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </Picker>
+                        </StackLayout>
+
+                        <StackLayout Grid.Column="1">
+                            <Label Text="Intervalo (dias):" FontSize="13" />
+                            <Entry x:Name="IntervaloDiasEntry"
+                                   Keyboard="Numeric"
+                                   Text="30"
+                                   Placeholder="30" />
+                        </StackLayout>
+                    </Grid>
+
+                    <StackLayout>
+                        <Label Text="Data 1ª Parcela:" FontSize="13" />
+                        <DatePicker x:Name="PrimeiraParcelaDatePicker"
+                                    Format="dd/MM/yyyy" />
+                    </StackLayout>
+
+                    <Button Text="Gerar Parcelas"
+                            Clicked="GerarParcelasButton_Clicked"
+                            BackgroundColor="{StaticResource SuccessColor}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HeightRequest="45" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Parcelas List -->
+            <Frame Padding="15" CornerRadius="8" BorderColor="LightGray">
+                <StackLayout Spacing="10">
+                    <Label Text="Parcelas Geradas" FontSize="16" FontAttributes="Bold" />
+
+                    <CollectionView x:Name="ParcelasCollectionView"
+                                    EmptyView="Nenhuma parcela gerada. Configure e clique em 'Gerar Parcelas'."
+                                    HeightRequest="250">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="10" Margin="0,0,0,5" CornerRadius="5" BorderColor="LightGray">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding NumeroParcela, StringFormat='#{0}'}"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center" />
+                                        <StackLayout Grid.Column="1">
+                                            <Label Text="{Binding DataVencimento, StringFormat='Venc: {0:dd/MM/yyyy}'}"
+                                                   FontSize="12" />
+                                        </StackLayout>
+                                        <Label Grid.Column="2"
+                                               Text="{Binding ValorParcela, StringFormat='R$ {0:N2}'}"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+            </Frame>
+
+            <!-- Observações -->
+            <Frame Padding="15" CornerRadius="8" BorderColor="LightGray">
+                <StackLayout Spacing="8">
+                    <Label Text="Observações (opcional):" FontSize="13" />
+                    <Editor x:Name="ObservacoesEditor"
+                            Placeholder="Digite observações sobre esta conta..."
+                            HeightRequest="80" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Action Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,10,0,20">
+                <Button Grid.Column="0"
+                        Text="Salvar"
+                        Clicked="SalvarButton_Clicked"
+                        BackgroundColor="{StaticResource SuccessColor}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="50"
+                        FontAttributes="Bold" />
+
+                <Button Grid.Column="1"
+                        Text="Cancelar"
+                        Clicked="CancelarButton_Clicked"
+                        BackgroundColor="{StaticResource DangerColor}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="50"
+                        FontAttributes="Bold" />
+            </Grid>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

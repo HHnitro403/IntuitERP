@@ -12,10 +12,12 @@ namespace IntuitERP
         private bool _isUserValid = false;
         private bool _isPasswordValid = false;
         private UsuarioService _usuarioService;
+        private readonly UserContext _userContext;
 
         public MainPage()
         {
             InitializeComponent();
+            _userContext = UserContext.Instance;
         }
 
         // The logic is now in the Loaded event handler
@@ -83,6 +85,8 @@ namespace IntuitERP
                 var usuario = await _usuarioService.AuthenticateAsync(UserEntry.Text, PasswordEntry.Text);
                 if (usuario != null)
                 {
+                    // Store the authenticated user in the session context
+                    _userContext.SetCurrentUser(usuario);
                     return true;
                 }
                 else

@@ -57,25 +57,37 @@
                        Placeholder="Buscar por cód. venda, cliente ou vendedor..."
                        TextChanged="VendaSearchBar_TextChanged" />
 
-            <Grid Grid.Row="1" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
 
-                <Button x:Name="NovaVendaButton" 
+                <Button x:Name="NovaVendaButton"
                         Grid.Column="0"
-                        Text="Novo" 
+                        Text="Novo"
                         Clicked="NovaVendaButton_Clicked"
                         Style="{StaticResource SuccessButton}" />
 
-                <Button x:Name="EditarVendaButton" 
+                <Button x:Name="EditarVendaButton"
                         Grid.Column="1"
-                        Text="Editar" 
-                        Clicked="EditarVendaSelecionadaButton_Clicked" 
+                        Text="Editar"
+                        Clicked="EditarVendaSelecionadaButton_Clicked"
                         IsEnabled="False"
                         Style="{StaticResource WarningButton}" />
 
-                <Button x:Name="ExcluirVendaButton" 
+                <Button x:Name="GerarContaReceberButton"
                         Grid.Column="2"
-                        Text="Excluir" 
-                        Clicked="ExcluirVendaSelecionadaButton_Clicked" 
+                        Text="Gerar Conta"
+                        Clicked="GerarContaReceberButton_Clicked"
+                        IsEnabled="False"
+                        BackgroundColor="#6F42C1"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        CornerRadius="8"
+                        HeightRequest="45"
+                        Padding="15,0" />
+
+                <Button x:Name="ExcluirVendaButton"
+                        Grid.Column="3"
+                        Text="Excluir"
+                        Clicked="ExcluirVendaSelecionadaButton_Clicked"
                         IsEnabled="False"
                         Style="{StaticResource DangerButton}" />
             </Grid>

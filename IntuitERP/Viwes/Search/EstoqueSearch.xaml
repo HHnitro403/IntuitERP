@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:IntuitERP.models"
+             x:Class="IntuitERP.Viwes.Search.EstoqueSearch"
+             Shell.NavBarIsVisible="False"
+             Title="Movimentações de Estoque">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <!-- Action Button Colors -->
+            <Color x:Key="SuccessColor">#28A745</Color>
+            <Color x:Key="WarningColor">#FFC107</Color>
+            <Color x:Key="DangerColor">#DC3545</Color>
+            <Color x:Key="WarningTextColor">#212529</Color>
+
+            <!-- Base Style for Action Buttons -->
+            <Style x:Key="ActionButton" TargetType="Button">
+                <Setter Property="TextColor" Value="{StaticResource White}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="HeightRequest" Value="45" />
+                <Setter Property="Padding" Value="15,0" />
+            </Style>
+
+            <!-- Specific Styles for CRUD Buttons -->
+            <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+            </Style>
+            <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+                <Setter Property="TextColor" Value="{StaticResource WarningTextColor}" />
+            </Style>
+            <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, *"
+          RowSpacing="15">
+
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource PrimaryDarkBlue}" Padding="20,15">
+            <Label Grid.Row="0"
+               Text="Histórico de Movimentações de Estoque"
+               FontSize="24"
+               FontAttributes="Bold"
+               TextColor="{StaticResource White}"
+               HorizontalOptions="Center" />
+        </Grid>
+
+        <Grid Padding="15" Grid.Row="1" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="15" RowSpacing="10">
+
+            <SearchBar x:Name="EstoqueSearchBar"
+                       Grid.Row="0"
+                       Placeholder="Buscar por produto, tipo ou data..."
+                       TextChanged="EstoqueSearchBar_TextChanged" />
+
+            <!-- Filter by Type -->
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*,*,*" ColumnSpacing="10">
+                <Label Grid.Column="0"
+                       Text="Tipo:"
+                       VerticalOptions="Center"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}"/>
+                <Button x:Name="FiltroTodosButton"
+                        Grid.Column="1"
+                        Text="Todos"
+                        TextColor="White"
+                        FontSize="12"
+                        BackgroundColor="{StaticResource PrimaryMidBlue}"
+                        Clicked="FiltroTodos_Clicked" />
+                <Button x:Name="FiltroEntradaButton"
+                        Grid.Column="2"
+                        Text="Entrada"
+                        TextColor="White"
+                        FontSize="12"
+                        BackgroundColor="DarkGray"
+                        Clicked="FiltroEntrada_Clicked" />
+                <Button x:Name="FiltroSaidaButton"
+                        Grid.Column="3"
+                        Text="Saída"
+                        TextColor="White"
+                        FontSize="12"
+                        BackgroundColor="DarkGray"
+                        Clicked="FiltroSaida_Clicked" />
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+
+                <Button x:Name="NovoEstoqueButton"
+                        Grid.Column="0"
+                        Text="Nova Movimentação"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Green"
+                        Clicked="NovoEstoqueButton_Clicked" />
+
+                <Button x:Name="EditarEstoqueButton"
+                        Grid.Column="1"
+                        Text="Editar"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Gold"
+                        Clicked="EditarEstoqueSelecionadoButton_Clicked"
+                        IsEnabled="False" />
+
+                <Button x:Name="ExcluirEstoqueButton"
+                        Grid.Column="2"
+                        Text="Excluir"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        BackgroundColor="Red"
+                        Clicked="ExcluirEstoqueSelecionadoButton_Clicked"
+                        IsEnabled="False" />
+            </Grid>
+        </Grid>
+
+        <CollectionView x:Name="EstoqueCollectionView"
+                        Grid.Row="2"
+                        Margin="15,10,15,0"
+                        SelectionMode="Single"
+                        SelectionChanged="EstoqueCollectionView_SelectionChanged">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="15" Margin="0,0,0,10" CornerRadius="8" BorderColor="LightGray" HasShadow="True">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                            <!-- Header Row: Movement ID and Type Badge -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       FontAttributes="Bold"
+                                       FontSize="16"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextColorLight}, Dark={StaticResource PrimaryTextColorDark}}"
+                                       VerticalOptions="Center">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Mov. #"/>
+                                            <Span Text="{Binding CodEst}"/>
+                                            <Span Text=" - "/>
+                                            <Span Text="{Binding ProdutoNome}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Frame Grid.Column="1"
+                                       Padding="10,5"
+                                       CornerRadius="5"
+                                       HasShadow="False"
+                                       VerticalOptions="Center">
+                                    <Frame.Triggers>
+                                        <DataTrigger TargetType="Frame" Binding="{Binding Tipo}" Value="E">
+                                            <Setter Property="BackgroundColor" Value="#28A745"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Frame" Binding="{Binding Tipo}" Value="S">
+                                            <Setter Property="BackgroundColor" Value="#DC3545"/>
+                                        </DataTrigger>
+                                    </Frame.Triggers>
+                                    <Label FontAttributes="Bold"
+                                           FontSize="12"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           Text="{Binding TipoDescricao}"/>
+                                </Frame>
+                            </Grid>
+
+                            <!-- Details Row -->
+                            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="10" RowSpacing="5">
+                                <Label Grid.Column="0"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Quantidade: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding Qtd, StringFormat='{0:N2}'}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Column="1"
+                                       FontSize="13"
+                                       HorizontalTextAlignment="End"
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Data: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding Data, StringFormat='{0:dd/MM/yyyy}'}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+
+                            <!-- Product Code Row -->
+                            <Label Grid.Row="2"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextColorLight}, Dark={StaticResource SecondaryTextColorDark}}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Cód. Produto: " FontAttributes="Bold"/>
+                                        <Span Text="{Binding CodProduto}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

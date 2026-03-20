@@ -10,22 +10,25 @@ public partial class CadstroEstoque : ContentPage
     private readonly EstoqueService _estoqueService;
     private readonly ProdutoService _produtoService;
     private ObservableCollection<ProdutoModel> _listaProdutos;
+    private readonly int _id; // 0 for new, >0 for edit
+    private EstoqueModel _estoqueAtual; // Store current stock movement when editing
 
     // Helper class for TipoMovimentacaoPicker
     public class TipoMovimentacaoItem
     {
         public string DisplayName { get; set; }
-        public char Value { get; set; } // 'E' for Entrada, 'S' for SaÌda
+        public char Value { get; set; } // 'E' for Entrada, 'S' for Sa√≠da
     }
     private ObservableCollection<TipoMovimentacaoItem> _tiposMovimentacao;
 
 
     // Constructor for Dependency Injection (recommended)
-    public CadstroEstoque(EstoqueService estoqueService, ProdutoService produtoService)
+    public CadstroEstoque(EstoqueService estoqueService, ProdutoService produtoService, int id = 0)
     {
         InitializeComponent();
         _estoqueService = estoqueService;
         _produtoService = produtoService;
+        _id = id;
 
         _listaProdutos = new ObservableCollection<ProdutoModel>();
         ProdutoPicker.ItemsSource = _listaProdutos;
@@ -35,7 +38,7 @@ public partial class CadstroEstoque : ContentPage
         _tiposMovimentacao = new ObservableCollection<TipoMovimentacaoItem>
             {
                 new TipoMovimentacaoItem { DisplayName = "E - Entrada", Value = 'E' },
-                new TipoMovimentacaoItem { DisplayName = "S - SaÌda", Value = 'S' }
+                new TipoMovimentacaoItem { DisplayName = "S - Sa√≠da", Value = 'S' }
             };
         TipoMovimentacaoPicker.ItemsSource = _tiposMovimentacao;
         TipoMovimentacaoPicker.ItemDisplayBinding = new Binding("DisplayName");
@@ -49,6 +52,12 @@ public partial class CadstroEstoque : ContentPage
     {
         base.OnAppearing();
         await LoadProdutosAsync();
+
+        // Load existing stock movement if editing
+        if (_id > 0)
+        {
+            await LoadEstoqueAsync(_id);
+        }
     }
 
     private async Task LoadProdutosAsync()
@@ -67,13 +76,57 @@ public partial class CadstroEstoque : ContentPage
             }
             else
             {
-                await DisplayAlert("AtenÁ„o", "Nenhum produto encontrado para carregar no seletor. Cadastre produtos primeiro.", "OK");
+                await DisplayAlert("Aten√ß√£o", "Nenhum produto encontrado para carregar no seletor. Cadastre produtos primeiro.", "OK");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading products: {ex.Message}");
-            await DisplayAlert("Erro", "N„o foi possÌvel carregar a lista de produtos.", "OK");
+            await DisplayAlert("Erro", "N√£o foi poss√≠vel carregar a lista de produtos.", "OK");
+        }
+    }
+
+    private async Task LoadEstoqueAsync(int id)
+    {
+        try
+        {
+            _estoqueAtual = await _estoqueService.GetByIdAsync(id);
+            if (_estoqueAtual != null)
+            {
+                // Set the product picker
+                var produto = _listaProdutos.FirstOrDefault(p => p.CodProduto == _estoqueAtual.CodProduto);
+                if (produto != null)
+                {
+                    ProdutoPicker.SelectedItem = produto;
+                }
+
+                // Set the type picker
+                var tipoItem = _tiposMovimentacao.FirstOrDefault(t => t.Value == _estoqueAtual.Tipo);
+                if (tipoItem != null)
+                {
+                    TipoMovimentacaoPicker.SelectedItem = tipoItem;
+                }
+
+                // Set quantity
+                QuantidadeEntry.Text = _estoqueAtual.Qtd?.ToString("N2") ?? "0";
+
+                // Set date
+                DataMovimentacaoPicker.Date = _estoqueAtual.Data;
+
+                // Update button text
+                SalvarMovimentacaoButton.Text = "Atualizar";
+            }
+            else
+            {
+                await DisplayAlert("Erro", "Movimenta√ß√£o n√£o encontrada.", "OK");
+                await Navigation.PopAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading stock movement: {ex.Message}");
+            await DisplayAlert("Erro", $"N√£o foi poss√≠vel carregar a movimenta√ß√£o: {ex.Message}", "OK");
+            await Navigation.PopAsync();
         }
     }
 
@@ -91,14 +144,14 @@ public partial class CadstroEstoque : ContentPage
         // --- Basic Validation ---
         if (ProdutoPicker.SelectedItem == null)
         {
-            await DisplayAlert("Campo ObrigatÛrio", "Por favor, selecione o Produto.", "OK");
+            await DisplayAlert("Campo Obrigat√≥rio", "Por favor, selecione o Produto.", "OK");
             ProdutoPicker.Focus();
             return;
         }
 
         if (TipoMovimentacaoPicker.SelectedItem == null)
         {
-            await DisplayAlert("Campo ObrigatÛrio", "Por favor, selecione o Tipo de MovimentaÁ„o.", "OK");
+            await DisplayAlert("Campo Obrigat√≥rio", "Por favor, selecione o Tipo de Movimenta√ß√£o.", "OK");
             TipoMovimentacaoPicker.Focus();
             return;
         }
@@ -110,7 +163,7 @@ public partial class CadstroEstoque : ContentPage
             // Attempt to parse with InvariantCulture as a fallback if CurrentCulture fails (e.g. for '.')
             if (!decimal.TryParse(QuantidadeEntry.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out qtd) || qtd <= 0)
             {
-                await DisplayAlert("Quantidade Inv·lida", "Por favor, insira uma Quantidade v·lida e maior que zero.", "OK");
+                await DisplayAlert("Quantidade Inv√°lida", "Por favor, insira uma Quantidade v√°lida e maior que zero.", "OK");
                 QuantidadeEntry.Focus();
                 return;
             }
@@ -120,23 +173,30 @@ public partial class CadstroEstoque : ContentPage
         var selectedTipoMovimentacaoItem = (TipoMovimentacaoItem)TipoMovimentacaoPicker.SelectedItem;
         char tipoMovimentacao = selectedTipoMovimentacaoItem.Value;
 
-        // Additional validation for 'SaÌda' (Stock Out)
+        // When editing, we need to handle stock reversion first
+        if (_id > 0 && _estoqueAtual != null)
+        {
+            await HandleEditMovimentacao(selectedProduto, tipoMovimentacao, qtd);
+        }
+        else
+        {
+            await HandleNewMovimentacao(selectedProduto, tipoMovimentacao, qtd);
+        }
+    }
+
+    private async Task HandleNewMovimentacao(ProdutoModel selectedProduto, char tipoMovimentacao, decimal qtd)
+    {
+        // Additional validation for 'Sa√≠da' (Stock Out)
         if (tipoMovimentacao == 'S')
         {
-            // Fetch current stock balance to ensure sufficient stock
-            // The ProdutoModel might not have the most up-to-date SaldoEst if it was loaded once.
-            // It's safer to re-fetch or ensure your service layer handles this check atomically.
-            // For simplicity here, we'll assume selectedProduto.SaldoEst is reasonably current
-            // or that a database trigger/constraint would prevent negative stock if not handled here.
             var produtoAtual = await _produtoService.GetByIdAsync(selectedProduto.CodProduto);
             if (produtoAtual == null || produtoAtual.SaldoEst < qtd)
             {
-                await DisplayAlert("Estoque Insuficiente", $"N„o h· saldo suficiente para o produto '{selectedProduto.Descricao}'. Saldo atual: {produtoAtual?.SaldoEst ?? 0}", "OK");
+                await DisplayAlert("Estoque Insuficiente", $"N√£o h√° saldo suficiente para o produto '{selectedProduto.Descricao}'. Saldo atual: {produtoAtual?.SaldoEst ?? 0}", "OK");
                 QuantidadeEntry.Focus();
                 return;
             }
         }
-
 
         // --- Create EstoqueModel (Stock Movement Log) ---
         var novaMovimentacao = new EstoqueModel
@@ -157,38 +217,115 @@ public partial class CadstroEstoque : ContentPage
                 // 2. Update the product's stock balance (SaldoEst in 'produto' table)
                 decimal quantidadeParaAtualizarSaldo = (tipoMovimentacao == 'E') ? qtd : -qtd;
 
-                // Update the product's stock balance
-
                 int updateResult = await _produtoService.AtualizarEstoqueAsync(selectedProduto.CodProduto, (int)quantidadeParaAtualizarSaldo);
 
                 if (updateResult > 0)
                 {
-                    await DisplayAlert("Sucesso", "MovimentaÁ„o de estoque registrada e saldo do produto atualizado!", "OK");
-                    ClearForm();
-                    // Optionally, refresh product list if displayed elsewhere or navigate
+                    await DisplayAlert("Sucesso", "Movimenta√ß√£o de estoque registrada e saldo do produto atualizado!", "OK");
+
+                    // Navigate back to the list
+                    if (Navigation.NavigationStack.Count > 1)
+                    {
+                        await Navigation.PopAsync();
+                    }
+                    else
+                    {
+                        ClearForm();
+                    }
                 }
                 else
                 {
-                    // This case is tricky: movement logged, but product balance update failed.
-                    // Requires a compensation strategy (e.g., log this error, attempt to revert movement, or manual correction).
-                    await DisplayAlert("AtenÁ„o", "MovimentaÁ„o registrada, mas houve um erro ao atualizar o saldo do produto. Verifique o produto.", "OK");
+                    await DisplayAlert("Aten√ß√£o", "Movimenta√ß√£o registrada, mas houve um erro ao atualizar o saldo do produto. Verifique o produto.", "OK");
                 }
             }
             else
             {
-                await DisplayAlert("Erro", "N„o foi possÌvel registrar a movimentaÁ„o de estoque.", "OK");
+                await DisplayAlert("Erro", "N√£o foi poss√≠vel registrar a movimenta√ß√£o de estoque.", "OK");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error saving stock movement: {ex.Message}");
-            await DisplayAlert("Erro Inesperado", $"Ocorreu um erro ao salvar a movimentaÁ„o: {ex.Message}", "OK");
+            await DisplayAlert("Erro Inesperado", $"Ocorreu um erro ao salvar a movimenta√ß√£o: {ex.Message}", "OK");
+        }
+    }
+
+    private async Task HandleEditMovimentacao(ProdutoModel selectedProduto, char tipoMovimentacao, decimal qtd)
+    {
+        try
+        {
+            // First, reverse the original stock movement
+            decimal originalMultiplier = (_estoqueAtual.Tipo == 'E') ? -1 : 1;
+            await _produtoService.AtualizarEstoqueAsync(
+                _estoqueAtual.CodProduto,
+                (int)((_estoqueAtual.Qtd ?? 0) * originalMultiplier)
+            );
+
+            // Validate new movement for 'Sa√≠da'
+            if (tipoMovimentacao == 'S')
+            {
+                var produtoAtual = await _produtoService.GetByIdAsync(selectedProduto.CodProduto);
+                if (produtoAtual == null || produtoAtual.SaldoEst < qtd)
+                {
+                    // Restore the original movement since validation failed
+                    await _produtoService.AtualizarEstoqueAsync(
+                        _estoqueAtual.CodProduto,
+                        (int)((_estoqueAtual.Qtd ?? 0) * -originalMultiplier)
+                    );
+
+                    await DisplayAlert("Estoque Insuficiente",
+                        $"N√£o h√° saldo suficiente para o produto '{selectedProduto.Descricao}'. Saldo atual: {produtoAtual?.SaldoEst ?? 0}",
+                        "OK");
+                    return;
+                }
+            }
+
+            // Update the stock movement record
+            _estoqueAtual.CodProduto = selectedProduto.CodProduto;
+            _estoqueAtual.Tipo = tipoMovimentacao;
+            _estoqueAtual.Qtd = qtd;
+            _estoqueAtual.Data = DataMovimentacaoPicker.Date;
+
+            int updateResult = await _estoqueService.UpdateAsync(_estoqueAtual);
+
+            if (updateResult > 0)
+            {
+                // Apply the new stock movement
+                decimal newMultiplier = (tipoMovimentacao == 'E') ? 1 : -1;
+                await _produtoService.AtualizarEstoqueAsync(
+                    selectedProduto.CodProduto,
+                    (int)(qtd * newMultiplier)
+                );
+
+                await DisplayAlert("Sucesso", "Movimenta√ß√£o atualizada com sucesso!", "OK");
+
+                // Navigate back to the list
+                if (Navigation.NavigationStack.Count > 1)
+                {
+                    await Navigation.PopAsync();
+                }
+            }
+            else
+            {
+                // Restore original movement if update failed
+                await _produtoService.AtualizarEstoqueAsync(
+                    _estoqueAtual.CodProduto,
+                    (int)((_estoqueAtual.Qtd ?? 0) * -originalMultiplier)
+                );
+
+                await DisplayAlert("Erro", "N√£o foi poss√≠vel atualizar a movimenta√ß√£o.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating stock movement: {ex.Message}");
+            await DisplayAlert("Erro Inesperado", $"Ocorreu um erro ao atualizar a movimenta√ß√£o: {ex.Message}", "OK");
         }
     }
 
     private async void CancelarMovimentacaoButton_Clicked(object sender, EventArgs e)
     {
-        bool confirm = await DisplayAlert("Cancelar MovimentaÁ„o", "Tem certeza que deseja cancelar? As informaÁıes n„o salvas ser„o perdidas.", "Sim", "N„o");
+        bool confirm = await DisplayAlert("Cancelar Movimenta√ß√£o", "Tem certeza que deseja cancelar? As informa√ß√µes n√£o salvas ser√£o perdidas.", "Sim", "N√£o");
         if (confirm)
         {
             ClearForm();

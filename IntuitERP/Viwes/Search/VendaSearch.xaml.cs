@@ -78,10 +78,10 @@ public partial class VendaSearch : ContentPage
                     Status = GetStatusString(venda.status_venda),
                     NomeCliente = venda.CodCliente > 0 && clientesDict.ContainsKey(venda.CodCliente)
                                   ? clientesDict[key: venda.CodCliente]
-                                  : "Cliente não encontrado",
+                                  : "Cliente nï¿½o encontrado",
                     NomeVendedor = venda.CodVendedor.HasValue && vendedoresDict.ContainsKey(venda.CodVendedor.Value)
                                    ? vendedoresDict[venda.CodVendedor.Value]
-                                   : "Vendedor não encontrado"
+                                   : "Vendedor nï¿½o encontrado"
                 });
             }
 
@@ -90,7 +90,7 @@ public partial class VendaSearch : ContentPage
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading sales: {ex.ToString()}");
-            await DisplayAlert("Erro", $"Não foi possível carregar a lista de vendas: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Nï¿½o foi possï¿½vel carregar a lista de vendas: {ex.Message}", "OK");
         }
     }
 
@@ -98,7 +98,7 @@ public partial class VendaSearch : ContentPage
     {
         switch (status)
         {
-            case 0: return "Orçamento";
+            case 0: return "Orï¿½amento";
             case 1: return "Pendente";
             case 2: return "Faturada";
             case 3: return "Cancelada";
@@ -154,16 +154,11 @@ public partial class VendaSearch : ContentPage
         // You may want to prevent editing/deleting of already Faturada/Cancelada sales
         bool canEdit = isSelected && _vendaSelecionada.Status != "Faturada" && _vendaSelecionada.Status != "Cancelada";
         bool canDelete = isSelected; // Or add similar logic for deletion
+        bool canGerarConta = isSelected && _vendaSelecionada.Status == "Faturada";
 
-        if (isSelected && !canEdit)
-        {
-            DisplayAlert("Atenção", "Esta venda está faturada ou cancelada e não pode ser editada.", "Ok");
-        }
-        else
-        {
-            EditarVendaButton.IsEnabled = canEdit;
-            ExcluirVendaButton.IsEnabled = canDelete; // Enable the ExcluirVe
-        }
+        EditarVendaButton.IsEnabled = canEdit;
+        ExcluirVendaButton.IsEnabled = canDelete;
+        GerarContaReceberButton.IsEnabled = canGerarConta;
     }
 
     private void VendasCollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -185,6 +180,8 @@ public partial class VendaSearch : ContentPage
             IDbConnection newPageConnection = configurator.GetMySqlConnection();
             if (newPageConnection.State == ConnectionState.Closed) newPageConnection.Open();
 
+            var connectionFactory = new MySqlConnectionFactory();
+            var transactionService = new TransactionService(connectionFactory);
             var vendaService = new VendaService(newPageConnection);
             var itemVendaService = new ItemVendaService(newPageConnection);
             var clienteService = new ClienteService(newPageConnection);
@@ -192,11 +189,11 @@ public partial class VendaSearch : ContentPage
             var produtoService = new ProdutoService(newPageConnection);
             var estoqueService = new EstoqueService(newPageConnection);
 
-            await Navigation.PushAsync(new CadastrodeVenda(vendaService, itemVendaService, clienteService, vendedorService, produtoService, estoqueService));
+            await Navigation.PushAsync(new CadastrodeVenda(vendaService, itemVendaService, clienteService, vendedorService, produtoService, estoqueService, transactionService));
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível abrir a tela de nova venda: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"NÃ£o foi possÃ­vel abrir a tela de nova venda: {ex.Message}", "OK");
         }
     }
 
@@ -214,6 +211,8 @@ public partial class VendaSearch : ContentPage
             IDbConnection editPageConnection = configurator.GetMySqlConnection();
             if (editPageConnection.State == ConnectionState.Closed) editPageConnection.Open();
 
+            var connectionFactory = new MySqlConnectionFactory();
+            var transactionService = new TransactionService(connectionFactory);
             var vendaService = new VendaService(editPageConnection);
             var itemVendaService = new ItemVendaService(editPageConnection);
             var clienteService = new ClienteService(editPageConnection);
@@ -221,12 +220,11 @@ public partial class VendaSearch : ContentPage
             var produtoService = new ProdutoService(editPageConnection);
             var estoqueService = new EstoqueService(editPageConnection);
 
-            // You will need to adapt CadastrodeVenda to accept a CodVenda and load existing data
-            await Navigation.PushAsync(new CadastrodeVenda(vendaService, itemVendaService, clienteService, vendedorService, produtoService, estoqueService, _vendaSelecionada.CodVenda));
+            await Navigation.PushAsync(new CadastrodeVenda(vendaService, itemVendaService, clienteService, vendedorService, produtoService, estoqueService, transactionService, _vendaSelecionada.CodVenda));
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Não foi possível abrir a tela de edição: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"NÃ£o foi possÃ­vel abrir a tela de ediÃ§Ã£o: {ex.Message}", "OK");
         }
     }
 
@@ -240,9 +238,9 @@ public partial class VendaSearch : ContentPage
 
         // Note: Deleting a 'Faturada' sale without reversing stock movements can cause data inconsistency.
         // This logic performs a hard delete of the sale and its items.
-        bool confirm = await DisplayAlert("Confirmar Exclusão",
-            $"ATENÇÃO: Esta ação é PERMANENTE e não pode ser desfeita. Se a venda foi Faturada, o estoque NÃO será revertido automaticamente.\n\nDeseja excluir a venda Cód: {_vendaSelecionada.CodVenda}?",
-            "Sim, Excluir Permanentemente", "Não");
+        bool confirm = await DisplayAlert("Confirmar Exclusï¿½o",
+            $"ATENï¿½ï¿½O: Esta aï¿½ï¿½o ï¿½ PERMANENTE e nï¿½o pode ser desfeita. Se a venda foi Faturada, o estoque Nï¿½O serï¿½ revertido automaticamente.\n\nDeseja excluir a venda Cï¿½d: {_vendaSelecionada.CodVenda}?",
+            "Sim, Excluir Permanentemente", "Nï¿½o");
 
         if (confirm)
         {
@@ -256,18 +254,75 @@ public partial class VendaSearch : ContentPage
 
                 if (rowsAffected > 0)
                 {
-                    await DisplayAlert("Sucesso", "Venda e seus itens foram excluídos permanentemente.", "OK");
+                    await DisplayAlert("Sucesso", "Venda e seus itens foram excluï¿½dos permanentemente.", "OK");
                     await LoadVendasAsync(); // Refresh the list
                 }
                 else
                 {
-                    await DisplayAlert("Erro", "Não foi possível excluir o registro principal da venda (os itens podem ter sido excluídos).", "OK");
+                    await DisplayAlert("Erro", "Nï¿½o foi possï¿½vel excluir o registro principal da venda (os itens podem ter sido excluï¿½dos).", "OK");
                 }
             }
             catch (Exception ex)
             {
                 await DisplayAlert("Erro", $"Ocorreu um erro ao excluir a venda: {ex.Message}", "OK");
             }
+        }
+    }
+
+    private async void GerarContaReceberButton_Clicked(object sender, EventArgs e)
+    {
+        if (_vendaSelecionada == null)
+        {
+            await DisplayAlert("Aviso", "Selecione uma venda para gerar a conta a receber.", "OK");
+            return;
+        }
+
+        if (_vendaSelecionada.Status != "Faturada")
+        {
+            await DisplayAlert("Aviso", "Apenas vendas faturadas podem gerar contas a receber.", "OK");
+            return;
+        }
+
+        try
+        {
+            // Create services
+            var connectionFactory = new MySqlConnectionFactory();
+            var connection = connectionFactory.CreateConnection();
+
+            var contaReceberService = new ContaReceberService(connection);
+
+            // Check if conta already exists
+            var contaExistente = await contaReceberService.GetByVendaAsync(_vendaSelecionada.CodVenda);
+            if (contaExistente != null)
+            {
+                await DisplayAlert("Aviso",
+                    $"JÃ¡ existe uma conta a receber para esta venda (Conta #{contaExistente.Id})",
+                    "OK");
+                return;
+            }
+
+            // Get venda details
+            var venda = await _vendaService.GetByIdAsync(_vendaSelecionada.CodVenda);
+            if (venda == null)
+            {
+                await DisplayAlert("Erro", "Venda nÃ£o encontrada.", "OK");
+                return;
+            }
+
+            // Navigate to cadastro page
+            var parcelaReceberService = new ParcelaReceberService(connection, contaReceberService);
+            var vendaService = new VendaService(connection);
+
+            await Navigation.PushAsync(new CadastroContaReceber(
+                contaReceberService,
+                parcelaReceberService,
+                vendaService,
+                venda,
+                null));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Erro ao gerar conta a receber: {ex.Message}", "OK");
         }
     }
 }

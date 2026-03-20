@@ -11,11 +11,17 @@ namespace IntuitERP.Viwes;
 
 public partial class MaenuPage : ContentPage
 {
+    private readonly PermissionService _permissionService;
+    private readonly UserContext _userContext;
     public ObservableCollection<VendaSearch.VendaDisplayModel> RecentOrders { get; set; }
+
     public MaenuPage()
     {
-
         InitializeComponent();
+
+        _permissionService = new PermissionService();
+        _userContext = UserContext.Instance;
+
         // Initialize the collection
         RecentOrders = new ObservableCollection<VendaSearch.VendaDisplayModel>();
 
@@ -88,10 +94,10 @@ public partial class MaenuPage : ContentPage
                     Status = "Pendente",
                     NomeCliente = venda.CodCliente > 0 && clientesDict.ContainsKey(venda.CodCliente)
                                   ? clientesDict[venda.CodCliente]
-                                  : "Cliente não encontrado",
+                                  : "Cliente nï¿½o encontrado",
                     NomeVendedor = venda.CodVendedor.HasValue && vendedoresDict.ContainsKey(venda.CodVendedor.Value)
                                    ? vendedoresDict[venda.CodVendedor.Value]
-                                   : "Vendedor não encontrado"
+                                   : "Vendedor nï¿½o encontrado"
                 });
             }
         }
@@ -183,6 +189,15 @@ public partial class MaenuPage : ContentPage
     // Navigation methods for Cadastros
     private async void OnProdutosClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadProduct())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar produtos"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -217,6 +232,15 @@ public partial class MaenuPage : ContentPage
 
     private async void OnClientesClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadClient())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar clientes"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -234,6 +258,15 @@ public partial class MaenuPage : ContentPage
 
     private async void OnFornecedoresClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadSupplier())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar fornecedores"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -251,6 +284,16 @@ public partial class MaenuPage : ContentPage
 
     private async void OnUsuariosClicked(object sender, EventArgs e)
     {
+        // User management requires administrator privileges
+        if (!_permissionService.IsAdministrator())
+        {
+            await DisplayAlert("Acesso Negado",
+                "Apenas administradores podem gerenciar usuÃ¡rios do sistema. " +
+                "Entre em contato com um administrador para alteraÃ§Ãµes de usuÃ¡rios e permissÃµes.",
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -261,12 +304,21 @@ public partial class MaenuPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Falha ao abrir cadastro de usuários: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Falha ao abrir cadastro de usuï¿½rios: {ex.Message}", "OK");
         }
     }
 
     private async void OnVendedoresClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadSeller())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar vendedores"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -281,9 +333,18 @@ public partial class MaenuPage : ContentPage
         }
     }
 
-    // Navigation methods for Operações
+    // Navigation methods for Operaï¿½ï¿½es
     private async void OnComprasClicked(object sender, EventArgs e)
     {
+        // Note: Purchase permissions use Supplier permissions as purchases are from suppliers
+        if (!_permissionService.CanReadSupplier())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar compras"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -305,6 +366,15 @@ public partial class MaenuPage : ContentPage
 
     private async void OnVendasClicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanReadSale())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("acessar vendas"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -325,6 +395,56 @@ public partial class MaenuPage : ContentPage
         }
     }
 
+    // Navigation method for Contas a Receber
+    private async void OnContasReceberClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var connectionFactory = new MySqlConnectionFactory();
+            var connection = connectionFactory.CreateConnection();
+            var contaReceberService = new ContaReceberService(connection);
+            var parcelaReceberService = new ParcelaReceberService(connection, contaReceberService);
+            var vendaService = new VendaService(connection);
+            var settingsService = new SystemSettingsService(connection);
+
+            var contasReceberPage = new ContasReceberSearch(
+                contaReceberService,
+                parcelaReceberService,
+                vendaService,
+                settingsService);
+            await Navigation.PushAsync(contasReceberPage);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Falha ao abrir Contas a Receber: {ex.Message}", "OK");
+        }
+    }
+
+    // Navigation method for Contas a Pagar
+    private async void OnContasPagarClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var connectionFactory = new MySqlConnectionFactory();
+            var connection = connectionFactory.CreateConnection();
+            var contaPagarService = new ContaPagarService(connection);
+            var parcelaPagarService = new ParcelaPagarService(connection, contaPagarService);
+            var compraService = new CompraService(connection);
+            var settingsService = new SystemSettingsService(connection);
+
+            var contasPagarPage = new ContasPagarSearch(
+                contaPagarService,
+                parcelaPagarService,
+                compraService,
+                settingsService);
+            await Navigation.PushAsync(contasPagarPage);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", $"Falha ao abrir Contas a Pagar: {ex.Message}", "OK");
+        }
+    }
+
     // Navigation method for Estoque
     private async void OnEstoqueClicked(object sender, EventArgs e)
     {
@@ -332,19 +452,28 @@ public partial class MaenuPage : ContentPage
         {
             var configurator = new Configurator();
             IDbConnection connection = configurator.GetMySqlConnection();
-            var estoqueService = new EstoqueService(connection); // Assuming EstoqueService exists
+            var estoqueService = new EstoqueService(connection);
             var produtosService = new ProdutoService(connection);
-            var cadastroEstoquePage = new CadstroEstoque(estoqueService, produtosService); // Assuming CadstroEstoque constructor takes EstoqueService
-            await Navigation.PushAsync(cadastroEstoquePage);
+            var estoqueSearchPage = new IntuitERP.Viwes.Search.EstoqueSearch(estoqueService, produtosService);
+            await Navigation.PushAsync(estoqueSearchPage);
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Falha ao abrir cadastro de estoque: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Falha ao abrir histÃ³rico de estoque: {ex.Message}", "OK");
         }
     }
 
     private async void GeraRelatButton_Clicked(object sender, EventArgs e)
     {
+        // Check permission before navigating
+        if (!_permissionService.CanGenerateReports())
+        {
+            await DisplayAlert("Acesso Negado",
+                _permissionService.GetPermissionDeniedMessage("gerar relatÃ³rios"),
+                "OK");
+            return;
+        }
+
         try
         {
             var configurator = new Configurator();
@@ -355,7 +484,7 @@ public partial class MaenuPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Falha ao gerar relatório: {ex.Message}", "OK");
+            await DisplayAlert("Erro", $"Falha ao gerar relatï¿½rio: {ex.Message}", "OK");
         }
     }
 
