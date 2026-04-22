@@ -1,0 +1,21 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="IntuitERP.Desktop.App"
+             RequestedThemeVariant="Default">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="PageBackgroundColor">#F0F2F5</SolidColorBrush>
+                    <SolidColorBrush x:Key="CardBackgroundColor">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="PrimaryTextColor">#1B4F83</SolidColorBrush>
+                    <SolidColorBrush x:Key="SecondaryTextColor">#5F6368</SolidColorBrush>
+                    <SolidColorBrush x:Key="BorderColor">#EAEAEA</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>

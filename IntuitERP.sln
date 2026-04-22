@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.13.35828.75
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11527.330
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuitERP", "IntuitERP\IntuitERP.csproj", "{3D63352C-6B24-424E-9D40-FF06077E12CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBconfigurator", "DBconfigurator\DBconfigurator.csproj", "{333D672D-4F6A-4904-B21E-37ED858E44B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuiERP.Avalonia.UI", "IntuiERP.Avalonia.UI\IntuiERP.Avalonia.UI.csproj", "{09D57761-BAD7-4E82-83A3-F1F838672B86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBConfigurator.Avalonia.UI", "DBConfigurator.Avalonia.UI\DBConfigurator.Avalonia.UI.csproj", "{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,22 @@ Global
 		{333D672D-4F6A-4904-B21E-37ED858E44B7}.Release|x64.ActiveCfg = Release|x64
 		{333D672D-4F6A-4904-B21E-37ED858E44B7}.Release|x64.Build.0 = Release|x64
 		{333D672D-4F6A-4904-B21E-37ED858E44B7}.Release|x64.Deploy.0 = Release|x64
+		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Debug|x64.Build.0 = Debug|Any CPU
+		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Release|x64.ActiveCfg = Release|Any CPU
+		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Release|x64.Build.0 = Release|Any CPU
+		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Debug|x64.Build.0 = Debug|Any CPU
+		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Release|x64.ActiveCfg = Release|Any CPU
+		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
