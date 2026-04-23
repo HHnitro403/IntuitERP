@@ -74,8 +74,7 @@ public partial class ContasReceberSearch : UserControl
         }
         catch (Exception ex)
         {
-            if (VisualRoot is Window window)
-                await MessageBox.Show(window, $"Não foi possível carregar as contas: {ex.Message}", "Erro");
+            await MessageBox.Show(NavigationHelper.GetWindow(this), $"Não foi possível carregar as contas: {ex.Message}", "Erro");
         }
     }
 
@@ -138,25 +137,25 @@ public partial class ContasReceberSearch : UserControl
 
     private async void NovaContaButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-            await MessageBox.Show(window, "Módulo de Cadastro de Conta em desenvolvimento.", "Informação");
+        await MessageBox.Show(NavigationHelper.GetWindow(this), "Módulo de Cadastro de Conta em desenvolvimento.", "Informação");
     }
 
     private async void VerParcelasButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (_contaSelecionada != null && VisualRoot is Window window)
-            await MessageBox.Show(window, "Visualização de Parcelas em desenvolvimento.", "Informação");
+        if (_contaSelecionada != null)
+            await MessageBox.Show(NavigationHelper.GetWindow(this), "Visualização de Parcelas em desenvolvimento.", "Informação");
     }
 
     private async void EditarContaButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (_contaSelecionada != null && VisualRoot is Window window)
-            await MessageBox.Show(window, "Edição de Conta em desenvolvimento.", "Informação");
+        if (_contaSelecionada != null)
+            await MessageBox.Show(NavigationHelper.GetWindow(this), "Edição de Conta em desenvolvimento.", "Informação");
     }
 
     private async void ExcluirContaButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (_contaSelecionada == null || VisualRoot is not Window window) return;
+        if (_contaSelecionada == null) return;
+        var window = NavigationHelper.GetWindow(this);
 
         try
         {
@@ -175,9 +174,6 @@ public partial class ContasReceberSearch : UserControl
 
     private void BtnBack_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new MenuPage();
-        }
+        NavigationHelper.NavigateTo(new MenuPage());
     }
 }

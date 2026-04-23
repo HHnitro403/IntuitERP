@@ -47,8 +47,7 @@ public partial class CadastroVendedor : UserControl
             }
             catch (Exception ex)
             {
-                if (VisualRoot is Window window)
-                    await MessageBox.Show(window, $"Erro ao carregar vendedor: {ex.Message}", "Erro");
+                await MessageBox.Show(NavigationHelper.GetWindow(this), $"Erro ao carregar vendedor: {ex.Message}", "Erro");
             }
         }
     }
@@ -64,7 +63,8 @@ public partial class CadastroVendedor : UserControl
 
     private async void SalvarVendedorButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is not Window window) return;
+        var window = NavigationHelper.GetWindow(this);
+        if (window == null) return;
 
         if (string.IsNullOrWhiteSpace(NomeVendedorEntry.Text))
         {
@@ -88,7 +88,7 @@ public partial class CadastroVendedor : UserControl
                 if (result > 0)
                 {
                     await MessageBox.Show(window, "Vendedor atualizado com sucesso!", "Sucesso");
-                    window.Content = new VendedorSearch();
+                    NavigationHelper.NavigateTo(new VendedorSearch());
                 }
             }
             else // Insert
@@ -98,7 +98,7 @@ public partial class CadastroVendedor : UserControl
                 if (newVendedorId > 0)
                 {
                     await MessageBox.Show(window, "Vendedor cadastrado com sucesso!", "Sucesso");
-                    window.Content = new VendedorSearch();
+                    NavigationHelper.NavigateTo(new VendedorSearch());
                 }
                 else
                 {
@@ -114,9 +114,6 @@ public partial class CadastroVendedor : UserControl
 
     private void CancelarButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new VendedorSearch();
-        }
+        NavigationHelper.NavigateTo(new VendedorSearch());
     }
 }

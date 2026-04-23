@@ -289,6 +289,12 @@ namespace IntuiERP.Avalonia.UI.Services
 
             var user = _userContext.CurrentUser;
 
+            // Super-user bypass for "admin" or "sysadmin"
+            if (user.Usuario.ToLower() == "admin" || user.Usuario.ToLower() == "sysadmin")
+            {
+                return true;
+            }
+
             // Check if user has all major permissions
             return user.PermissaoProdutosCreate > 0 &&
                    user.PermissaoProdutosRead > 0 &&

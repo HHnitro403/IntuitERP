@@ -107,6 +107,12 @@ namespace IntuiERP.Avalonia.UI.Services
                 return false;
             }
 
+            // Super-user bypass for "admin" or "sysadmin"
+            if (_currentUser.Usuario.ToLower() == "admin" || _currentUser.Usuario.ToLower() == "sysadmin")
+            {
+                return true;
+            }
+
             // Use reflection to get the permission value
             var property = typeof(UsuarioModel).GetProperty(permissionProperty);
             if (property == null)
@@ -115,12 +121,17 @@ namespace IntuiERP.Avalonia.UI.Services
             }
 
             var value = property.GetValue(_currentUser);
-            if (value is int intValue)
-            {
-                return intValue > 0;
-            }
+            if (value == null) return false;
 
-            return false;
+            // Robust numeric conversion to handle int, long, short, etc.
+            try
+            {
+                return Convert.ToInt32(value) > 0;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>

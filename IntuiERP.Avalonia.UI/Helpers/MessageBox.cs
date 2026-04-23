@@ -14,8 +14,16 @@ namespace IntuiERP.Avalonia.UI.Helpers
 
     public static class MessageBox
     {
-        public static async Task Show(Window owner, string message, string title, MessageBoxButton button = MessageBoxButton.Ok)
+        public static async Task Show(Window? owner, string message, string title, MessageBoxButton button = MessageBoxButton.Ok)
         {
+            owner ??= NavigationHelper.GetMainWindow();
+            
+            if (owner == null)
+            {
+                // Fallback for cases where no window is available (e.g., designer)
+                return;
+            }
+
             var dialog = new Window
             {
                 Title = title,

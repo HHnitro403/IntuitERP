@@ -104,10 +104,7 @@ public partial class MenuPage : UserControl
         }
         catch (Exception ex)
         {
-            if (VisualRoot is Window window)
-            {
-                await MessageBox.Show(window, ex.Message, "Error Loading Dashboard");
-            }
+            await MessageBox.Show(NavigationHelper.GetWindow(this), ex.Message, "Error Loading Dashboard");
         }
     }
 
@@ -194,9 +191,6 @@ public partial class MenuPage : UserControl
 
     private async void OnNavigationClicked(string destination)
     {
-        var window = TopLevel.GetTopLevel(this) as Window;
-        if (window == null) return;
-
         try
         {
             UserControl? nextPage = null;
@@ -206,7 +200,7 @@ public partial class MenuPage : UserControl
                 case "Produtos":
                     if (!_permissionService.CanReadProduct())
                     {
-                        await MessageBox.Show(window, _permissionService.GetPermissionDeniedMessage("acessar produtos"), "Acesso Negado");
+                        await MessageBox.Show(NavigationHelper.GetWindow(this), _permissionService.GetPermissionDeniedMessage("acessar produtos"), "Acesso Negado");
                         return;
                     }
                     nextPage = new ProdutoSearch();
@@ -219,7 +213,7 @@ public partial class MenuPage : UserControl
                 case "Clientes":
                     if (!_permissionService.CanReadClient())
                     {
-                        await MessageBox.Show(window, _permissionService.GetPermissionDeniedMessage("acessar clientes"), "Acesso Negado");
+                        await MessageBox.Show(NavigationHelper.GetWindow(this), _permissionService.GetPermissionDeniedMessage("acessar clientes"), "Acesso Negado");
                         return;
                     }
                     nextPage = new ClienteSearch();
@@ -228,7 +222,7 @@ public partial class MenuPage : UserControl
                 case "Fornecedores":
                     if (!_permissionService.CanReadSupplier())
                     {
-                        await MessageBox.Show(window, _permissionService.GetPermissionDeniedMessage("acessar fornecedores"), "Acesso Negado");
+                        await MessageBox.Show(NavigationHelper.GetWindow(this), _permissionService.GetPermissionDeniedMessage("acessar fornecedores"), "Acesso Negado");
                         return;
                     }
                     nextPage = new FornecedorSearch();
@@ -237,7 +231,7 @@ public partial class MenuPage : UserControl
                 case "Usuarios":
                     if (!_permissionService.IsAdministrator())
                     {
-                        await MessageBox.Show(window, "Apenas administradores podem gerenciar usuários do sistema.", "Acesso Negado");
+                        await MessageBox.Show(NavigationHelper.GetWindow(this), "Apenas administradores podem gerenciar usuários do sistema.", "Acesso Negado");
                         return;
                     }
                     nextPage = new UsuarioSearch();
@@ -246,7 +240,7 @@ public partial class MenuPage : UserControl
                 case "Vendedores":
                     if (!_permissionService.CanReadSeller())
                     {
-                        await MessageBox.Show(window, _permissionService.GetPermissionDeniedMessage("acessar vendedores"), "Acesso Negado");
+                        await MessageBox.Show(NavigationHelper.GetWindow(this), _permissionService.GetPermissionDeniedMessage("acessar vendedores"), "Acesso Negado");
                         return;
                     }
                     nextPage = new VendedorSearch();
@@ -255,7 +249,7 @@ public partial class MenuPage : UserControl
                 case "Compras":
                     if (!_permissionService.CanReadSupplier()) // Purchases use supplier permission
                     {
-                        await MessageBox.Show(window, _permissionService.GetPermissionDeniedMessage("acessar compras"), "Acesso Negado");
+                        await MessageBox.Show(NavigationHelper.GetWindow(this), _permissionService.GetPermissionDeniedMessage("acessar compras"), "Acesso Negado");
                         return;
                     }
                     nextPage = new CompraSearch();
@@ -264,7 +258,7 @@ public partial class MenuPage : UserControl
                 case "Vendas":
                     if (!_permissionService.CanReadSale())
                     {
-                        await MessageBox.Show(window, _permissionService.GetPermissionDeniedMessage("acessar vendas"), "Acesso Negado");
+                        await MessageBox.Show(NavigationHelper.GetWindow(this), _permissionService.GetPermissionDeniedMessage("acessar vendas"), "Acesso Negado");
                         return;
                     }
                     nextPage = new VendaSearch();
@@ -285,22 +279,21 @@ public partial class MenuPage : UserControl
                 case "Reports":
                     if (!_permissionService.CanGenerateReports())
                     {
-                        await MessageBox.Show(window, _permissionService.GetPermissionDeniedMessage("gerar relatórios"), "Acesso Negado");
+                        await MessageBox.Show(NavigationHelper.GetWindow(this), _permissionService.GetPermissionDeniedMessage("gerar relatórios"), "Acesso Negado");
                         return;
                     }
-                    await MessageBox.Show(window, "Módulo de Relatórios em desenvolvimento.", "Informação");
+                    await MessageBox.Show(NavigationHelper.GetWindow(this), "Módulo de Relatórios em desenvolvimento.", "Informação");
                     break;
             }
 
             if (nextPage != null)
             {
-                // In a real app, we'd have a navigation service. For now, replace content.
-                window.Content = nextPage;
+                NavigationHelper.NavigateTo(nextPage);
             }
         }
         catch (Exception ex)
         {
-            await MessageBox.Show(window, $"Falha ao abrir tela: {ex.Message}", "Erro");
+            await MessageBox.Show(NavigationHelper.GetWindow(this), $"Falha ao abrir tela: {ex.Message}", "Erro");
         }
     }
 
@@ -319,10 +312,6 @@ public partial class MenuPage : UserControl
     private void LogoutButton_Click(object? sender, RoutedEventArgs e)
     {
         _userContext.ClearCurrentUser();
-        var window = TopLevel.GetTopLevel(this) as Window;
-        if (window != null)
-        {
-            window.Content = new MainWindow(); // Return to Login
-        }
+        NavigationHelper.NavigateTo(new MainWindow()); // Return to Login
     }
 }

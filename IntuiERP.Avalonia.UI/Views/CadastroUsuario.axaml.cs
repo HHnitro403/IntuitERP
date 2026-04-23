@@ -74,8 +74,7 @@ public partial class CadastroUsuario : UserControl
             }
             catch (Exception ex)
             {
-                if (VisualRoot is Window window)
-                    await MessageBox.Show(window, $"Erro ao carregar usuário: {ex.Message}", "Erro");
+                await MessageBox.Show(NavigationHelper.GetWindow(this), $"Erro ao carregar usuário: {ex.Message}", "Erro");
             }
         }
     }
@@ -118,7 +117,8 @@ public partial class CadastroUsuario : UserControl
 
     private async void SalvarUsuarioButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is not Window window) return;
+        var window = NavigationHelper.GetWindow(this);
+        if (window == null) return;
 
         if (string.IsNullOrWhiteSpace(UsuarioEntry.Text))
         {
@@ -183,7 +183,7 @@ public partial class CadastroUsuario : UserControl
                 if (result > 0)
                 {
                     await MessageBox.Show(window, "Usuário atualizado com sucesso!", "Sucesso");
-                    window.Content = new UsuarioSearch();
+                    NavigationHelper.NavigateTo(new UsuarioSearch());
                 }
             }
             else
@@ -200,7 +200,7 @@ public partial class CadastroUsuario : UserControl
                 if (newUserId > 0)
                 {
                     await MessageBox.Show(window, "Usuário cadastrado com sucesso!", "Sucesso");
-                    window.Content = new UsuarioSearch();
+                    NavigationHelper.NavigateTo(new UsuarioSearch());
                 }
             }
         }
@@ -212,9 +212,6 @@ public partial class CadastroUsuario : UserControl
 
     private void CancelarButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new UsuarioSearch();
-        }
+        NavigationHelper.NavigateTo(new UsuarioSearch());
     }
 }

@@ -44,11 +44,8 @@ public partial class CadastroProduto : UserControl
     {
         if (!_permissionService.CanReadProduct())
         {
-            if (VisualRoot is Window window)
-            {
-                await MessageBox.Show(window, _permissionService.GetPermissionDeniedMessage("visualizar produtos"), "Acesso Negado");
-                window.Content = new MenuPage();
-            }
+            await MessageBox.Show(NavigationHelper.GetWindow(this), _permissionService.GetPermissionDeniedMessage("visualizar produtos"), "Acesso Negado");
+            NavigationHelper.NavigateTo(new MenuPage());
             return;
         }
 
@@ -85,8 +82,7 @@ public partial class CadastroProduto : UserControl
             }
             catch (Exception ex)
             {
-                if (VisualRoot is Window window)
-                    await MessageBox.Show(window, $"Erro ao carregar produto: {ex.Message}", "Erro");
+                await MessageBox.Show(NavigationHelper.GetWindow(this), $"Erro ao carregar produto: {ex.Message}", "Erro");
             }
         }
         else if (!_permissionService.CanCreateProduct())
@@ -123,7 +119,8 @@ public partial class CadastroProduto : UserControl
 
     private async void SalvarProdutoButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is not Window window) return;
+        var window = NavigationHelper.GetWindow(this);
+        if (window == null) return;
 
         try
         {
@@ -176,7 +173,7 @@ public partial class CadastroProduto : UserControl
                 if (result > 0)
                 {
                     await MessageBox.Show(window, "Produto atualizado com sucesso!", "Sucesso");
-                    window.Content = new ProdutoSearch();
+                    NavigationHelper.NavigateTo(new ProdutoSearch());
                 }
             }
             else
@@ -185,7 +182,7 @@ public partial class CadastroProduto : UserControl
                 if (newId > 0)
                 {
                     await MessageBox.Show(window, "Produto cadastrado com sucesso!", "Sucesso");
-                    window.Content = new ProdutoSearch();
+                    NavigationHelper.NavigateTo(new ProdutoSearch());
                 }
             }
         }
@@ -197,9 +194,6 @@ public partial class CadastroProduto : UserControl
 
     private void CancelarButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new ProdutoSearch();
-        }
+        NavigationHelper.NavigateTo(new ProdutoSearch());
     }
 }

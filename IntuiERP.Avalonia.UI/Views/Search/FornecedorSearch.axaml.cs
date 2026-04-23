@@ -54,8 +54,7 @@ public partial class FornecedorSearch : UserControl
         }
         catch (Exception ex)
         {
-            if (VisualRoot is Window window)
-                await MessageBox.Show(window, $"Não foi possível carregar a lista de fornecedores: {ex.Message}", "Erro");
+            await MessageBox.Show(NavigationHelper.GetWindow(this), $"Não foi possível carregar a lista de fornecedores: {ex.Message}", "Erro");
         }
     }
 
@@ -96,23 +95,21 @@ public partial class FornecedorSearch : UserControl
 
     private void NovoFornecedorButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new CadastroFornecedor();
-        }
+        NavigationHelper.NavigateTo(new CadastroFornecedor());
     }
 
     private void EditarFornecedorButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (_fornecedorSelecionado != null && VisualRoot is Window window)
+        if (_fornecedorSelecionado != null)
         {
-            window.Content = new CadastroFornecedor(_fornecedorSelecionado.CodFornecedor);
+            NavigationHelper.NavigateTo(new CadastroFornecedor(_fornecedorSelecionado.CodFornecedor));
         }
     }
 
     private async void ExcluirFornecedorButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (_fornecedorSelecionado == null || VisualRoot is not Window window) return;
+        if (_fornecedorSelecionado == null) return;
+        var window = NavigationHelper.GetWindow(this);
 
         try
         {
@@ -133,9 +130,6 @@ public partial class FornecedorSearch : UserControl
 
     private void BtnBack_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new MenuPage();
-        }
+        NavigationHelper.NavigateTo(new MenuPage());
     }
 }

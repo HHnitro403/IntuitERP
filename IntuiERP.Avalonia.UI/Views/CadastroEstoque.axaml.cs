@@ -56,7 +56,8 @@ public partial class CadastroEstoque : UserControl
 
     private async void SalvarButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is not Window window) return;
+        var window = NavigationHelper.GetWindow(this);
+        if (window == null) return;
 
         if (ProdutoComboBox.SelectedItem is not ProdutoModel selectedProduto)
         {
@@ -91,7 +92,7 @@ public partial class CadastroEstoque : UserControl
             if (newId > 0)
             {
                 await MessageBox.Show(window, "Movimentação registrada com sucesso!", "Sucesso");
-                window.Content = new EstoqueSearch();
+                NavigationHelper.NavigateTo(new EstoqueSearch());
             }
             else
             {
@@ -106,9 +107,6 @@ public partial class CadastroEstoque : UserControl
 
     private void CancelarButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new EstoqueSearch();
-        }
+        NavigationHelper.NavigateTo(new EstoqueSearch());
     }
 }

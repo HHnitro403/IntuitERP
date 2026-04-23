@@ -66,8 +66,7 @@ public partial class EstoqueSearch : UserControl
         }
         catch (Exception ex)
         {
-            if (VisualRoot is Window window)
-                await MessageBox.Show(window, $"Não foi possível carregar o histórico de estoque: {ex.Message}", "Erro");
+            await MessageBox.Show(NavigationHelper.GetWindow(this), $"Não foi possível carregar o histórico de estoque: {ex.Message}", "Erro");
         }
     }
 
@@ -106,15 +105,13 @@ public partial class EstoqueSearch : UserControl
 
     private void NovaMovimentacaoButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new CadastroEstoque();
-        }
+        NavigationHelper.NavigateTo(new CadastroEstoque());
     }
 
     private async void ExcluirMovimentacaoButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (_movimentacaoSelecionada == null || VisualRoot is not Window window) return;
+        if (_movimentacaoSelecionada == null) return;
+        var window = NavigationHelper.GetWindow(this);
 
         try
         {
@@ -134,9 +131,6 @@ public partial class EstoqueSearch : UserControl
 
     private void BtnBack_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new MenuPage();
-        }
+        NavigationHelper.NavigateTo(new MenuPage());
     }
 }

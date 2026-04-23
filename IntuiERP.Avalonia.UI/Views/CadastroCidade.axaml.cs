@@ -60,8 +60,7 @@ public partial class CadastroCidade : UserControl
         }
         catch (Exception ex)
         {
-            if (VisualRoot is Window window)
-                await MessageBox.Show(window, "Não foi possível carregar a lista de cidades.", "Erro");
+            await MessageBox.Show(NavigationHelper.GetWindow(this), "Não foi possível carregar a lista de cidades.", "Erro");
         }
     }
 
@@ -95,7 +94,8 @@ public partial class CadastroCidade : UserControl
 
     private async void BtnSave_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is not Window window) return;
+        var window = NavigationHelper.GetWindow(this);
+        if (window == null) return;
 
         if (string.IsNullOrWhiteSpace(EntryCidade.Text) || string.IsNullOrWhiteSpace(EntryUF.Text))
         {
@@ -173,7 +173,8 @@ public partial class CadastroCidade : UserControl
 
     private async void DeleteCity(CidadeModel city)
     {
-        if (VisualRoot is not Window window) return;
+        var window = NavigationHelper.GetWindow(this);
+        if (window == null) return;
 
         // Note: Our MessageBox only has OK, we might need a Yes/No dialog or just alert before deleting.
         // For now, let's assume the user really wants to delete if they click it, or we could implement a YesNo dialog.
@@ -204,10 +205,7 @@ public partial class CadastroCidade : UserControl
 
     private void BtnBack_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new MenuPage();
-        }
+        NavigationHelper.NavigateTo(new MenuPage());
     }
 }
 

@@ -71,8 +71,7 @@ public partial class CadastroFornecedor : UserControl
             }
             catch (Exception ex)
             {
-                if (VisualRoot is Window window)
-                    await MessageBox.Show(window, $"Erro ao carregar fornecedor: {ex.Message}", "Erro");
+                await MessageBox.Show(NavigationHelper.GetWindow(this), $"Erro ao carregar fornecedor: {ex.Message}", "Erro");
             }
         }
     }
@@ -93,7 +92,8 @@ public partial class CadastroFornecedor : UserControl
 
     private async void SalvarFornecedorButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is not Window window) return;
+        var window = NavigationHelper.GetWindow(this);
+        if (window == null) return;
 
         if (string.IsNullOrWhiteSpace(RazaoSocialEntry.Text))
         {
@@ -135,7 +135,7 @@ public partial class CadastroFornecedor : UserControl
                 if (result > 0)
                 {
                     await MessageBox.Show(window, "Fornecedor atualizado com sucesso!", "Sucesso");
-                    window.Content = new FornecedorSearch();
+                    NavigationHelper.NavigateTo(new FornecedorSearch());
                 }
             }
             else
@@ -144,7 +144,7 @@ public partial class CadastroFornecedor : UserControl
                 if (newId > 0)
                 {
                     await MessageBox.Show(window, "Fornecedor cadastrado com sucesso!", "Sucesso");
-                    window.Content = new FornecedorSearch();
+                    NavigationHelper.NavigateTo(new FornecedorSearch());
                 }
             }
         }
@@ -156,10 +156,7 @@ public partial class CadastroFornecedor : UserControl
 
     private void CancelarButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new FornecedorSearch();
-        }
+        NavigationHelper.NavigateTo(new FornecedorSearch());
     }
 
     private string SanitizeInput(string? input) => Regex.Replace(input ?? string.Empty, @"[^\d]", "");

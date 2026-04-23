@@ -78,8 +78,7 @@ public partial class CadastroCliente : UserControl
             }
             catch (Exception ex)
             {
-                if (VisualRoot is Window window)
-                    await MessageBox.Show(window, $"Erro ao carregar cliente: {ex.Message}", "Erro");
+                await MessageBox.Show(NavigationHelper.GetWindow(this), $"Erro ao carregar cliente: {ex.Message}", "Erro");
             }
         }
     }
@@ -100,7 +99,8 @@ public partial class CadastroCliente : UserControl
 
     private async void SalvarButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is not Window window) return;
+        var window = NavigationHelper.GetWindow(this);
+        if (window == null) return;
 
         if (string.IsNullOrWhiteSpace(NomeEntry.Text))
         {
@@ -139,7 +139,7 @@ public partial class CadastroCliente : UserControl
                 if (result > 0)
                 {
                     await MessageBox.Show(window, "Cliente atualizado com sucesso!", "Sucesso");
-                    window.Content = new ClienteSearch();
+                    NavigationHelper.NavigateTo(new ClienteSearch());
                 }
             }
             else
@@ -148,7 +148,7 @@ public partial class CadastroCliente : UserControl
                 if (newId > 0)
                 {
                     await MessageBox.Show(window, "Cliente cadastrado com sucesso!", "Sucesso");
-                    window.Content = new ClienteSearch();
+                    NavigationHelper.NavigateTo(new ClienteSearch());
                 }
             }
         }
@@ -160,10 +160,7 @@ public partial class CadastroCliente : UserControl
 
     private void CancelarButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new ClienteSearch();
-        }
+        NavigationHelper.NavigateTo(new ClienteSearch());
     }
 
     private string SanitizeInput(string? input) => Regex.Replace(input ?? string.Empty, @"[^\d]", "");

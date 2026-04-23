@@ -54,8 +54,7 @@ public partial class ProdutoSearch : UserControl
         }
         catch (Exception ex)
         {
-            if (VisualRoot is Window window)
-                await MessageBox.Show(window, $"Não foi possível carregar a lista de produtos: {ex.Message}", "Erro");
+            await MessageBox.Show(NavigationHelper.GetWindow(this), $"Não foi possível carregar a lista de produtos: {ex.Message}", "Erro");
         }
     }
 
@@ -96,23 +95,21 @@ public partial class ProdutoSearch : UserControl
 
     private void NovoProdutoButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new CadastroProduto();
-        }
+        NavigationHelper.NavigateTo(new CadastroProduto());
     }
 
     private void EditarProdutoButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (_produtoSelecionado != null && VisualRoot is Window window)
+        if (_produtoSelecionado != null)
         {
-            window.Content = new CadastroProduto(_produtoSelecionado.CodProduto);
+            NavigationHelper.NavigateTo(new CadastroProduto(_produtoSelecionado.CodProduto));
         }
     }
 
     private async void ExcluirProdutoButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (_produtoSelecionado == null || VisualRoot is not Window window) return;
+        if (_produtoSelecionado == null) return;
+        var window = NavigationHelper.GetWindow(this);
 
         try
         {
@@ -133,9 +130,6 @@ public partial class ProdutoSearch : UserControl
 
     private void BtnBack_Clicked(object? sender, RoutedEventArgs e)
     {
-        if (VisualRoot is Window window)
-        {
-            window.Content = new MenuPage();
-        }
+        NavigationHelper.NavigateTo(new MenuPage());
     }
 }
