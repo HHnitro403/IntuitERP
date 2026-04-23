@@ -2,7 +2,67 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.Search.VendaSearch">
-  Welcome to Avalonia!
+             xmlns:models="clr-namespace:IntuiERP.Avalonia.UI.models"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
+             x:Class="IntuiERP.Avalonia.UI.Views.Search.VendaSearch"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <Style Selector="Button.ActionBtn">
+            <Setter Property="Height" Value="45" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <Button x:Name="BtnBack" Content="Voltar" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" />
+                <TextBlock Grid.Column="1" Text="Vendas Cadastradas" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Search and Actions -->
+        <StackPanel Grid.Row="1" Margin="15" Spacing="10">
+            <TextBox x:Name="VendaSearchBar" PlaceholderText="Buscar por cód. venda, cliente ou vendedor..." />
+            
+            <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="8">
+                <Button x:Name="NovaVendaButton" Content="Novo" Classes="ActionBtn" Background="#28A745" Foreground="White" />
+                <Button x:Name="EditarVendaButton" Content="Editar" Classes="ActionBtn" Background="#FFC107" Foreground="#212529" IsEnabled="False" Grid.Column="1" />
+                <Button x:Name="GerarContaReceberButton" Content="Gerar Conta" Classes="ActionBtn" Background="#6F42C1" Foreground="White" IsEnabled="False" Grid.Column="2" />
+                <Button x:Name="ExcluirVendaButton" Content="Excluir" Classes="ActionBtn" Background="#DC3545" Foreground="White" IsEnabled="False" Grid.Column="3" />
+            </Grid>
+        </StackPanel>
+
+        <!-- List -->
+        <Border Grid.Row="2" Margin="15,0,15,15" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000" ClipToBounds="True">
+            <ListBox x:Name="VendasListBox" Background="Transparent" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:VendaDisplayModel">
+                        <StackPanel Margin="10" Spacing="8">
+                            <Grid ColumnDefinitions="*,*">
+                                <TextBlock Text="{Binding CodVenda, StringFormat='Venda Cód: {0}'}" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource FieldLabelColor}" />
+                                <TextBlock Grid.Column="1" Text="{Binding DataVenda, StringFormat={}{0:dd/MM/yyyy}}" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.7" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,*">
+                                <TextBlock Text="{Binding NomeCliente, StringFormat='Cliente: {0}'}" FontSize="14" />
+                                <TextBlock Grid.Column="1" Text="{Binding ValorTotal, StringFormat={}{0:C2}}" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Right" />
+                                </Grid>
+
+                            <Grid ColumnDefinitions="*,*">
+                                <TextBlock Text="{Binding NomeVendedor, StringFormat='Vendedor: {0}'}" FontSize="12" Opacity="0.7" />
+                                <TextBlock Grid.Column="1" Text="{Binding Status, StringFormat='Status: {0}'}" FontWeight="Bold" FontSize="12" HorizontalAlignment="Right" />
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+    </Grid>
 </UserControl>

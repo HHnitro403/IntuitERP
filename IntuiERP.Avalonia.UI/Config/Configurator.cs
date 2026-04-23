@@ -103,7 +103,7 @@ namespace IntuiERP.Avalonia.UI.Config
             // Removed trailing semicolon from Host if user accidentally included it
             string cleanHost = server.Replace("postgresql://", "").Split(':')[0].Trim();
             
-            return $"Host={cleanHost};Database={database};Username={user};Password={password};SSL Mode=Prefer;Trust Server Certificate=true;";
+            return $"Host={cleanHost};Database={database};Username={user};Password={password};SSL Mode=Prefer;Trust Server Certificate=true;Pooling=false;Command Timeout=30;";
         }
     }
 }

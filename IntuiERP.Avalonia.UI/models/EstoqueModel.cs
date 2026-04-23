@@ -29,5 +29,11 @@ namespace IntuiERP.Avalonia.UI.models
         // Navigation properties
         [ForeignKey("CodProduto")]
         public virtual ProdutoModel? Produto { get; set; }
+
+        [NotMapped]
+        public string? ProdutoNome { get; set; }
+
+        [NotMapped]
+        public string? TipoDescricao { get; set; }
     }
 }

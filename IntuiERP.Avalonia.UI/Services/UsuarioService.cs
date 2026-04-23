@@ -2,50 +2,63 @@ using Dapper;
 using IntuiERP.Avalonia.UI.models;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace IntuiERP.Avalonia.UI.Services
 {
     public class UsuarioService
     {
-        private readonly IDbConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
         private readonly PasswordHashingService _passwordHashingService;
 
-        public UsuarioService(IDbConnection connection)
+        public UsuarioService(IDbConnectionFactory connectionFactory)
         {
-            _connection = connection;
+            _connectionFactory = connectionFactory;
             _passwordHashingService = new PasswordHashingService();
         }
 
+        private IDbConnection CreateConnection() => _connectionFactory.CreateConnection();
+
         public async Task<IEnumerable<UsuarioModel>> GetAllAsync()
         {
+            using var connection = CreateConnection();
+            if (connection is DbConnection dbConn) await dbConn.OpenAsync();
+            
             const string query = "SELECT * FROM usuarios";
-            return await _connection.QueryAsync<UsuarioModel>(query);
+            return await connection.QueryAsync<UsuarioModel>(query);
         }
 
         public async Task<UsuarioModel> GetByIdAsync(int id)
         {
+            using var connection = CreateConnection();
+            if (connection is DbConnection dbConn) await dbConn.OpenAsync();
+
             const string query = "SELECT * FROM usuarios WHERE CodUsuarios = @Id";
-            return await _connection.QueryFirstOrDefaultAsync<UsuarioModel>(query, new { Id = id });
+            return await connection.QueryFirstOrDefaultAsync<UsuarioModel>(query, new { Id = id });
         }
 
         public async Task<UsuarioModel> GetByUsuarioAsync(string usuario)
         {
+            using var connection = CreateConnection();
+            if (connection is DbConnection dbConn) await dbConn.OpenAsync();
+
             const string query = "SELECT * FROM usuarios WHERE Usuario = @Usuario";
-            return await _connection.QueryFirstOrDefaultAsync<UsuarioModel>(query, new { Usuario = usuario });
+            return await connection.QueryFirstOrDefaultAsync<UsuarioModel>(query, new { Usuario = usuario });
         }
 
         public async Task<int> InsertAsync(UsuarioModel usuario)
         {
-            // Hash the password before storing
             if (!string.IsNullOrWhiteSpace(usuario.Senha))
             {
-                // Only hash if it's not already hashed
                 if (!_passwordHashingService.IsPasswordHashed(usuario.Senha))
                 {
                     usuario.Senha = _passwordHashingService.HashPassword(usuario.Senha);
                 }
             }
+
+            using var connection = CreateConnection();
+            if (connection is DbConnection dbConn) await dbConn.OpenAsync();
 
             const string query =
                 @"INSERT INTO usuarios
@@ -67,20 +80,21 @@ namespace IntuiERP.Avalonia.UI.Services
                 @PermissaoClientesCreate, @PermissaoClientesRead, @PermissaoClientesUpdate,
                 @PermissaoClientesDelete) RETURNING CodUsuarios;";
 
-            return await _connection.ExecuteScalarAsync<int>(query, usuario);
+            return await connection.ExecuteScalarAsync<int>(query, usuario);
         }
 
         public async Task<int> UpdateAsync(UsuarioModel usuario)
         {
-            // Hash the password before storing if it's being changed
             if (!string.IsNullOrWhiteSpace(usuario.Senha))
             {
-                // Only hash if it's not already hashed (e.g., user is changing password)
                 if (!_passwordHashingService.IsPasswordHashed(usuario.Senha))
                 {
                     usuario.Senha = _passwordHashingService.HashPassword(usuario.Senha);
                 }
             }
+
+            using var connection = CreateConnection();
+            if (connection is DbConnection dbConn) await dbConn.OpenAsync();
 
             const string query =
                 @"UPDATE usuarios SET
@@ -109,55 +123,47 @@ namespace IntuiERP.Avalonia.UI.Services
                 PermissaoClientesDelete = @PermissaoClientesDelete
                 WHERE CodUsuarios = @CodUsuarios";
 
-            var result = await _connection.ExecuteAsync(query, usuario);
-
-            return result;
+            return await connection.ExecuteAsync(query, usuario);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
+            using var connection = CreateConnection();
+            if (connection is DbConnection dbConn) await dbConn.OpenAsync();
+
             const string query = "DELETE FROM usuarios WHERE CodUsuarios = @Id";
-            return await _connection.ExecuteAsync(query, new { Id = id });
+            return await connection.ExecuteAsync(query, new { Id = id });
         }
 
         public async Task<UsuarioModel?> AuthenticateAsync(string usuario, string senha)
         {
-            // First, retrieve the user by username only
+            using var connection = CreateConnection();
+            if (connection is DbConnection dbConn) await dbConn.OpenAsync();
+
             const string query = "SELECT * FROM usuarios WHERE Usuario = @Usuario";
-            var user = await _connection.QueryFirstOrDefaultAsync<UsuarioModel>(query,
+            var user = await connection.QueryFirstOrDefaultAsync<UsuarioModel>(query,
                 new { Usuario = usuario });
 
-            if (user == null)
-            {
-                // User not found
-                return null;
-            }
+            if (user == null) return null;
 
-            // Check if password is hashed or plain text (for migration compatibility)
             bool isPasswordValid = false;
 
             if (_passwordHashingService.IsPasswordHashed(user.Senha))
             {
-                // Verify hashed password
                 isPasswordValid = _passwordHashingService.VerifyPassword(senha, user.Senha);
 
-                // Check if password needs rehashing (e.g., work factor changed)
                 if (isPasswordValid && _passwordHashingService.NeedsRehash(user.Senha))
                 {
-                    // Rehash and update password
                     user.Senha = _passwordHashingService.HashPassword(senha);
                     await UpdateAsync(user);
                 }
             }
             else
             {
-                // MIGRATION PATH: Password is still in plain text
-                // Check plain text match and then hash it
                 isPasswordValid = user.Senha == senha;
 
                 if (isPasswordValid)
                 {
-                    // Hash the password and update in database
                     user.Senha = _passwordHashingService.HashPassword(senha);
                     await UpdateAsync(user);
                 }

@@ -13,6 +13,9 @@ namespace DBConfigurator.Avalonia.UI.Models
         public string Server { get; set; } = string.Empty;
 
         [Required]
+        public int Port { get; set; } = 5432;
+
+        [Required]
         public string DataBase { get; set; } = string.Empty;
 
         [Required]

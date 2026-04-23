@@ -64,4 +64,14 @@ namespace IntuiERP.Avalonia.UI.models
         public string? FormaPagamento { get; set; }
         public int? StatusVenda { get; set; }
     }
+
+    public class VendaDisplayModel
+    {
+        public int CodVenda { get; set; }
+        public DateTime? DataVenda { get; set; }
+        public decimal? ValorTotal { get; set; }
+        public string? Status { get; set; }
+        public string? NomeCliente { get; set; }
+        public string? NomeVendedor { get; set; }
+    }
 }

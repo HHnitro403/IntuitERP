@@ -2,7 +2,131 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.Search.ContasReceberSearch">
-  Welcome to Avalonia!
+             xmlns:models="clr-namespace:IntuiERP.Avalonia.UI.models"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
+             x:Class="IntuiERP.Avalonia.UI.Views.Search.ContasReceberSearch"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <Style Selector="Border.SummaryCard">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="BoxShadow" Value="0 4 8 0 #1A000000" />
+            <Setter Property="Margin" Value="4" />
+        </Style>
+        <Style Selector="TextBlock.SummaryValue">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.SummaryLabel">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.ActionBtn">
+            <Setter Property="Height" Value="45" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <Button x:Name="BtnBack" Content="Voltar" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" />
+                <TextBlock Grid.Column="1" Text="Contas a Receber" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Dashboard Cards -->
+        <Grid Grid.Row="1" Margin="10" ColumnDefinitions="*,*,*,*">
+            <Border Grid.Column="0" Background="#6C757D" Classes="SummaryCard">
+                <StackPanel>
+                    <TextBlock x:Name="TotalPendenteLabel" Text="R$ 0,00" Classes="SummaryValue" />
+                    <TextBlock Text="Pendente" Classes="SummaryLabel" />
+                    <TextBlock x:Name="CountPendenteLabel" Text="0 contas" FontSize="10" Foreground="White" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="1" Background="#D32F2F" Classes="SummaryCard">
+                <StackPanel>
+                    <TextBlock x:Name="TotalVencidoLabel" Text="R$ 0,00" Classes="SummaryValue" />
+                    <TextBlock Text="Vencido" Classes="SummaryLabel" />
+                    <TextBlock x:Name="CountVencidoLabel" Text="0 contas" FontSize="10" Foreground="White" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="2" Background="#FFA500" Classes="SummaryCard">
+                <StackPanel>
+                    <TextBlock x:Name="TotalParcialLabel" Text="R$ 0,00" Classes="SummaryValue" />
+                    <TextBlock Text="Parcial" Classes="SummaryLabel" />
+                    <TextBlock x:Name="CountParcialLabel" Text="0 contas" FontSize="10" Foreground="White" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="3" Background="#34A853" Classes="SummaryCard">
+                <StackPanel>
+                    <TextBlock x:Name="TotalPagoLabel" Text="R$ 0,00" Classes="SummaryValue" />
+                    <TextBlock Text="Pago" Classes="SummaryLabel" />
+                    <TextBlock x:Name="CountPagoLabel" Text="0 contas" FontSize="10" Foreground="White" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Search and Actions -->
+        <StackPanel Grid.Row="2" Margin="15" Spacing="10">
+            <TextBox x:Name="ContasSearchBar" PlaceholderText="Buscar por cliente, venda ou valor..." />
+            
+            <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="8">
+                <Button x:Name="NovaContaButton" Content="Nova Conta" Classes="ActionBtn" Background="#28A745" Foreground="White" />
+                <Button x:Name="VerParcelasButton" Content="Ver Parcelas" Classes="ActionBtn" Background="#FFC107" Foreground="#212529" IsEnabled="False" Grid.Column="1" />
+                <Button x:Name="EditarContaButton" Content="Editar" Classes="ActionBtn" Background="#FFC107" Foreground="#212529" IsEnabled="False" Grid.Column="2" />
+                <Button x:Name="ExcluirContaButton" Content="Excluir" Classes="ActionBtn" Background="#DC3545" Foreground="White" IsEnabled="False" Grid.Column="3" />
+            </Grid>
+        </StackPanel>
+
+        <!-- List -->
+        <Border Grid.Row="3" Margin="15,0,15,15" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000" ClipToBounds="True">
+            <ListBox x:Name="ContasListBox" Background="Transparent" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:ContaReceberModel">
+                        <StackPanel Margin="10" Spacing="8">
+                            <Grid ColumnDefinitions="*,*">
+                                <TextBlock Text="{Binding Id, StringFormat='Conta #{0}'}" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource FieldLabelColor}" />
+                                <TextBlock Grid.Column="1" Text="{Binding DataEmissao, StringFormat={}{0:dd/MM/yyyy}}" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.7" />
+                            </Grid>
+                            
+                            <Grid ColumnDefinitions="2*,*">
+                                <TextBlock Text="{Binding ClienteNome, StringFormat='Cliente: {0}'}" FontSize="14" />
+                                <TextBlock Grid.Column="1" Text="{Binding CodVenda, StringFormat='Venda #{0}'}" FontSize="11" HorizontalAlignment="Right" Opacity="0.6" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*,*">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Total:" FontSize="10" Opacity="0.6" />
+                                    <TextBlock Text="{Binding ValorTotal, StringFormat={}{0:C2}}" FontWeight="Bold" FontSize="14" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Pago:" FontSize="10" Opacity="0.6" />
+                                    <TextBlock Text="{Binding ValorPago, StringFormat={}{0:C2}}" Foreground="#34A853" FontWeight="Bold" FontSize="14" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Pendente:" FontSize="10" Opacity="0.6" />
+                                    <TextBlock Text="{Binding ValorPendente, StringFormat={}{0:C2}}" Foreground="#D32F2F" FontWeight="Bold" FontSize="14" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*">
+                                <TextBlock Text="{Binding NumParcelas, StringFormat={}{0} parcelas}" FontSize="12" Opacity="0.7" />
+                                <TextBlock Grid.Column="1" Text="{Binding Status}" FontWeight="Bold" FontSize="13" HorizontalAlignment="Right" />
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+    </Grid>
 </UserControl>

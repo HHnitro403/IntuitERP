@@ -51,6 +51,16 @@ namespace IntuiERP.Avalonia.UI.models
         public int CodFornecedor { get; internal set; }
     }
 
+    public class CompraDisplayModel
+    {
+        public int CodCompra { get; set; }
+        public DateTime? DataCompra { get; set; }
+        public decimal ValorTotal { get; set; }
+        public string? Status { get; set; }
+        public string? NomeFornecedor { get; set; }
+        public string? NomeVendedor { get; set; }
+    }
+
     public class CompraFilterModel
     {
         public int? CodFornec { get; set; }

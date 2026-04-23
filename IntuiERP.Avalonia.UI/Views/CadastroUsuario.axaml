@@ -2,7 +2,215 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.CadastroUsuario">
-  Welcome to Avalonia!
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1200"
+             x:Class="IntuiERP.Avalonia.UI.Views.CadastroUsuario"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.FormLabel">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style Selector="Border.FormField">
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBox.InputField">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="TextBlock.CategoryLabel">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+
+        <Style Selector="TextBlock.SubCategoryLabel">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="Margin" Value="0,15,0,10" />
+        </Style>
+
+        <Style Selector="TextBlock.PermissionLabel">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <Style Selector="ToggleSwitch">
+            <Setter Property="OnContent" Value="Sim" />
+            <Setter Property="OffContent" Value="Não" />
+        </Style>
+
+        <Style Selector="Button.PrimaryAction">
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.SecondaryAction">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <TextBlock x:Name="HeaderLabel" Text="Cadastro de Usuário" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Form Content -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="20" Margin="20">
+                
+                <!-- Access Data Card -->
+                <Border Padding="20, 25" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000">
+                    <StackPanel Spacing="15">
+                        <TextBlock Text="Dados de Acesso" Classes="CategoryLabel" />
+                        <Separator Background="{DynamicResource BorderBrushColor}" />
+
+                        <StackPanel>
+                            <TextBlock Text="Usuário:" Classes="FormLabel" />
+                            <Border Classes="FormField">
+                                <TextBox x:Name="UsuarioEntry" Watermark="Digite o nome de usuário" Classes="InputField" />
+                            </Border>
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Senha:" Classes="FormLabel" />
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="SenhaEntry" Watermark="Digite a senha" PasswordChar="●" Classes="InputField" />
+                                </Border>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Confirmar Senha:" Classes="FormLabel" />
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="ConfirmarSenhaEntry" Watermark="Confirme a senha" PasswordChar="●" Classes="InputField" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Permissions Card -->
+                <Border Padding="20, 25" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Permissões do Usuário" Classes="CategoryLabel" />
+                        <Separator Background="{DynamicResource BorderBrushColor}" />
+
+                        <!-- Products Section -->
+                        <TextBlock Text="Produtos" Classes="SubCategoryLabel" />
+                        <Grid ColumnDefinitions="*, Auto, *, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="20" RowSpacing="10">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Criar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" x:Name="PermissaoProdutosCreateSwitch" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Ler:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="3" x:Name="PermissaoProdutosReadSwitch" />
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Atualizar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="1" x:Name="PermissaoProdutosUpdateSwitch" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Excluir:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="3" x:Name="PermissaoProdutosDeleteSwitch" />
+                        </Grid>
+
+                        <!-- Vendas Section -->
+                        <TextBlock Text="Vendas" Classes="SubCategoryLabel" />
+                        <Grid ColumnDefinitions="*, Auto, *, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="20" RowSpacing="10">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Criar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" x:Name="PermissaoVendasCreateSwitch" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Ler:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="3" x:Name="PermissaoVendasReadSwitch" />
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Atualizar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="1" x:Name="PermissaoVendasUpdateSwitch" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Excluir:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="3" x:Name="PermissaoVendasDeleteSwitch" />
+                        </Grid>
+
+                        <!-- Vendedores Section -->
+                        <TextBlock Text="Vendedores" Classes="SubCategoryLabel" />
+                        <Grid ColumnDefinitions="*, Auto, *, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="20" RowSpacing="10">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Criar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" x:Name="PermissaoVendedoresCreateSwitch" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Ler:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="3" x:Name="PermissaoVendedoresReadSwitch" />
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Atualizar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="1" x:Name="PermissaoVendedoresUpdateSwitch" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Excluir:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="3" x:Name="PermissaoVendedoresDeleteSwitch" />
+                        </Grid>
+
+                        <!-- Fornecedores Section -->
+                        <TextBlock Text="Fornecedores" Classes="SubCategoryLabel" />
+                        <Grid ColumnDefinitions="*, Auto, *, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="20" RowSpacing="10">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Criar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" x:Name="PermissaoFornecedoresCreateSwitch" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Ler:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="3" x:Name="PermissaoFornecedoresReadSwitch" />
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Atualizar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="1" x:Name="PermissaoFornecedoresUpdateSwitch" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Excluir:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="3" x:Name="PermissaoFornecedoresDeleteSwitch" />
+                        </Grid>
+
+                        <!-- Clientes Section -->
+                        <TextBlock Text="Clientes" Classes="SubCategoryLabel" />
+                        <Grid ColumnDefinitions="*, Auto, *, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="20" RowSpacing="10">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Criar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1" x:Name="PermissaoClientesCreateSwitch" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Ler:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="3" x:Name="PermissaoClientesReadSwitch" />
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Atualizar:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="1" x:Name="PermissaoClientesUpdateSwitch" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Excluir:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="3" x:Name="PermissaoClientesDeleteSwitch" />
+                        </Grid>
+
+                        <!-- Relatorios Section -->
+                        <TextBlock Text="Outros" Classes="SubCategoryLabel" />
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="20">
+                            <TextBlock Grid.Column="0" Text="Gerar Relatórios:" Classes="PermissionLabel" />
+                            <ToggleSwitch Grid.Column="1" x:Name="PermissaoRelatoriosGenerateSwitch" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer Actions -->
+        <Border Grid.Row="2" Padding="20" Background="{DynamicResource CardBackgroundColor}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                <Button x:Name="CancelarButton" Content="Cancelar" Classes="SecondaryAction" HorizontalAlignment="Stretch" />
+                <Button x:Name="SalvarUsuarioButton" Grid.Column="1" Content="Salvar Usuário" Classes="PrimaryAction" HorizontalAlignment="Stretch" />
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

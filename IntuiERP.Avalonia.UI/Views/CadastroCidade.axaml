@@ -2,7 +2,153 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.CadastroCidade">
-  Welcome to Avalonia!
+             xmlns:models="clr-namespace:IntuiERP.Avalonia.UI.models"
+             xmlns:views="clr-namespace:IntuiERP.Avalonia.UI.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="IntuiERP.Avalonia.UI.Views.CadastroCidade"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.FormLabel">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+        
+        <Style Selector="Border.FormField">
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBox.InputField">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="Button.PrimaryAction">
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.SecondaryAction">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.InlineButton">
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <!-- Top Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <Button x:Name="BtnBack" Content="Voltar" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Grid.Column="0" />
+                <TextBlock Grid.Column="1" Text="Gerenciamento de Cidades" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Form Area -->
+        <Border Grid.Row="1" Padding="15" Background="{DynamicResource CardBackgroundColor}" Margin="15" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000">
+            <StackPanel Spacing="15">
+                <TextBlock Text="Adicionar / Editar Cidade" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" />
+                
+                <Grid ColumnDefinitions="*, 80, 120" ColumnSpacing="15">
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Cidade:" Classes="FormLabel" />
+                        <Border Classes="FormField">
+                            <TextBox x:Name="EntryCidade" Watermark="Nome da Cidade" MaxLength="255" Classes="InputField" />
+                        </Border>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="UF:" Classes="FormLabel" />
+                        <Border Classes="FormField">
+                            <TextBox x:Name="EntryUF" Watermark="UF" MaxLength="2" Classes="InputField" />
+                        </Border>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Código:" Classes="FormLabel" />
+                        <Border Classes="FormField" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+                            <TextBox x:Name="EntryId" IsEnabled="False" Watermark="Auto" Classes="InputField" />
+                        </Border>
+                    </StackPanel>
+                </Grid>
+                
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                    <Button x:Name="BtnClear" Content="Limpar" Classes="SecondaryAction" HorizontalAlignment="Stretch" />
+                    <Button x:Name="BtnSave" Grid.Column="1" Content="Salvar" Classes="PrimaryAction" HorizontalAlignment="Stretch" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- List Area -->
+        <Grid Grid.Row="2" RowDefinitions="Auto, *" Margin="15,0,15,15">
+            <TextBox x:Name="EntrySearch" Watermark="Buscar por nome da cidade..." Margin="0,0,0,10" />
+
+            <Border Grid.Row="1" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" Padding="0" ClipToBounds="True">
+                <Grid RowDefinitions="Auto, *">
+                    <!-- Header -->
+                    <Border Grid.Row="0" Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}" Padding="15,10">
+                        <Grid ColumnDefinitions="80, *, 60, 180">
+                            <TextBlock Grid.Column="0" Text="Código" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.6" />
+                            <TextBlock Grid.Column="1" Text="Cidade" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.6" />
+                            <TextBlock Grid.Column="2" Text="UF" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.6" />
+                            <TextBlock Grid.Column="3" Text="Ações" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.6" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Items -->
+                    <ListBox x:Name="CitiesList" Grid.Row="1" Background="Transparent" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:CidadeModel">
+                                <Grid ColumnDefinitions="80, *, 60, 180" Margin="0,5">
+                                    <TextBlock Grid.Column="0" Text="{Binding CodCIdade}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Cidade}" FontWeight="Bold" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Text="{Binding UF}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
+                                        <Button Content="Editar" Classes="InlineButton" Background="#FFC107" Foreground="#212529" 
+                                                Command="{Binding $parent[UserControl].((views:CadastroCidade)DataContext).EditCommand}" CommandParameter="{Binding}"
+                                                x:Name="BtnEditItem" />
+                                        <Button Content="Excluir" Classes="InlineButton" Background="#DC3545" Foreground="White" 
+                                                Command="{Binding $parent[UserControl].((views:CadastroCidade)DataContext).DeleteCommand}" CommandParameter="{Binding}"
+                                                x:Name="BtnDeleteItem" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+            
+            <TextBlock x:Name="EmptyLabel" Grid.Row="1" Text="Nenhuma cidade encontrada." HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="False" />
+        </Grid>
+    </Grid>
 </UserControl>

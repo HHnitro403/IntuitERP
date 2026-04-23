@@ -2,7 +2,109 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.CadastroVendedor">
-  Welcome to Avalonia!
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="IntuiERP.Avalonia.UI.Views.CadastroVendedor"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.FormLabel">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style Selector="Border.FormField">
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBox.InputField">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="Button.PrimaryAction">
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.SecondaryAction">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <TextBlock x:Name="HeaderLabel" Text="Cadastro de Vendedor" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Form Content -->
+        <ScrollViewer Grid.Row="1">
+            <Border Padding="20, 25" Margin="20" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000">
+                <StackPanel Spacing="15">
+                    <!-- Nome do Vendedor -->
+                    <StackPanel>
+                        <TextBlock Text="Nome do Vendedor:" Classes="FormLabel"/>
+                        <Border Classes="FormField">
+                            <TextBox x:Name="NomeVendedorEntry" Watermark="Digite o nome completo do vendedor" Classes="InputField"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Sales Statistics -->
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="15">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Total de Vendas:" Classes="FormLabel"/>
+                            <Border Classes="FormField" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+                                <TextBox x:Name="TotalVendasEntry" Text="0" IsReadOnly="True" Classes="InputField"/>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Finalizadas:" Classes="FormLabel"/>
+                            <Border Classes="FormField" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+                                <TextBox x:Name="VendasFinalizadasEntry" Text="0" IsReadOnly="True" Classes="InputField"/>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Canceladas:" Classes="FormLabel"/>
+                            <Border Classes="FormField" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+                                <TextBox x:Name="VendasCanceladasEntry" Text="0" IsReadOnly="True" Classes="InputField"/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+
+        <!-- Footer Actions -->
+        <Border Grid.Row="2" Padding="20" Background="{DynamicResource CardBackgroundColor}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                <Button x:Name="CancelarButton" Content="Cancelar" Classes="SecondaryAction" HorizontalAlignment="Stretch" />
+                <Button x:Name="SalvarVendedorButton" Grid.Column="1" Content="Salvar" Classes="PrimaryAction" HorizontalAlignment="Stretch" />
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

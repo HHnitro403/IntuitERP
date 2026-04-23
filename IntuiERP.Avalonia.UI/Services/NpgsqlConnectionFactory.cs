@@ -1,5 +1,6 @@
 using IntuiERP.Avalonia.UI.Config;
 using System.Data;
+using Npgsql;
 
 namespace IntuiERP.Avalonia.UI.Services
 {
@@ -17,22 +18,15 @@ namespace IntuiERP.Avalonia.UI.Services
         }
 
         /// <summary>
-        /// Creates a new PostgreSQL connection from configuration
-        /// Connection is opened and ready to use
-        /// IMPORTANT: Caller must dispose the connection using 'using' statement
+        /// Creates a new PostgreSQL connection from configuration.
+        /// The connection is NOT opened here to allow for asynchronous opening in the services.
         /// </summary>
-        /// <returns>An open PostgreSQL connection</returns>
+        /// <returns>A new IDbConnection instance (NpgsqlConnection)</returns>
         public IDbConnection CreateConnection()
         {
-            var connection = _configurator.GetNpgsqlConnection();
-
-            // Ensure connection is open
-            if (connection.State != ConnectionState.Open)
-            {
-                connection.Open();
-            }
-
-            return connection;
+            // Just return the connection object, don't open it yet.
+            // This avoids mixing synchronous Open() with asynchronous Dapper calls.
+            return _configurator.GetNpgsqlConnection();
         }
     }
 }

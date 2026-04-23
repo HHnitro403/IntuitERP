@@ -21,6 +21,7 @@ namespace IntuiERP.Avalonia.UI
         private bool _isPasswordValid = false;
         private UsuarioService? _usuarioService;
         private readonly UserContext _userContext;
+        private bool _isLoggingIn = false;
 
         public MainWindow()
         {
@@ -31,7 +32,25 @@ namespace IntuiERP.Avalonia.UI
             PasswordEntry.TextChanged += OnPasswordTextChanged;
             LoginButton.Click += LoginButton_Clicked;
             
+            var toggleThemeButton = this.FindControl<Button>("ToggleThemeButton");
+            if (toggleThemeButton != null)
+            {
+                toggleThemeButton.Click += (s, e) => ToggleTheme();
+            }
+            
             this.Opened += MainWindow_Opened;
+        }
+
+        private void ToggleTheme()
+        {
+            var app = Application.Current;
+            if (app != null)
+            {
+                var currentTheme = app.ActualThemeVariant;
+                app.RequestedThemeVariant = currentTheme == global::Avalonia.Styling.ThemeVariant.Dark 
+                    ? global::Avalonia.Styling.ThemeVariant.Light 
+                    : global::Avalonia.Styling.ThemeVariant.Dark;
+            }
         }
 
         private async void MainWindow_Opened(object? sender, EventArgs e)
@@ -49,21 +68,13 @@ namespace IntuiERP.Avalonia.UI
         {
             try
             {
-                var configurator = new Configurator();
-                IDbConnection connection = configurator.GetNpgsqlConnection();
+                // Use the factory for better lifecycle management
+                var factory = new NpgsqlConnectionFactory();
                 
-                // Test the connection immediately
-                try 
-                {
-                    connection.Open();
-                    connection.Close();
-                }
-                catch (Exception connEx)
-                {
-                    await MessageBox.Show(this, $"Database connection failed: {connEx.Message}", "Connection Error");
-                }
-
-                _usuarioService = new UsuarioService(connection);
+                // Optional: Verify connection string exists
+                var configurator = new Configurator();
+                
+                _usuarioService = new UsuarioService(factory);
                 LoginGrid.IsEnabled = true;
             }
             catch (Exception ex)
@@ -78,6 +89,8 @@ namespace IntuiERP.Avalonia.UI
 
         private async void LoginButton_Clicked(object? sender, RoutedEventArgs e)
         {
+            if (_isLoggingIn) return;
+            
             if (_usuarioService == null)
             {
                 await MessageBox.Show(this, "The application is not connected to the database. Please restart.", "Error");
@@ -86,19 +99,34 @@ namespace IntuiERP.Avalonia.UI
 
             try
             {
+                SetLoginState(true);
+                
                 var result = await LoginAsync();
                 if (result)
                 {
-                    var menuWindow = new MaenuWindow(); 
-                    menuWindow.Show();
-                    this.Close(); 
+                    // Swap the content of the current window to the MenuPage
+                    this.Content = new Views.MenuPage(); 
                 }
             }
             catch (Exception ex)
             {
                 await MessageBox.Show(this, ex.Message, "Login Failed");
                 Console.WriteLine($"Login error: {ex.Message}");
+                SetLoginState(false);
             }
+        }
+
+        private void SetLoginState(bool isLoggingIn)
+        {
+            _isLoggingIn = isLoggingIn;
+            LoginButton.IsEnabled = !isLoggingIn && _isUserValid && _isPasswordValid;
+            UserEntry.IsEnabled = !isLoggingIn;
+            PasswordEntry.IsEnabled = !isLoggingIn;
+            
+            if (isLoggingIn)
+                LoginButton.Content = "ENTRANDO...";
+            else
+                LoginButton.Content = "LOGIN";
         }
 
         public async Task<bool> LoginAsync()
@@ -163,7 +191,7 @@ namespace IntuiERP.Avalonia.UI
                 ShowPasswordError("Password is required");
                 _isPasswordValid = false;
             }
-            else if (password.Length < 5) // Reduced to 5 for initial tests if needed
+            else if (password.Length < 5)
             {
                 ShowPasswordError("Password must be at least 5 characters");
                 _isPasswordValid = false;
@@ -185,7 +213,7 @@ namespace IntuiERP.Avalonia.UI
         private void HideUserError()
         {
             UserErrorLabel.IsVisible = false;
-            UserFrame.BorderBrush = GetResourceBrush("BorderBrush") ?? Brushes.Gray;
+            UserFrame.BorderBrush = GetResourceBrush("BorderBrushColor") ?? Brushes.Gray;
         }
 
         private void ShowPasswordError(string message)
@@ -198,7 +226,7 @@ namespace IntuiERP.Avalonia.UI
         private void HidePasswordError()
         {
             PasswordErrorLabel.IsVisible = false;
-            PasswordFrame.BorderBrush = GetResourceBrush("BorderBrush") ?? Brushes.Gray;
+            PasswordFrame.BorderBrush = GetResourceBrush("BorderBrushColor") ?? Brushes.Gray;
         }
 
         private IBrush? GetResourceBrush(string resourceKey)
@@ -212,7 +240,8 @@ namespace IntuiERP.Avalonia.UI
 
         private void UpdateLoginButtonState()
         {
-            LoginButton.IsEnabled = _isUserValid && _isPasswordValid;
+            if (!_isLoggingIn)
+                LoginButton.IsEnabled = _isUserValid && _isPasswordValid;
         }
     }
 }

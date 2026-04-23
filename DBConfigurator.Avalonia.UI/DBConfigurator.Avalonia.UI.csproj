@@ -20,6 +20,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+	  
     <PackageReference Include="Npgsql" Version="10.0.2" />
     <PackageReference Include="Dapper" Version="2.1.72" />
   </ItemGroup>

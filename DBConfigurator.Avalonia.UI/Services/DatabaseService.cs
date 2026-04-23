@@ -43,11 +43,28 @@ namespace DBConfigurator.Avalonia.UI.Services
                     CREATE TABLE IF NOT EXISTS Connection (
                         ID INTEGER PRIMARY KEY AUTOINCREMENT,
                         Server TEXT,
+                        Port INTEGER DEFAULT 5432,
                         DataBase TEXT,
                         User TEXT,
                         Password TEXT
                     )");
+                    
+                // Try to add the Port column if the table already existed without it
+                try
+                {
+                    connection.Execute("ALTER TABLE Connection ADD COLUMN Port INTEGER DEFAULT 5432");
+                }
+                catch
+                {
+                    // Column likely already exists
+                }
             }
+        }
+
+        public string BuildConnectionString(Configuration config)
+        {
+            string cleanHost = config.Server.Replace("postgresql://", "").Split(':')[0].Trim();
+            return $"Host={cleanHost};Port={config.Port};Database={config.DataBase};Username={config.User};Password={config.Password};SSL Mode=Prefer;Trust Server Certificate=true;Pooling=false;";
         }
 
         public async Task<List<Configuration>> GetConfigurationsAsync()
@@ -76,14 +93,14 @@ namespace DBConfigurator.Avalonia.UI.Services
                 {
                     return await connection.ExecuteAsync(@"
                         UPDATE Connection 
-                        SET Server = @Server, DataBase = @DataBase, User = @User, Password = @Password 
+                        SET Server = @Server, Port = @Port, DataBase = @DataBase, User = @User, Password = @Password 
                         WHERE ID = @ID", config);
                 }
                 else
                 {
                     return await connection.ExecuteAsync(@"
-                        INSERT INTO Connection (Server, DataBase, User, Password) 
-                        VALUES (@Server, @DataBase, @User, @Password)", config);
+                        INSERT INTO Connection (Server, Port, DataBase, User, Password) 
+                        VALUES (@Server, @Port, @DataBase, @User, @Password)", config);
                 }
             }
         }

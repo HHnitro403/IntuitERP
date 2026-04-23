@@ -2,7 +2,60 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.Search.UsuarioSearch">
-  Welcome to Avalonia!
+             xmlns:models="clr-namespace:IntuiERP.Avalonia.UI.models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="IntuiERP.Avalonia.UI.Views.Search.UsuarioSearch"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <Style Selector="Button.ActionBtn">
+            <Setter Property="Height" Value="45" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <Button x:Name="BtnBack" Content="Voltar" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" />
+                <TextBlock Grid.Column="1" Text="Usuários Cadastrados" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Search and Actions -->
+        <StackPanel Grid.Row="1" Margin="15" Spacing="10">
+            <TextBox x:Name="UsuarioSearchBar" PlaceholderText="Buscar usuário por nome ou código..." />
+            
+            <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                <Button x:Name="NovoUsuarioButton" Content="Novo" Classes="ActionBtn" Background="#28A745" Foreground="White" />
+                <Button x:Name="EditarUsuarioButton" Content="Editar" Classes="ActionBtn" Background="#FFC107" Foreground="#212529" IsEnabled="False" Grid.Column="1" />
+                <Button x:Name="ExcluirUsuarioButton" Content="Excluir" Classes="ActionBtn" Background="#DC3545" Foreground="White" IsEnabled="False" Grid.Column="2" />
+            </Grid>
+        </StackPanel>
+
+        <!-- List -->
+        <Border Grid.Row="2" Margin="15,0,15,15" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000" ClipToBounds="True">
+            <ListBox x:Name="UsuariosListBox" Background="Transparent" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:UsuarioModel">
+                        <StackPanel Margin="10">
+                            <TextBlock FontWeight="Bold" FontSize="16" Foreground="{DynamicResource FieldLabelColor}">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Cód: {0} - {1}">
+                                        <Binding Path="CodUsuarios" />
+                                        <Binding Path="Usuario" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+    </Grid>
 </UserControl>

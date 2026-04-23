@@ -2,7 +2,180 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.CadastroCliente">
-  Welcome to Avalonia!
+             xmlns:models="clr-namespace:IntuiERP.Avalonia.UI.models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1000"
+             x:Class="IntuiERP.Avalonia.UI.Views.CadastroCliente"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.FormLabel">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style Selector="Border.FormField">
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+        </Style>
+
+        <Style Selector="TextBox.InputField">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="CalendarDatePicker">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.PrimaryAction">
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.SecondaryAction">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <TextBlock x:Name="HeaderLabel" Text="Cadastro de Cliente" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Form Content -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="15" Margin="20">
+                <Border Padding="20, 25" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000">
+                    <StackPanel Spacing="15">
+                        <!-- Nome Completo -->
+                        <StackPanel>
+                            <TextBlock Text="Nome Completo:" Classes="FormLabel"/>
+                            <Border Classes="FormField">
+                                <TextBox x:Name="NomeEntry" Watermark="Digite o nome completo" Classes="InputField"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Email & Telefone -->
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Email:" Classes="FormLabel"/>
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="EmailEntry" Watermark="exemplo@dominio.com" Classes="InputField"/>
+                                </Border>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Telefone:" Classes="FormLabel"/>
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="TelefoneEntry" Watermark="(XX) XXXXX-XXXX" Classes="InputField"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Data Nascimento & CPF -->
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Data de Nascimento:" Classes="FormLabel"/>
+                                <CalendarDatePicker x:Name="DataNascimentoPicker" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="CPF:" Classes="FormLabel"/>
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="CpfEntry" Watermark="000.000.000-00" MaxLength="14" Classes="InputField"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Endereço -->
+                        <Grid ColumnDefinitions="*, 120" ColumnSpacing="15">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Endereço:" Classes="FormLabel"/>
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="EnderecoEntry" Watermark="Rua, Avenida, etc." Classes="InputField"/>
+                                </Border>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Número:" Classes="FormLabel"/>
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="NumeroEntry" Watermark="Nº" Classes="InputField"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*, 120" ColumnSpacing="15">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Bairro:" Classes="FormLabel"/>
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="BairroEntry" Watermark="Nome do bairro" Classes="InputField"/>
+                                </Border>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="CEP:" Classes="FormLabel"/>
+                                <Border Classes="FormField">
+                                    <TextBox x:Name="CepEntry" Watermark="00000-000" MaxLength="9" Classes="InputField"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Cidade -->
+                        <StackPanel>
+                            <TextBlock Text="Cidade:" Classes="FormLabel" />
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                <ComboBox x:Name="CidadeComboBox" Grid.Column="0" HorizontalAlignment="Stretch">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="models:CidadeModel">
+                                            <TextBlock Text="{Binding Cidade}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Data Cadastro & Status -->
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="15">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Data de Cadastro:" Classes="FormLabel"/>
+                                <CalendarDatePicker x:Name="DataCadastroPicker" IsEnabled="False" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Ativo:" Classes="FormLabel" />
+                                <ToggleSwitch x:Name="AtivoSwitch" IsChecked="True" OnContent="Sim" OffContent="Não" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Padding="20" Background="{DynamicResource CardBackgroundColor}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                <Button x:Name="CancelarButton" Content="Cancelar" Classes="SecondaryAction" HorizontalAlignment="Stretch" />
+                <Button x:Name="SalvarButton" Grid.Column="1" Content="Salvar" Classes="PrimaryAction" HorizontalAlignment="Stretch" />
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

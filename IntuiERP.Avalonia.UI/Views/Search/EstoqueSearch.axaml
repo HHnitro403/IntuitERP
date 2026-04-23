@@ -2,7 +2,73 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.Search.EstoqueSearch">
-  Welcome to Avalonia!
+             xmlns:models="clr-namespace:IntuiERP.Avalonia.UI.models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="IntuiERP.Avalonia.UI.Views.Search.EstoqueSearch"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <Style Selector="Button.ActionBtn">
+            <Setter Property="Height" Value="45" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <Button x:Name="BtnBack" Content="Voltar" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" />
+                <TextBlock Grid.Column="1" Text="Histórico de Estoque" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Search and Actions -->
+        <StackPanel Grid.Row="1" Margin="15" Spacing="10">
+            <TextBox x:Name="EstoqueSearchBar" PlaceholderText="Buscar por nome do produto ou código..." />
+            
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                <Button x:Name="NovaMovimentacaoButton" Content="Nova Movimentação" Classes="ActionBtn" Background="#28A745" Foreground="White" />
+                <Button x:Name="ExcluirMovimentacaoButton" Content="Excluir Registro" Classes="ActionBtn" Background="#DC3545" Foreground="White" IsEnabled="False" Grid.Column="1" />
+            </Grid>
+        </StackPanel>
+
+        <!-- List -->
+        <Border Grid.Row="2" Margin="15,0,15,15" Background="{DynamicResource CardBackgroundColor}" CornerRadius="12" BoxShadow="0 4 15 0 #1A000000" ClipToBounds="True">
+            <ListBox x:Name="EstoqueListBox" Background="Transparent" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:EstoqueModel">
+                        <StackPanel Margin="10" Spacing="5">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <TextBlock Text="{Binding ProdutoNome}" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource FieldLabelColor}" />
+                                <TextBlock Grid.Column="1" Text="{Binding TipoDescricao}" FontWeight="Bold" FontSize="14">
+                                    <TextBlock.Foreground>
+                                        <Binding Path="Tipo">
+                                            <!-- Logic in code-behind or converter for color could be added, but keeping it simple -->
+                                        </Binding>
+                                    </TextBlock.Foreground>
+                                </TextBlock>
+                            </Grid>
+                            
+                            <Grid ColumnDefinitions="*, *">
+                                <TextBlock Grid.Column="0" FontSize="13" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.7">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="Qtd: {0} | Data: {1:dd/MM/yyyy}">
+                                            <Binding Path="Qtd" />
+                                            <Binding Path="Data" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <TextBlock Grid.Column="1" Text="{Binding CodEst, StringFormat='ID: {0}'}" FontSize="11" HorizontalAlignment="Right" Opacity="0.5" />
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+    </Grid>
 </UserControl>

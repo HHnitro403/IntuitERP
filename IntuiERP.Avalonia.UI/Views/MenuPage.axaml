@@ -2,7 +2,224 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IntuiERP.Avalonia.UI.Views.MenuPage">
-  Welcome to Avalonia!
+             xmlns:models="clr-namespace:IntuiERP.Avalonia.UI.models"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+             x:Class="IntuiERP.Avalonia.UI.Views.MenuPage"
+             Background="{DynamicResource SystemRegionBrush}">
+
+    <UserControl.Styles>
+        <!-- Modernized Style for Menu Buttons -->
+        <Style Selector="Button.ModernMenuButton">
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,2" />
+        </Style>
+
+        <Style Selector="Button.ModernMenuButton:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1976D2" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <!-- Style for the main content cards/panels -->
+        <Style Selector="Border.DashboardCard">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushColor}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}" />
+            <Setter Property="Padding" Value="15" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="BoxShadow" Value="0 4 15 0 #1A000000" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Header -->
+        <Border Grid.Row="0" Background="#1B4F83" Padding="20,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="2" VerticalAlignment="Center">
+                    <TextBlock Text="ERP System" Foreground="White" FontSize="22" FontWeight="Bold" />
+                    <TextBlock x:Name="WelcomeLabel" Text="Welcome, User" Foreground="White" FontSize="14" Opacity="0.9" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20" VerticalAlignment="Center">
+                    <TextBlock x:Name="DataLabel"
+                           Text="24/04/2025"
+                           Foreground="White"
+                           VerticalAlignment="Center"
+                           Opacity="0.9" />
+                    <Button x:Name="ToggleThemeButton" Content="Toggle Theme" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" />
+                    <Button x:Name="LogoutButton" Content="Logout" Background="#D32F2F" Foreground="White" FontWeight="Bold" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Navigation Menu -->
+            <ScrollViewer Grid.Column="0" Background="{DynamicResource CardBackgroundColor}">
+                <StackPanel Spacing="15" Margin="20">
+                    <TextBlock Text="Dashboard"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource FieldLabelColor}"
+                           Margin="0,0,0,10" />
+
+                    <!-- Cadastros Group -->
+                    <Border Padding="15" CornerRadius="8" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Cadastros" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" />
+                            <Button Content="Produtos" Name="ProdutosBtn" Classes="ModernMenuButton" />
+                            <Button Content="Cidades" Name="CidadesBtn" Classes="ModernMenuButton" />
+                            <Button Content="Clientes" Name="ClientesBtn" Classes="ModernMenuButton" />
+                            <Button Content="Fornecedores" Name="FornecedoresBtn" Classes="ModernMenuButton" />
+                            <Button Content="Usuários" Name="UsuariosBtn" Classes="ModernMenuButton" />
+                            <Button Content="Vendedores" Name="VendedoresBtn" Classes="ModernMenuButton" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Operações Group -->
+                    <Border Padding="15" CornerRadius="8" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Operações" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" />
+                            <Button Content="Compras" Name="ComprasBtn" Classes="ModernMenuButton" />
+                            <Button Content="Vendas" Name="VendasBtn" Classes="ModernMenuButton" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Financial Management -->
+                    <Border Padding="15" CornerRadius="8" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Financeiro" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" />
+                            <Button Content="Contas a Receber" Name="ContasReceberBtn" Classes="ModernMenuButton" />
+                            <Button Content="Contas a Pagar" Name="ContasPagarBtn" Classes="ModernMenuButton" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Stock Management -->
+                    <Border Padding="15" CornerRadius="8" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Estoque" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" />
+                            <Button Content="Gerenciar Estoque" Name="EstoqueBtn" Classes="ModernMenuButton" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Reports -->
+                    <Border Padding="15" CornerRadius="8" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Relatorios" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FieldLabelColor}" />
+                            <Button Content="Relatorios Gerenciais" Name="ReportsBtn" Classes="ModernMenuButton" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Right Content Area (Dashboard) -->
+            <ScrollViewer Grid.Column="1">
+                <StackPanel Spacing="20" Margin="25">
+
+                    <TextBlock Text="Dashboard"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource FieldLabelColor}" />
+
+                    <!-- Dashboard KPI Cards -->
+                    <Grid ColumnDefinitions="*, *, *">
+                        <!-- Sales Summary Card -->
+                        <Border Grid.Column="0" Margin="0,0,10,0" Classes="DashboardCard">
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Vendas" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.7" />
+                                <TextBlock x:Name="TotalVendasMes" Text="R$ 0,00" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryBrush}" />
+                                <TextBlock x:Name="PorcentagemVendas" Text="+0,00%" FontSize="12" Foreground="#34A853" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Expenses Card -->
+                        <Border Grid.Column="1" Margin="10,0,10,0" Classes="DashboardCard">
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Despesas" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.7" />
+                                <TextBlock x:Name="TotalDespesasMes" Text="R$ 0,00" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryBrush}" />
+                                <TextBlock x:Name="PorcentagemDespesas" Text="+0,00%" FontSize="12" Foreground="#34A853" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Inventory Card -->
+                        <Border Grid.Column="2" Margin="10,0,0,0" Classes="DashboardCard">
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Estoque" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.7" />
+                                <TextBlock x:Name="TotalProdutos" Text="0" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryBrush}" />
+                                <TextBlock x:Name="ProdEstBaixo" Text="0 produtos com estoque baixo" FontSize="12" Foreground="#D32F2F" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Recent Orders Card -->
+                    <Border Classes="DashboardCard">
+                        <StackPanel Spacing="15">
+                            <TextBlock Text="Pedidos Recentes"
+                                   FontWeight="Bold"
+                                   FontSize="18"
+                                   Foreground="{DynamicResource FieldLabelColor}" />
+
+                            <!-- Order Header -->
+                            <Grid Margin="10,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.5*" />
+                                    <ColumnDefinition Width="3*" />
+                                    <ColumnDefinition Width="1.5*" />
+                                    <ColumnDefinition Width="1.5*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Data" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.6" />
+                                <TextBlock Grid.Column="1" Text="Cliente" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.6" />
+                                <TextBlock Grid.Column="2" Text="Vendedor" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.6" TextAlignment="Right" />
+                                <TextBlock Grid.Column="3" Text="Valor" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.6" TextAlignment="Right" />
+                            </Grid>
+
+                            <Separator Background="{DynamicResource BorderBrushColor}" Height="1" />
+
+                            <ListBox x:Name="RecentOrdersList" Background="Transparent" BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:VendaDisplayModel">
+                                        <Grid Margin="0,5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1.5*" />
+                                                <ColumnDefinition Width="3*" />
+                                                <ColumnDefinition Width="1.5*" />
+                                                <ColumnDefinition Width="1.5*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding DataVenda, StringFormat={}{0:dd/MM/yyyy}}" FontSize="14" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="{Binding NomeCliente}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Text="{Binding NomeVendedor}" FontSize="13" VerticalAlignment="Center" TextAlignment="Right" />
+                                            <TextBlock Grid.Column="3" Text="{Binding ValorTotal, StringFormat={}{0:C2}}" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" TextAlignment="Right" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            
+                            <TextBlock x:Name="EmptyRecentOrdersLabel" Text="Nenhum pedido recente." HorizontalAlignment="Center" Margin="20" IsVisible="False" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
 </UserControl>

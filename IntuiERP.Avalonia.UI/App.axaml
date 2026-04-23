@@ -4,17 +4,26 @@
              RequestedThemeVariant="Default">
 
     <Application.Resources>
-        <!-- Colors -->
-        <Color x:Key="PrimaryColor">#2196F3</Color>
-        <Color x:Key="ErrorColor">#F44336</Color>
-        <Color x:Key="CardColor">#FFFFFF</Color>
-        <Color x:Key="BorderColor">#E0E0E0</Color>
-        
-        <!-- Brushes -->
-        <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
-        <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
-        <SolidColorBrush x:Key="CardBackgroundColor" Color="{StaticResource CardColor}"/>
-        <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="CardBackgroundColor">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="BorderBrushColor">#E0E0E0</SolidColorBrush>
+                    <SolidColorBrush x:Key="FieldLabelColor">#333333</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="CardBackgroundColor">#1E1E1E</SolidColorBrush>
+                    <SolidColorBrush x:Key="BorderBrushColor">#333333</SolidColorBrush>
+                    <SolidColorBrush x:Key="FieldLabelColor">#E0E0E0</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            
+            <Color x:Key="PrimaryColor">#2196F3</Color>
+            <Color x:Key="ErrorColor">#F44336</Color>
+            
+            <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
+            <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
+        </ResourceDictionary>
     </Application.Resources>
 
     <Application.Styles>
@@ -23,7 +32,7 @@
         <Style Selector="TextBlock.FieldLabel">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Foreground" Value="{DynamicResource FieldLabelColor}"/>
         </Style>
 
         <Style Selector="TextBox.InputField">
@@ -33,7 +42,7 @@
         </Style>
 
         <Style Selector="Button.LoginButton">
-            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Height" Value="50"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
