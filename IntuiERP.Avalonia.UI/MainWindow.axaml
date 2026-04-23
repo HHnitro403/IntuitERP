@@ -4,6 +4,61 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="IntuiERP.Avalonia.UI.MainWindow"
-        Title="IntuiERP.Avalonia.UI">
-    Welcome to Avalonia!
+        Title="IntuiERP - Login">
+	<Grid x:Name="LoginGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
+		<Border CornerRadius="20" BorderThickness="0"
+				Background="{DynamicResource CardBackgroundColor}"
+				Padding="30" Width="400"
+				BoxShadow="0 8 30 0 #1A000000">
+			<StackPanel Orientation="Vertical" Spacing="25">
+
+				<!-- Logo/Image -->
+				<Image x:Name="BotImage"
+					   Source="avares://IntuiERP.Avalonia.UI/Assets/dotnet_bot.png"
+					   Height="100"
+					   HorizontalAlignment="Center"
+					   Margin="0,0,0,10" />
+
+				<!-- Form Fields -->
+				<StackPanel Orientation="Vertical" Spacing="15">
+
+					<!-- Username Input -->
+					<StackPanel Orientation="Vertical" Spacing="8">
+						<TextBlock Text="Usuario" Classes="FieldLabel" />
+						<Border x:Name="UserFrame" CornerRadius="8"
+								BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+								Padding="15,0" Height="50">
+							<TextBox x:Name="UserEntry"
+									 PlaceholderText="Digite o seu Usuario"
+									 Classes="InputField" />
+						</Border>
+						<TextBlock x:Name="UserErrorLabel" IsVisible="False"
+								   Foreground="{DynamicResource ErrorBrush}" FontSize="12" />
+					</StackPanel>
+
+					<!-- Password Input -->
+					<StackPanel Orientation="Vertical" Spacing="8">
+						<TextBlock Text="Senha" Classes="FieldLabel" />
+						<Border x:Name="PasswordFrame" CornerRadius="8"
+								BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+								Padding="15,0" Height="50">
+							<TextBox x:Name="PasswordEntry"
+									 PlaceholderText="Digite a sua Senha"
+									 PasswordChar="●"
+									 Classes="InputField" />
+						</Border>
+						<TextBlock x:Name="PasswordErrorLabel" IsVisible="False"
+								   Foreground="{DynamicResource ErrorBrush}" FontSize="12" />
+					</StackPanel>
+				</StackPanel>
+
+				<!-- Login Button -->
+				<Button x:Name="LoginButton"
+						Content="LOGIN"
+						IsEnabled="False"
+						CornerRadius="5"
+						Classes="LoginButton" />
+			</StackPanel>
+		</Border>
+	</Grid>
 </Window>
