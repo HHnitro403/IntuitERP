@@ -194,7 +194,8 @@ public partial class MenuPage : UserControl
 
     private async void OnNavigationClicked(string destination)
     {
-        if (VisualRoot is not Window window) return;
+        var window = TopLevel.GetTopLevel(this) as Window;
+        if (window == null) return;
 
         try
         {
@@ -318,7 +319,8 @@ public partial class MenuPage : UserControl
     private void LogoutButton_Click(object? sender, RoutedEventArgs e)
     {
         _userContext.ClearCurrentUser();
-        if (VisualRoot is Window window)
+        var window = TopLevel.GetTopLevel(this) as Window;
+        if (window != null)
         {
             window.Content = new MainWindow(); // Return to Login
         }
