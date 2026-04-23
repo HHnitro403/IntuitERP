@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuitERP", "IntuitERP\Intu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBconfigurator", "DBconfigurator\DBconfigurator.csproj", "{333D672D-4F6A-4904-B21E-37ED858E44B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuiERP.Avalonia.UI", "IntuiERP.Avalonia.UI\IntuiERP.Avalonia.UI.csproj", "{09D57761-BAD7-4E82-83A3-F1F838672B86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntuiERP.Avalonia.UI", "IntuiERP.Avalonia.UI\IntuiERP.Avalonia.UI.csproj", "{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBConfigurator.Avalonia.UI", "DBConfigurator.Avalonia.UI\DBConfigurator.Avalonia.UI.csproj", "{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBConfigurator.Avalonia.UI", "DBConfigurator.Avalonia.UI\DBConfigurator.Avalonia.UI.csproj", "{1308D325-4C57-4E17-9489-241ED5A84FCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,22 +43,22 @@ Global
 		{333D672D-4F6A-4904-B21E-37ED858E44B7}.Release|x64.ActiveCfg = Release|x64
 		{333D672D-4F6A-4904-B21E-37ED858E44B7}.Release|x64.Build.0 = Release|x64
 		{333D672D-4F6A-4904-B21E-37ED858E44B7}.Release|x64.Deploy.0 = Release|x64
-		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Debug|x64.Build.0 = Debug|Any CPU
-		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Release|x64.ActiveCfg = Release|Any CPU
-		{09D57761-BAD7-4E82-83A3-F1F838672B86}.Release|x64.Build.0 = Release|Any CPU
-		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Debug|x64.Build.0 = Debug|Any CPU
-		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Release|x64.ActiveCfg = Release|Any CPU
-		{EBA90A2B-290C-4BCD-AE9C-34DD9A847BF5}.Release|x64.Build.0 = Release|Any CPU
+		{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}.Debug|x64.Build.0 = Debug|Any CPU
+		{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}.Release|x64.ActiveCfg = Release|Any CPU
+		{F48FC7ED-8454-4124-B6C6-8B5E8E238DAC}.Release|x64.Build.0 = Release|Any CPU
+		{1308D325-4C57-4E17-9489-241ED5A84FCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1308D325-4C57-4E17-9489-241ED5A84FCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1308D325-4C57-4E17-9489-241ED5A84FCF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1308D325-4C57-4E17-9489-241ED5A84FCF}.Debug|x64.Build.0 = Debug|Any CPU
+		{1308D325-4C57-4E17-9489-241ED5A84FCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1308D325-4C57-4E17-9489-241ED5A84FCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1308D325-4C57-4E17-9489-241ED5A84FCF}.Release|x64.ActiveCfg = Release|Any CPU
+		{1308D325-4C57-4E17-9489-241ED5A84FCF}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

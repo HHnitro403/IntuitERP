@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-namespace IntuitERP.Desktop
+namespace IntuiERP.Avalonia.UI
 {
     public partial class App : Application
     {

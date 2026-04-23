@@ -1,10 +1,7 @@
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Avalonia;
+﻿using Avalonia;
 using System;
 
-namespace IntuitERP.Desktop
+namespace IntuiERP.Avalonia.UI
 {
     internal class Program
     {
@@ -23,4 +20,3 @@ namespace IntuitERP.Desktop
                 .LogToTrace();
     }
 }
-
