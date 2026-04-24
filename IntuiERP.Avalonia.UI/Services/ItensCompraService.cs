@@ -17,31 +17,23 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<IEnumerable<ItemCompraModel>> GetAllAsync()
         {
-            const string query = "SELECT * FROM itenscompra";
+            const string query = "SELECT * FROM itens_compra";
             return await _connection.QueryAsync<ItemCompraModel>(query);
         }
 
         public async Task<ItemCompraModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM itenscompra WHERE CodItem = @Id";
+            const string query = "SELECT * FROM itens_compra WHERE id = @Id";
             return await _connection.QueryFirstOrDefaultAsync<ItemCompraModel>(query, new { Id = id });
         }
 
         public async Task<int> InsertAsync(ItemCompraModel item)
         {
             const string query =
-                @"INSERT INTO itenscompra 
-                (CodCompra, CodProduto, Descricao, quantidade, valor_unitario, valor_total, desconto) 
+                @"INSERT INTO itens_compra 
+                (cod_compra, cod_produto, quantidade, preco_unitario) 
                 VALUES 
-                (@CodCompra, @CodProduto, @Descricao, @quantidade, @valor_unitario, @valor_total, @desconto) RETURNING CodItem;";
-
-            // Calculate total value if not provided
-            if (!item.valor_total.HasValue && item.quantidade.HasValue && item.valor_unitario.HasValue)
-            {
-                decimal totalBeforeDiscount = item.quantidade.Value * item.valor_unitario.Value;
-                item.valor_total = item.desconto.HasValue ?
-                    totalBeforeDiscount - item.desconto.Value : totalBeforeDiscount;
-            }
+                (@CodCompra, @CodProduto, @quantidade, @preco_unitario) RETURNING id;";
 
             return await _connection.ExecuteScalarAsync<int>(query, item);
         }
@@ -49,43 +41,32 @@ namespace IntuiERP.Avalonia.UI.Services
         public async Task<int> UpdateAsync(ItemCompraModel item)
         {
             const string query =
-                @"UPDATE itenscompra SET 
-                CodCompra = @CodCompra, 
-                CodProduto = @CodProduto, 
-                Descricao = @Descricao, 
+                @"UPDATE itens_compra SET 
+                cod_compra = @CodCompra, 
+                cod_produto = @CodProduto, 
                 quantidade = @quantidade, 
-                valor_unitario = @valor_unitario, 
-                valor_total = @valor_total, 
-                desconto = @desconto 
-                WHERE CodItem = @CodItem";
-
-            // Calculate total value if not provided
-            if (!item.valor_total.HasValue && item.quantidade.HasValue && item.valor_unitario.HasValue)
-            {
-                decimal totalBeforeDiscount = item.quantidade.Value * item.valor_unitario.Value;
-                item.valor_total = item.desconto.HasValue ?
-                    totalBeforeDiscount - item.desconto.Value : totalBeforeDiscount;
-            }
+                preco_unitario = @preco_unitario 
+                WHERE id = @Id";
 
             return await _connection.ExecuteAsync(query, item);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM itenscompra WHERE CodItem = @Id";
+            const string query = "DELETE FROM itens_compra WHERE id = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
 
         public async Task<IEnumerable<ItemCompraModel>> GetByCompraAsync(int compraId)
         {
-            const string query = "SELECT * FROM itenscompra WHERE CodCompra = @CompraId";
+            const string query = "SELECT * FROM itens_compra WHERE cod_compra = @CompraId";
             return await _connection.QueryAsync<ItemCompraModel>(query,
                 new { CompraId = compraId });
         }
 
         public async Task<int> DeleteByCompraAsync(int compraId)
         {
-            const string query = "DELETE FROM itenscompra WHERE CodCompra = @CompraId";
+            const string query = "DELETE FROM itens_compra WHERE cod_compra = @CompraId";
             return await _connection.ExecuteAsync(query, new { CompraId = compraId });
         }
     }

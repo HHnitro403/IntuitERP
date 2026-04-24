@@ -25,7 +25,7 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<ClienteModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM cliente WHERE CodCliente = @Id";
+            const string query = "SELECT * FROM cliente WHERE cod_cliente = @Id";
             return await _connection.QueryFirstOrDefaultAsync<ClienteModel>(query, new { Id = id });
         }
 
@@ -33,11 +33,11 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"INSERT INTO cliente 
-                (CodCidade, Nome, Email, Telefone, DataNascimento, CPF, Endereco, 
-                 Numero, Bairro, CEP, DataCadastro, DataUltimaCompra, Ativo) 
+                (cod_cidade, nome, email, telefone, data_nascimento, cpf, endereco, 
+                 numero, bairro, cep, data_cadastro, data_ultima_compra, ativo) 
                 VALUES 
                 (@CodCidade, @Nome, @Email, @Telefone, @DataNascimento, @CPF, @Endereco,
-                 @Numero, @Bairro, @CEP, @DataCadastro, @DataUltimaCompra, @Ativo) RETURNING CodCliente;";
+                 @Numero, @Bairro, @CEP, @DataCadastro, @DataUltimaCompra, @Ativo) RETURNING cod_cliente;";
 
             if (cliente.DataCadastro == null)
                 cliente.DataCadastro = DateTime.Now;
@@ -49,37 +49,37 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE cliente SET 
-                CodCidade = @CodCidade,
-                Nome = @Nome, 
-                Email = @Email, 
-                Telefone = @Telefone, 
-                DataNascimento = @DataNascimento, 
-                CPF = @CPF, 
-                Endereco = @Endereco,
-                Numero = @Numero,
-                Bairro = @Bairro,
-                CEP = @CEP,
-                DataUltimaCompra = @DataUltimaCompra, 
-                Ativo = @Ativo 
-                WHERE CodCliente = @CodCliente";
+                cod_cidade = @CodCidade,
+                nome = @Nome, 
+                email = @Email, 
+                telefone = @Telefone, 
+                data_nascimento = @DataNascimento, 
+                cpf = @CPF, 
+                endereco = @Endereco,
+                numero = @Numero,
+                bairro = @Bairro,
+                cep = @CEP,
+                data_ultima_compra = @DataUltimaCompra, 
+                ativo = @Ativo 
+                WHERE cod_cliente = @CodCliente";
             return await _connection.ExecuteAsync(query, cliente);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM cliente WHERE CodCliente = @Id";
+            const string query = "DELETE FROM cliente WHERE cod_cliente = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
 
         public async Task<ClienteModel> GetByEmailAsync(string email)
         {
-            const string query = "SELECT * FROM cliente WHERE Email = @Email";
+            const string query = "SELECT * FROM cliente WHERE email = @Email";
             return await _connection.QueryFirstOrDefaultAsync<ClienteModel>(query, new { Email = email });
         }
 
         public async Task<ClienteModel> GetByCPFAsync(string cpf)
         {
-            const string query = "SELECT * FROM cliente WHERE CPF = @CPF";
+            const string query = "SELECT * FROM cliente WHERE cpf = @CPF";
             return await _connection.QueryFirstOrDefaultAsync<ClienteModel>(query, new { CPF = cpf });
         }
 
@@ -87,9 +87,9 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"SELECT * FROM cliente 
-                WHERE Nome LIKE @SearchTerm 
-                OR Email LIKE @SearchTerm 
-                OR CPF LIKE @SearchTerm";
+                WHERE nome LIKE @SearchTerm 
+                OR email LIKE @SearchTerm 
+                OR cpf LIKE @SearchTerm";
             return await _connection.QueryAsync<ClienteModel>(query, new { SearchTerm = $"%{searchTerm}%" });
         }
     }

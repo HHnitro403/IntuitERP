@@ -24,7 +24,7 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<FornecedorModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM fornecedor WHERE CodFornecedor = @Id";
+            const string query = "SELECT * FROM fornecedor WHERE cod_fornecedor = @Id";
             return await _connection.QueryFirstOrDefaultAsync<FornecedorModel>(query, new { Id = id });
         }
 
@@ -32,14 +32,12 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"INSERT INTO fornecedor 
-                (CodCidade, RazaoSocial, NomeFantasia, CNPJ, Email, Telefone, 
-                Endereco, DataCadastro, DataUltimaCompra, Ativo) 
+                (cod_cidade, razao_social, nome_fantasia, cnpj, email, telefone, 
+                endereco, numero, bairro, cep, ativo) 
                 VALUES 
                 (@CodCidade, @RazaoSocial, @NomeFantasia, @CNPJ, @Email, @Telefone, 
-                @Endereco, @DataCadastro, @DataUltimaCompra, @Ativo) RETURNING CodFornecedor;";
+                @Endereco, @Numero, @Bairro, @CEP, @Ativo) RETURNING cod_fornecedor;";
 
-            if (fornecedor.DataCadastro == null)
-                fornecedor.DataCadastro = DateTime.Now;
             if (fornecedor.Ativo == null)
                 fornecedor.Ativo = true;
 
@@ -50,28 +48,30 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE fornecedor SET 
-                CodCidade = @CodCidade,
-                RazaoSocial = @RazaoSocial, 
-                NomeFantasia = @NomeFantasia, 
-                CNPJ = @CNPJ, 
-                Email = @Email, 
-                Telefone = @Telefone, 
-                Endereco = @Endereco, 
-                DataUltimaCompra = @DataUltimaCompra, 
-                Ativo = @Ativo 
-                WHERE CodFornecedor = @CodFornecedor";
+                cod_cidade = @CodCidade,
+                razao_social = @RazaoSocial, 
+                nome_fantasia = @NomeFantasia, 
+                cnpj = @CNPJ, 
+                email = @Email, 
+                telefone = @Telefone, 
+                endereco = @Endereco, 
+                numero = @Numero,
+                bairro = @Bairro,
+                cep = @CEP,
+                ativo = @Ativo 
+                WHERE cod_fornecedor = @CodFornecedor";
             return await _connection.ExecuteAsync(query, fornecedor);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM fornecedor WHERE CodFornecedor = @Id";
+            const string query = "DELETE FROM fornecedor WHERE cod_fornecedor = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
 
         public async Task<FornecedorModel> GetByCNPJAsync(string cnpj)
         {
-            const string query = "SELECT * FROM fornecedor WHERE CNPJ = @CNPJ";
+            const string query = "SELECT * FROM fornecedor WHERE cnpj = @CNPJ";
             return await _connection.QueryFirstOrDefaultAsync<FornecedorModel>(query, new { CNPJ = cnpj });
         }
 
@@ -79,20 +79,10 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"SELECT * FROM fornecedor 
-                WHERE RazaoSocial LIKE @SearchTerm 
-                OR NomeFantasia LIKE @SearchTerm 
-                OR CNPJ LIKE @SearchTerm";
+                WHERE razao_social LIKE @SearchTerm 
+                OR nome_fantasia LIKE @SearchTerm 
+                OR cnpj LIKE @SearchTerm";
             return await _connection.QueryAsync<FornecedorModel>(query, new { SearchTerm = $"%{searchTerm}%" });
-        }
-
-        public async Task UpdateUltimaCompraAsync(int fornecedorId)
-        {
-            const string query =
-                @"UPDATE fornecedor SET 
-                DataUltimaCompra = @DataUltimaCompra 
-                WHERE CodFornecedor = @CodFornecedor";
-            await _connection.ExecuteAsync(query,
-                new { CodFornecedor = fornecedorId, DataUltimaCompra = DateTime.Now });
         }
     }
 }

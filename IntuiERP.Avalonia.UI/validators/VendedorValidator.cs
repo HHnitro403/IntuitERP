@@ -12,70 +12,59 @@ namespace IntuiERP.Avalonia.UI.Validators
             // Required fields validation
             if (string.IsNullOrWhiteSpace(vendedor.NomeVendedor))
             {
-                result.AddError("Nome do vendedor é obrigatório");
+                result.AddError("Nome do vendedor ï¿½ obrigatï¿½rio");
             }
             else if (vendedor.NomeVendedor.Length > 255)
             {
-                result.AddError("Nome do vendedor não pode exceder 255 caracteres");
+                result.AddError("Nome do vendedor nï¿½o pode exceder 255 caracteres");
             }
-            else if (Regex.IsMatch(vendedor.NomeVendedor, @"[^a-zA-ZÀ-ÿ\s\-\']"))
+            else if (Regex.IsMatch(vendedor.NomeVendedor, @"[^a-zA-Zï¿½-ï¿½\s\-\']"))
             {
-                result.AddError("Nome do vendedor contém caracteres inválidos");
+                result.AddError("Nome do vendedor contï¿½m caracteres invï¿½lidos");
             }
 
             // Stats validation
-            if (vendedor.totalvendas.HasValue && vendedor.totalvendas < 0)
+            if (vendedor.QtdVendas.HasValue && vendedor.QtdVendas < 0)
             {
-                result.AddError("Total de vendas não pode ser negativo");
+                result.AddError("Total de vendas no pode ser negativo");
             }
 
-            if (vendedor.vendasfinalizadas.HasValue && vendedor.vendasfinalizadas < 0)
+            if (vendedor.QtdVendasFinalizadas.HasValue && vendedor.QtdVendasFinalizadas < 0)
             {
-                result.AddError("Vendas finalizadas não pode ser negativo");
-            }
-
-            if (vendedor.vendascanceladas.HasValue && vendedor.vendascanceladas < 0)
-            {
-                result.AddError("Vendas canceladas não pode ser negativo");
+                result.AddError("Vendas finalizadas no pode ser negativo");
             }
 
             // Check for consistency between totals
-            if (vendedor.totalvendas.HasValue && vendedor.vendasfinalizadas.HasValue &&
-                vendedor.vendascanceladas.HasValue)
+            if (vendedor.QtdVendas.HasValue && vendedor.QtdVendasFinalizadas.HasValue)
             {
-                if (vendedor.vendasfinalizadas + vendedor.vendascanceladas > vendedor.totalvendas)
+                if (vendedor.QtdVendasFinalizadas > vendedor.QtdVendas)
                 {
-                    result.AddError("A soma de vendas finalizadas e canceladas não pode ser maior que o total de vendas");
+                    result.AddError("Vendas finalizadas no pode ser maior que o total de vendas");
                 }
             }
 
             return result;
-        }
+            }
 
-        // Method to sanitize input
-        public VendedorModel Sanitize(VendedorModel vendedor)
-        {
+            // Method to sanitize input
+            public VendedorModel Sanitize(VendedorModel vendedor)
+            {
             if (vendedor.NomeVendedor != null)
             {
                 vendedor.NomeVendedor = vendedor.NomeVendedor.Trim();
             }
 
-            if (vendedor.totalvendas == null)
+            if (vendedor.QtdVendas == null)
             {
-                vendedor.totalvendas = 0;
+                vendedor.QtdVendas = 0;
             }
 
-            if (vendedor.vendasfinalizadas == null)
+            if (vendedor.QtdVendasFinalizadas == null)
             {
-                vendedor.vendasfinalizadas = 0;
-            }
-
-            if (vendedor.vendascanceladas == null)
-            {
-                vendedor.vendascanceladas = 0;
+                vendedor.QtdVendasFinalizadas = 0;
             }
 
             return vendedor;
-        }
+            }
     }
 }

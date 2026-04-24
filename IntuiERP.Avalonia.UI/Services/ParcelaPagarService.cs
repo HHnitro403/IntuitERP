@@ -39,9 +39,9 @@ namespace IntuiERP.Avalonia.UI.Services
         public async Task<List<ParcelaPagarModel>> GetVencidasAsync()
         {
             var sql = @"SELECT pp.* FROM parcelas_pagar pp
-                        INNER JOIN contas_pagar cp ON pp.cod_conta_pagar = cp.id
+                        JOIN contas_pagar cp ON pp.cod_conta_pagar = cp.id
                         WHERE pp.status IN ('Pendente', 'Vencido')
-                          AND pp.data_vencimento < CURDATE()
+                          AND pp.data_vencimento < CURRENT_DATE
                           AND cp.status != 'Cancelado'
                         ORDER BY pp.data_vencimento";
 
@@ -52,9 +52,9 @@ namespace IntuiERP.Avalonia.UI.Services
         public async Task<List<ParcelaPagarModel>> GetVencendoHojeAsync()
         {
             var sql = @"SELECT pp.* FROM parcelas_pagar pp
-                        INNER JOIN contas_pagar cp ON pp.cod_conta_pagar = cp.id
+                        JOIN contas_pagar cp ON pp.cod_conta_pagar = cp.id
                         WHERE pp.status = 'Pendente'
-                          AND pp.data_vencimento = CURDATE()
+                          AND pp.data_vencimento = CURRENT_DATE
                           AND cp.status != 'Cancelado'
                         ORDER BY pp.numero_parcela";
 
@@ -198,7 +198,7 @@ namespace IntuiERP.Avalonia.UI.Services
             var sql = @"UPDATE parcelas_pagar
                         SET status = 'Vencido'
                         WHERE status = 'Pendente'
-                          AND data_vencimento < CURDATE()";
+                          AND data_vencimento < CURRENT_DATE";
 
             await _connection.ExecuteAsync(sql);
 

@@ -3,34 +3,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace IntuiERP.Avalonia.UI.models
 {
 
-    [Table("itenscompra")]
+    [Table("itens_compra")]
     public class ItemCompraModel
     {
-
         [Key]
-        [Column("CodItem")]
-        public int CodItem { get; set; }
+        [Column("id")]
+        public int Id { get; set; }
 
-        [Column("CodCompra")]
-        public int? CodCompra { get; set; }
+        [Column("cod_compra")]
+        public int CodCompra { get; set; }
 
-        [Column("CodProduto")]
-        public int? CodProduto { get; set; }
-
-        [Column("Descricao")]
-        public string? Descricao { get; set; }
+        [Column("cod_produto")]
+        public int CodProduto { get; set; }
 
         [Column("quantidade")]
-        public int? quantidade { get; set; }
+        public int quantidade { get; set; }
 
-        [Column("valor_unitario", TypeName = "decimal(10,2)")]
-        public decimal? valor_unitario { get; set; }
+        [Column("preco_unitario")]
+        public decimal preco_unitario { get; set; }
 
-        [Column("valor_total", TypeName = "decimal(10,2)")]
-        public decimal? valor_total { get; set; }
-
-        [Column("desconto", TypeName = "decimal(10,2)")]
-        public decimal? desconto { get; set; }
+        [Column("subtotal")]
+        public decimal subtotal { get; set; }
 
         // Navigation properties
         [ForeignKey("CodCompra")]

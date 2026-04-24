@@ -67,7 +67,7 @@ public partial class CadastroProduto : UserControl
                     DataCadastroPicker.SelectedDate = produto.DataCadastro;
                     AtivoSwitch.IsChecked = produto.Ativo;
 
-                    var selectedFornecedor = _fornecedores.FirstOrDefault(f => f.CodFornecedor == produto.FornecedorP_ID);
+                    var selectedFornecedor = _fornecedores.FirstOrDefault(f => f.CodFornecedor == produto.FornecedorId);
                     if (selectedFornecedor != null)
                     {
                         FornecedorComboBox.SelectedItem = selectedFornecedor;
@@ -158,7 +158,7 @@ public partial class CadastroProduto : UserControl
             Tipo = TipoProdutoEntry.Text?.Trim(),
             PrecoUnitario = preco,
             EstMinimo = int.TryParse(EstoqueMinimoEntry.Text, out int estMin) ? estMin : 0,
-            FornecedorP_ID = selectedFornecedor.CodFornecedor,
+            FornecedorId = selectedFornecedor.CodFornecedor,
             DataCadastro = DataCadastroPicker.SelectedDate ?? DateTime.Now,
             Ativo = AtivoSwitch.IsChecked == true,
             SaldoEst = 0 

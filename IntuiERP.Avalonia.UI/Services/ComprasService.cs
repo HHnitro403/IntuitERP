@@ -20,13 +20,13 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<IEnumerable<CompraModel>> GetAllAsync()
         {
-            const string query = "SELECT * FROM compra Order by CodCompra";
+            const string query = "SELECT * FROM compra ORDER BY cod_compra";
             return await _connection.QueryAsync<CompraModel>(query);
         }
 
         public async Task<CompraModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM compra WHERE CodCompra = @Id";
+            const string query = "SELECT * FROM compra WHERE cod_compra = @Id";
             return await _connection.QueryFirstOrDefaultAsync<CompraModel>(query, new { Id = id });
         }
 
@@ -36,11 +36,11 @@ namespace IntuiERP.Avalonia.UI.Services
             var parameters = new DynamicParameters();
             var whereClauses = new List<string>();
 
-            // Filter by Supplier (CodFornec)
-            if (filters.CodFornec.HasValue)
+            // Filter by Supplier (cod_fornecedor)
+            if (filters.CodFornecedor.HasValue)
             {
-                whereClauses.Add("CodFornec = @CodFornec");
-                parameters.Add("@CodFornec", filters.CodFornec.Value);
+                whereClauses.Add("cod_fornecedor = @CodFornecedor");
+                parameters.Add("@CodFornecedor", filters.CodFornecedor.Value);
             }
 
             // Filter by Start Date
@@ -69,7 +69,7 @@ namespace IntuiERP.Avalonia.UI.Services
                 sqlBuilder.Append(" WHERE " + string.Join(" AND ", whereClauses));
             }
 
-            sqlBuilder.Append(" ORDER BY CodCompra DESC");
+            sqlBuilder.Append(" ORDER BY cod_compra DESC");
 
             return await _connection.QueryAsync<CompraModel>(sqlBuilder.ToString(), parameters);
         }
@@ -78,16 +78,12 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query = 
                 @"INSERT INTO compra 
-                (data_compra, hora_compra, CodFornec, Desconto, CodVendedor, 
-                OBS, valor_total, forma_pagamento, status_compra) 
+                (data_compra, cod_fornecedor, valor_total, status_compra) 
                 VALUES 
-                (@data_compra, @hora_compra, @CodFornec, @Desconto, @CodVendedor, 
-                @OBS, @valor_total, @forma_pagamento, @status_compra) RETURNING CodCompra;";
+                (@data_compra, @CodFornecedor, @valor_total, @status_compra) RETURNING cod_compra;";
             
             if (compra.data_compra == null)
                 compra.data_compra = DateTime.Now;
-            if (compra.hora_compra == null)
-                compra.hora_compra = DateTime.Now.TimeOfDay;
                 
             return await _connection.ExecuteScalarAsync<int>(query, compra);
         }
@@ -97,21 +93,16 @@ namespace IntuiERP.Avalonia.UI.Services
             const string query = 
                 @"UPDATE compra SET 
                 data_compra = @data_compra, 
-                hora_compra = @hora_compra, 
-                CodFornec = @CodFornec, 
-                Desconto = @Desconto, 
-                CodVendedor = @CodVendedor, 
-                OBS = @OBS, 
+                cod_fornecedor = @CodFornecedor, 
                 valor_total = @valor_total, 
-                forma_pagamento = @forma_pagamento, 
                 status_compra = @status_compra 
-                WHERE CodCompra = @CodCompra";
+                WHERE cod_compra = @CodCompra";
             return await _connection.ExecuteAsync(query, compra);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM compra WHERE CodCompra = @Id";
+            const string query = "DELETE FROM compra WHERE cod_compra = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
         
@@ -126,7 +117,7 @@ namespace IntuiERP.Avalonia.UI.Services
         
         public async Task<IEnumerable<CompraModel>> GetByFornecedorAsync(int fornecedorId)
         {
-            const string query = "SELECT * FROM compra WHERE CodFornec = @FornecedorId";
+            const string query = "SELECT * FROM compra WHERE cod_fornecedor = @FornecedorId";
             return await _connection.QueryAsync<CompraModel>(query, 
                 new { FornecedorId = fornecedorId });
         }

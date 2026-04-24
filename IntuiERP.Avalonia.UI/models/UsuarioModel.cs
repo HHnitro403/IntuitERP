@@ -7,82 +7,81 @@ namespace IntuiERP.Avalonia.UI.models
     public class UsuarioModel
     {
         [Key]
-        [Column("CodUsuarios")]
+        [Column("cod_usuarios")]
         public int CodUsuarios { get; set; }
 
-        [Column("Usuario")]
+        [Column("usuario")]
         [Required]
         [StringLength(255)]
         public string Usuario { get; set; }
 
-        [Column("Senha")]
+        [Column("senha")]
         [Required]
         [StringLength(255)]
         public string Senha { get; set; }
 
-        [Column("PermissaoProdutosCreate")]
+        [Column("permissao_produtos_create")]
         public int PermissaoProdutosCreate { get; set; } = 0;
 
-        [Column("PermissaoProdutosRead")]
+        [Column("permissao_produtos_read")]
         public int PermissaoProdutosRead { get; set; } = 0;
 
-        [Column("PermissaoProdutosUpdate")]
+        [Column("permissao_produtos_update")]
         public int PermissaoProdutosUpdate { get; set; } = 0;
 
-        [Column("PermissaoProdutosDelete")]
+        [Column("permissao_produtos_delete")]
         public int PermissaoProdutosDelete { get; set; } = 0;
 
-        [Column("PermissaoVendasCreate")]
+        [Column("permissao_vendas_create")]
         public int PermissaoVendasCreate { get; set; } = 0;
 
-        [Column("PermissaoVendasRead")]
+        [Column("permissao_vendas_read")]
         public int PermissaoVendasRead { get; set; } = 0;
 
-        [Column("PermissaoVendasUpdate")]
+        [Column("permissao_vendas_update")]
         public int PermissaoVendasUpdate { get; set; } = 0;
 
-        [Column("PermissaoVendasDelete")]
+        [Column("permissao_vendas_delete")]
         public int PermissaoVendasDelete { get; set; } = 0;
 
-        [Column("PermissaoRelatoriosGenerate")]
+        [Column("permissao_relatorios_generate")]
         public int PermissaoRelatoriosGenerate { get; set; } = 0;
 
-        [Column("PermissaoVendedoresCreate")]
+        [Column("permissao_vendedores_create")]
         public int PermissaoVendedoresCreate { get; set; } = 0;
 
-        [Column("PermissaoVendedoresRead")]
+        [Column("permissao_vendedores_read")]
         public int PermissaoVendedoresRead { get; set; } = 0;
 
-        [Column("PermissaoVendedoresUpdate")]
+        [Column("permissao_vendedores_update")]
         public int PermissaoVendedoresUpdate { get; set; } = 0;
 
-        [Column("PermissaoVendedoresDelete")]
+        [Column("permissao_vendedores_delete")]
         public int PermissaoVendedoresDelete { get; set; } = 0;
 
-        [Column("PermissaoFornecedoresCreate")]
+        [Column("permissao_fornecedores_create")]
         public int PermissaoFornecedoresCreate { get; set; } = 0;
 
-        [Column("PermissaoFornecedoresRead")]
+        [Column("permissao_fornecedores_read")]
         public int PermissaoFornecedoresRead { get; set; } = 0;
 
-        [Column("PermissaoFornecedoresUpdate")]
+        [Column("permissao_fornecedores_update")]
         public int PermissaoFornecedoresUpdate { get; set; } = 0;
 
-        [Column("PermissaoFornecedoresDelete")]
+        [Column("permissao_fornecedores_delete")]
         public int PermissaoFornecedoresDelete { get; set; } = 0;
 
-        [Column("PermissaoClientesCreate")]
+        [Column("permissao_clientes_create")]
         public int PermissaoClientesCreate { get; set; } = 0;
 
-        [Column("PermissaoClientesRead")]
+        [Column("permissao_clientes_read")]
         public int PermissaoClientesRead { get; set; } = 0;
 
-        [Column("PermissaoClientesUpdate")]
+        [Column("permissao_clientes_update")]
         public int PermissaoClientesUpdate { get; set; } = 0;
 
-        [Column("PermissaoClientesDelete")]
+        [Column("permissao_clientes_delete")]
         public int PermissaoClientesDelete { get; set; } = 0;
     }
 
 }
-

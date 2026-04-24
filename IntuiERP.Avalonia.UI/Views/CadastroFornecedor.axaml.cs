@@ -59,7 +59,6 @@ public partial class CadastroFornecedor : UserControl
                     EmailEntry.Text = fornecedor.Email;
                     TelefoneEntry.Text = fornecedor.Telefone;
                     EnderecoEntry.Text = fornecedor.Endereco;
-                    DataCadastroPicker.SelectedDate = fornecedor.DataCadastro;
                     AtivoSwitch.IsChecked = fornecedor.Ativo;
 
                     var selectedCidade = _cidades.FirstOrDefault(c => c.CodCIdade == fornecedor.CodCidade);
@@ -122,7 +121,6 @@ public partial class CadastroFornecedor : UserControl
             Telefone = SanitizeInput(TelefoneEntry.Text),
             Endereco = EnderecoEntry.Text?.Trim(),
             CodCidade = selectedCidade.CodCIdade,
-            DataCadastro = DataCadastroPicker.SelectedDate ?? DateTime.Now,
             Ativo = AtivoSwitch.IsChecked == true
         };
 

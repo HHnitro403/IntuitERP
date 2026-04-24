@@ -23,7 +23,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                c.nome as ClienteNome,
                                c.cpf as ClienteCpf
                         FROM contas_receber cr
-                        INNER JOIN clientes c ON cr.cod_cliente = c.CodCliente
+                        JOIN cliente c ON cr.cod_cliente = c.cod_cliente
                         ORDER BY cr.data_emissao DESC";
 
             var contas = await _connection.QueryAsync<ContaReceberModel>(sql);
@@ -36,7 +36,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                c.nome as ClienteNome,
                                c.cpf as ClienteCpf
                         FROM contas_receber cr
-                        INNER JOIN clientes c ON cr.cod_cliente = c.CodCliente
+                        JOIN cliente c ON cr.cod_cliente = c.cod_cliente
                         WHERE cr.id = @Id";
 
             return await _connection.QueryFirstOrDefaultAsync<ContaReceberModel>(sql, new { Id = id });
@@ -48,7 +48,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                c.nome as ClienteNome,
                                c.cpf as ClienteCpf
                         FROM contas_receber cr
-                        INNER JOIN clientes c ON cr.cod_cliente = c.CodCliente
+                        JOIN cliente c ON cr.cod_cliente = c.cod_cliente
                         WHERE cr.cod_venda = @CodVenda";
 
             return await _connection.QueryFirstOrDefaultAsync<ContaReceberModel>(sql, new { CodVenda = codVenda });
@@ -60,7 +60,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                c.nome as ClienteNome,
                                c.cpf as ClienteCpf
                         FROM contas_receber cr
-                        INNER JOIN clientes c ON cr.cod_cliente = c.CodCliente
+                        JOIN cliente c ON cr.cod_cliente = c.cod_cliente
                         WHERE cr.cod_cliente = @CodCliente
                         ORDER BY cr.data_emissao DESC";
 
@@ -74,7 +74,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                c.nome as ClienteNome,
                                c.cpf as ClienteCpf
                         FROM contas_receber cr
-                        INNER JOIN clientes c ON cr.cod_cliente = c.CodCliente
+                        JOIN cliente c ON cr.cod_cliente = c.cod_cliente
                         WHERE cr.status = @Status
                         ORDER BY cr.data_emissao DESC";
 
@@ -93,7 +93,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                c.nome as ClienteNome,
                                c.cpf as ClienteCpf
                         FROM contas_receber cr
-                        INNER JOIN clientes c ON cr.cod_cliente = c.CodCliente
+                        JOIN cliente c ON cr.cod_cliente = c.cod_cliente
                         WHERE cr.data_emissao BETWEEN @DataInicio AND @DataFim
                         ORDER BY cr.data_emissao DESC";
 

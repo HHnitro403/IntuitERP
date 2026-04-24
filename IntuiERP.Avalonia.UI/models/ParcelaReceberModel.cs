@@ -1,5 +1,7 @@
 using Avalonia.Media;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IntuiERP.Avalonia.UI.models
 {
@@ -7,27 +9,62 @@ namespace IntuiERP.Avalonia.UI.models
     /// Model for Parcelas de Contas a Receber (Receivable Installments)
     /// Represents individual installment payments
     /// </summary>
+    [Table("parcelas_receber")]
     public class ParcelaReceberModel
     {
+        [Key]
+        [Column("id")]
         public int Id { get; set; }
+
+        [Column("cod_conta_receber")]
         public int CodContaReceber { get; set; }
+
+        [Column("numero_parcela")]
         public int NumeroParcela { get; set; }
+
+        [Column("data_vencimento")]
         public DateTime DataVencimento { get; set; }
+
+        [Column("valor_parcela")]
         public decimal ValorParcela { get; set; }
+
+        [Column("valor_pago")]
         public decimal ValorPago { get; set; }
+
+        [Column("data_pagamento")]
         public DateTime? DataPagamento { get; set; }
+
+        [Column("forma_pagamento")]
         public string? FormaPagamento { get; set; }
+
+        [Column("status")]
         public string Status { get; set; } = "Pendente"; // Pendente, Pago, Vencido, Cancelado
+
+        [Column("juros")]
         public decimal Juros { get; set; }
+
+        [Column("multa")]
         public decimal Multa { get; set; }
+
+        [Column("desconto")]
         public decimal Desconto { get; set; }
+
         // ValorTotal is calculated: valor_parcela + juros + multa - desconto
-        public decimal ValorTotal => ValorParcela + Juros + Multa - Desconto;
+        [Column("valor_total")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public decimal ValorTotal { get; set; }
+
+        [Column("observacoes")]
         public string? Observacoes { get; set; }
+
+        [Column("created_at")]
         public DateTime CreatedAt { get; set; }
+
+        [Column("updated_at")]
         public DateTime UpdatedAt { get; set; }
 
         // Calculated properties
+        [NotMapped]
         public bool IsVencida
         {
             get
@@ -39,6 +76,7 @@ namespace IntuiERP.Avalonia.UI.models
             }
         }
 
+        [NotMapped]
         public int DiasAtraso
         {
             get
@@ -50,6 +88,7 @@ namespace IntuiERP.Avalonia.UI.models
             }
         }
 
+        [NotMapped]
         public decimal ValorRestante => ValorTotal - ValorPago;
 
         public bool IsPago => Status == "Pago" && ValorPago >= ValorTotal;

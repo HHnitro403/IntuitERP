@@ -34,7 +34,7 @@ namespace IntuiERP.Avalonia.UI.Services
             using var connection = CreateConnection();
             if (connection is DbConnection dbConn) await dbConn.OpenAsync();
 
-            const string query = "SELECT * FROM usuarios WHERE CodUsuarios = @Id";
+            const string query = "SELECT * FROM usuarios WHERE cod_usuarios = @Id";
             return await connection.QueryFirstOrDefaultAsync<UsuarioModel>(query, new { Id = id });
         }
 
@@ -43,7 +43,7 @@ namespace IntuiERP.Avalonia.UI.Services
             using var connection = CreateConnection();
             if (connection is DbConnection dbConn) await dbConn.OpenAsync();
 
-            const string query = "SELECT * FROM usuarios WHERE Usuario = @Usuario";
+            const string query = "SELECT * FROM usuarios WHERE usuario = @Usuario";
             return await connection.QueryFirstOrDefaultAsync<UsuarioModel>(query, new { Usuario = usuario });
         }
 
@@ -62,14 +62,14 @@ namespace IntuiERP.Avalonia.UI.Services
 
             const string query =
                 @"INSERT INTO usuarios
-                (Usuario, Senha, PermissaoProdutosCreate, PermissaoProdutosRead,
-                PermissaoProdutosUpdate, PermissaoProdutosDelete, PermissaoVendasCreate,
-                PermissaoVendasRead, PermissaoVendasUpdate, PermissaoVendasDelete,
-                PermissaoRelatoriosGenerate, PermissaoVendedoresCreate, PermissaoVendedoresRead,
-                PermissaoVendedoresUpdate, PermissaoVendedoresDelete, PermissaoFornecedoresCreate,
-                PermissaoFornecedoresRead, PermissaoFornecedoresUpdate, PermissaoFornecedoresDelete,
-                PermissaoClientesCreate, PermissaoClientesRead, PermissaoClientesUpdate,
-                PermissaoClientesDelete)
+                (usuario, senha, permissao_produtos_create, permissao_produtos_read,
+                permissao_produtos_update, permissao_produtos_delete, permissao_vendas_create,
+                permissao_vendas_read, permissao_vendas_update, permissao_vendas_delete,
+                permissao_relatorios_generate, permissao_vendedores_create, permissao_vendedores_read,
+                permissao_vendedores_update, permissao_vendedores_delete, permissao_fornecedores_create,
+                permissao_fornecedores_read, permissao_fornecedores_update, permissao_fornecedores_delete,
+                permissao_clientes_create, permissao_clientes_read, permissao_clientes_update,
+                permissao_clientes_delete)
                 VALUES
                 (@Usuario, @Senha, @PermissaoProdutosCreate, @PermissaoProdutosRead,
                 @PermissaoProdutosUpdate, @PermissaoProdutosDelete, @PermissaoVendasCreate,
@@ -78,7 +78,7 @@ namespace IntuiERP.Avalonia.UI.Services
                 @PermissaoVendedoresUpdate, @PermissaoVendedoresDelete, @PermissaoFornecedoresCreate,
                 @PermissaoFornecedoresRead, @PermissaoFornecedoresUpdate, @PermissaoFornecedoresDelete,
                 @PermissaoClientesCreate, @PermissaoClientesRead, @PermissaoClientesUpdate,
-                @PermissaoClientesDelete) RETURNING CodUsuarios;";
+                @PermissaoClientesDelete) RETURNING cod_usuarios;";
 
             return await connection.ExecuteScalarAsync<int>(query, usuario);
         }
@@ -98,30 +98,30 @@ namespace IntuiERP.Avalonia.UI.Services
 
             const string query =
                 @"UPDATE usuarios SET
-                Usuario = @Usuario,
-                Senha = @Senha,
-                PermissaoProdutosCreate = @PermissaoProdutosCreate,
-                PermissaoProdutosRead = @PermissaoProdutosRead,
-                PermissaoProdutosUpdate = @PermissaoProdutosUpdate,
-                PermissaoProdutosDelete = @PermissaoProdutosDelete,
-                PermissaoVendasCreate = @PermissaoVendasCreate,
-                PermissaoVendasRead = @PermissaoVendasRead,
-                PermissaoVendasUpdate = @PermissaoVendasUpdate,
-                PermissaoVendasDelete = @PermissaoVendasDelete,
-                PermissaoRelatoriosGenerate = @PermissaoRelatoriosGenerate,
-                PermissaoVendedoresCreate = @PermissaoVendedoresCreate,
-                PermissaoVendedoresRead = @PermissaoVendedoresRead,
-                PermissaoVendedoresUpdate = @PermissaoVendedoresUpdate,
-                PermissaoVendedoresDelete = @PermissaoVendedoresDelete,
-                PermissaoFornecedoresCreate = @PermissaoFornecedoresCreate,
-                PermissaoFornecedoresRead = @PermissaoFornecedoresRead,
-                PermissaoFornecedoresUpdate = @PermissaoFornecedoresUpdate,
-                PermissaoFornecedoresDelete = @PermissaoFornecedoresDelete,
-                PermissaoClientesCreate = @PermissaoClientesCreate,
-                PermissaoClientesRead = @PermissaoClientesRead,
-                PermissaoClientesUpdate = @PermissaoClientesUpdate,
-                PermissaoClientesDelete = @PermissaoClientesDelete
-                WHERE CodUsuarios = @CodUsuarios";
+                usuario = @Usuario,
+                senha = @Senha,
+                permissao_produtos_create = @PermissaoProdutosCreate,
+                permissao_produtos_read = @PermissaoProdutosRead,
+                permissao_produtos_update = @PermissaoProdutosUpdate,
+                permissao_produtos_delete = @PermissaoProdutosDelete,
+                permissao_vendas_create = @PermissaoVendasCreate,
+                permissao_vendas_read = @PermissaoVendasRead,
+                permissao_vendas_update = @PermissaoVendasUpdate,
+                permissao_vendas_delete = @PermissaoVendasDelete,
+                permissao_relatorios_generate = @PermissaoRelatoriosGenerate,
+                permissao_vendedores_create = @PermissaoVendedoresCreate,
+                permissao_vendedores_read = @PermissaoVendedoresRead,
+                permissao_vendedores_update = @PermissaoVendedoresUpdate,
+                permissao_vendedores_delete = @PermissaoVendedoresDelete,
+                permissao_fornecedores_create = @PermissaoFornecedoresCreate,
+                permissao_fornecedores_read = @PermissaoFornecedoresRead,
+                permissao_fornecedores_update = @PermissaoFornecedoresUpdate,
+                permissao_fornecedores_delete = @PermissaoFornecedoresDelete,
+                permissao_clientes_create = @PermissaoClientesCreate,
+                permissao_clientes_read = @PermissaoClientesRead,
+                permissao_clientes_update = @PermissaoClientesUpdate,
+                permissao_clientes_delete = @PermissaoClientesDelete
+                WHERE cod_usuarios = @CodUsuarios";
 
             return await connection.ExecuteAsync(query, usuario);
         }
@@ -131,7 +131,7 @@ namespace IntuiERP.Avalonia.UI.Services
             using var connection = CreateConnection();
             if (connection is DbConnection dbConn) await dbConn.OpenAsync();
 
-            const string query = "DELETE FROM usuarios WHERE CodUsuarios = @Id";
+            const string query = "DELETE FROM usuarios WHERE cod_usuarios = @Id";
             return await connection.ExecuteAsync(query, new { Id = id });
         }
 
@@ -140,7 +140,7 @@ namespace IntuiERP.Avalonia.UI.Services
             using var connection = CreateConnection();
             if (connection is DbConnection dbConn) await dbConn.OpenAsync();
 
-            const string query = "SELECT * FROM usuarios WHERE Usuario = @Usuario";
+            const string query = "SELECT * FROM usuarios WHERE usuario = @Usuario";
             var user = await connection.QueryFirstOrDefaultAsync<UsuarioModel>(query,
                 new { Usuario = usuario });
 

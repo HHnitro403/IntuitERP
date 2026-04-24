@@ -61,7 +61,7 @@ public partial class EstoqueSearch : UserControl
                 item.TipoDescricao = item.Tipo == 'E' ? "ENTRADA" : "SAÍDA";
             }
 
-            _masterListaEstoque = estoque.OrderByDescending(e => e.Data).ThenByDescending(e => e.CodEst).ToList();
+            _masterListaEstoque = estoque.OrderByDescending(e => e.Data).ThenByDescending(e => e.Id).ToList();
             FilterEstoque();
         }
         catch (Exception ex)
@@ -78,7 +78,7 @@ public partial class EstoqueSearch : UserControl
             .Where(e => string.IsNullOrEmpty(searchTerm) || 
                         (e.ProdutoNome?.ToLowerInvariant().Contains(searchTerm) ?? false) ||
                         (e.CodProduto.ToString().Contains(searchTerm)) ||
-                        (e.CodEst.ToString().Contains(searchTerm)));
+                        (e.Id.ToString().Contains(searchTerm)));
 
         _listaEstoqueDisplay.Clear();
         foreach (var e in filtered)
@@ -115,7 +115,7 @@ public partial class EstoqueSearch : UserControl
 
         try
         {
-            int rowsAffected = await _estoqueService.DeleteAsync(_movimentacaoSelecionada.CodEst);
+            int rowsAffected = await _estoqueService.DeleteAsync(_movimentacaoSelecionada.Id);
 
             if (rowsAffected > 0)
             {

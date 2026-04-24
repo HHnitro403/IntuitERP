@@ -23,7 +23,7 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<VendedorModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM vendedor WHERE CodVendedor = @Id";
+            const string query = "SELECT * FROM vendedor WHERE cod_vendedor = @Id";
             return await _connection.QueryFirstOrDefaultAsync<VendedorModel>(query, new { Id = id });
         }
 
@@ -31,16 +31,14 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"INSERT INTO vendedor 
-                (NomeVendedor, totalvendas, vendasfinalizadas, vendascanceladas) 
+                (nome_vendedor, comissao, ativo, qtd_vendas, qtd_vendas_finalizadas) 
                 VALUES 
-                (@NomeVendedor, @totalvendas, @vendasfinalizadas, @vendascanceladas) RETURNING CodVendedor;";
+                (@NomeVendedor, @Comissao, @Ativo, @QtdVendas, @QtdVendasFinalizadas) RETURNING cod_vendedor;";
 
-            if (vendedor.totalvendas == null)
-                vendedor.totalvendas = 0;
-            if (vendedor.vendasfinalizadas == null)
-                vendedor.vendasfinalizadas = 0;
-            if (vendedor.vendascanceladas == null)
-                vendedor.vendascanceladas = 0;
+            if (vendedor.QtdVendas == null)
+                vendedor.QtdVendas = 0;
+            if (vendedor.QtdVendasFinalizadas == null)
+                vendedor.QtdVendasFinalizadas = 0;
 
             return await _connection.ExecuteScalarAsync<int>(query, vendedor);
         }
@@ -49,14 +47,18 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE vendedor SET 
-                NomeVendedor = @NomeVendedor,                 
-                WHERE CodVendedor = @CodVendedor";
+                nome_vendedor = @NomeVendedor,
+                comissao = @Comissao,
+                ativo = @Ativo,
+                qtd_vendas = @QtdVendas,
+                qtd_vendas_finalizadas = @QtdVendasFinalizadas
+                WHERE cod_vendedor = @CodVendedor";
             return await _connection.ExecuteAsync(query, vendedor);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM vendedor WHERE CodVendedor = @Id";
+            const string query = "DELETE FROM vendedor WHERE cod_vendedor = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
 
@@ -64,8 +66,8 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE vendedor SET 
-                totalvendas = totalvendas + 1 
-                WHERE CodVendedor = @VendedorId";
+                qtd_vendas = COALESCE(qtd_vendas, 0) + 1 
+                WHERE cod_vendedor = @VendedorId";
             await _connection.ExecuteAsync(query, new { VendedorId = vendedorId });
         }
 
@@ -73,17 +75,8 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE vendedor SET 
-                vendasfinalizadas = vendasfinalizadas + 1 
-                WHERE CodVendedor = @VendedorId";
-            await _connection.ExecuteAsync(query, new { VendedorId = vendedorId });
-        }
-
-        public async Task IncrementVendasCanceladasAsync(int vendedorId)
-        {
-            const string query =
-                @"UPDATE vendedor SET 
-                vendascanceladas = vendascanceladas + 1 
-                WHERE CodVendedor = @VendedorId";
+                qtd_vendas_finalizadas = COALESCE(qtd_vendas_finalizadas, 0) + 1 
+                WHERE cod_vendedor = @VendedorId";
             await _connection.ExecuteAsync(query, new { VendedorId = vendedorId });
         }
     }

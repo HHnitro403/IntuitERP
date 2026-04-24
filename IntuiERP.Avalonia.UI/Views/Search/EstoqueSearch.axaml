@@ -63,7 +63,7 @@
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
-                                <TextBlock Grid.Column="1" Text="{Binding CodEst, StringFormat='ID: {0}'}" FontSize="11" HorizontalAlignment="Right" Opacity="0.5" />
+                                <TextBlock Grid.Column="1" Text="{Binding Id, StringFormat='ID: {0}'}" FontSize="11" HorizontalAlignment="Right" Opacity="0.5" />
                             </Grid>
                         </StackPanel>
                     </DataTemplate>

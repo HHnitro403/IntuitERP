@@ -24,7 +24,7 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<EstoqueModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM estoque WHERE CodEst = @Id";
+            const string query = "SELECT * FROM estoque WHERE id = @Id";
             return await _connection.QueryFirstOrDefaultAsync<EstoqueModel>(query, new { Id = id });
         }
 
@@ -32,9 +32,9 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"INSERT INTO estoque 
-                (CodProduto, Tipo, Qtd, Data) 
+                (cod_produto, tipo, qtd, data) 
                 VALUES 
-                (@CodProduto, @Tipo, @Qtd, @Data) RETURNING CodEst;";
+                (@CodProduto, @Tipo, @Qtd, @Data) RETURNING id;";
 
             if (estoque.Data == DateTime.MinValue)
                 estoque.Data = DateTime.Now;
@@ -46,28 +46,28 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE estoque SET 
-                CodProduto = @CodProduto, 
-                Tipo = @Tipo, 
-                Qtd = @Qtd, 
-                Data = @Data 
-                WHERE CodEst = @CodEst";
+                cod_produto = @CodProduto, 
+                tipo = @Tipo, 
+                qtd = @Qtd, 
+                data = @Data 
+                WHERE id = @Id";
             return await _connection.ExecuteAsync(query, estoque);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM estoque WHERE CodEst = @Id";
+            const string query = "DELETE FROM estoque WHERE id = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
 
         public async Task<IEnumerable<EstoqueModel>> GetByProdutoAsync(int produtoId)
         {
-            const string query = "SELECT * FROM estoque WHERE CodProduto = @ProdutoId";
+            const string query = "SELECT * FROM estoque WHERE cod_produto = @ProdutoId";
             return await _connection.QueryAsync<EstoqueModel>(query,
                 new { ProdutoId = produtoId });
         }
 
-        public async Task<int> AtualizarSaldoAsync(int produtoId, decimal quantidade, char tipo)
+        public async Task<int> AtualizarSaldoAsync(int produtoId, int quantidade, char tipo)
         {
             EstoqueModel estoque = new EstoqueModel
             {

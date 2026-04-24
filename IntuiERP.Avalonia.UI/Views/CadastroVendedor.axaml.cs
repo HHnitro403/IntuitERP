@@ -40,9 +40,8 @@ public partial class CadastroVendedor : UserControl
                 if (vendedor != null)
                 {
                     NomeVendedorEntry.Text = vendedor.NomeVendedor;
-                    TotalVendasEntry.Text = vendedor.totalvendas.ToString();
-                    VendasFinalizadasEntry.Text = vendedor.vendasfinalizadas.ToString();
-                    VendasCanceladasEntry.Text = vendedor.vendascanceladas.ToString();
+                    TotalVendasEntry.Text = vendedor.QtdVendas.ToString();
+                    VendasFinalizadasEntry.Text = vendedor.QtdVendasFinalizadas.ToString();
                 }
             }
             catch (Exception ex)

@@ -9,47 +9,47 @@ namespace IntuiERP.Avalonia.UI.models
     public class ProdutoModel
     {
         [Key]
-        [Column("CodProduto")]
+        [Column("cod_produto")]
         public int CodProduto { get; set; }
 
-        [Column("Descricao")]
+        [Column("descricao")]
         [StringLength(255)]
         public string? Descricao { get; set; }
 
-        [Column("Categoria")]
+        [Column("categoria")]
         [StringLength(100)]
         public string? Categoria { get; set; }
 
-        [Column("PrecoUnitario", TypeName = "decimal(10, 2)")]
+        [Column("preco_unitario", TypeName = "decimal(10, 2)")]
         public decimal? PrecoUnitario { get; set; }
 
-        [Column("SaldoEst")]
+        [Column("saldo_est")]
         public int? SaldoEst { get; set; }
 
-        [Column("FornecedorP_ID")]
-        public int? FornecedorP_ID { get; set; }
+        [Column("fornecedor_id")]
+        public int? FornecedorId { get; set; }
 
-        [Column("DataCadastro")]
+        [Column("data_cadastro")]
         public DateTime? DataCadastro { get; set; }
 
-        [Column("EstMinimo")]
+        [Column("est_minimo")]
         public int? EstMinimo { get; set; }
 
-        [Column("EstoqueID")]
-        public int? EstoqueID { get; set; }
+        [Column("estoque_id")]
+        public int? EstoqueId { get; set; }
 
-        [Column("VarianteID")]
-        public int? VarianteID { get; set; }
+        [Column("variante_id")]
+        public int? VarianteId { get; set; }
 
-        [Column("Tipo")]
+        [Column("tipo")]
         [StringLength(50)]
         public string? Tipo { get; set; }
 
-        [Column("Ativo")]
+        [Column("ativo")]
         public bool? Ativo { get; set; }
 
         // Navigation properties
-        [ForeignKey("FornecedorP_ID")]
+        [ForeignKey("fornecedor_id")]
         public virtual FornecedorModel? Fornecedor { get; set; }
 
         public virtual ICollection<EstoqueModel>? Estoques { get; set; }
@@ -71,11 +71,11 @@ namespace IntuiERP.Avalonia.UI.models
         public string? Categoria { get; set; }
         public decimal? PrecoUnitario { get; set; }
         public int? SaldoEst { get; set; }
-        public int? FornecedorP_ID { get; set; }
+        public int? FornecedorId { get; set; }
         public DateTime? DataCadastro { get; set; }
         public int? EstMinimo { get; set; }
-        public int? EstoqueID { get; set; }
-        public int? VarianteID { get; set; }
+        public int? EstoqueId { get; set; }
+        public int? VarianteId { get; set; }
         public string? Tipo { get; set; }
         public bool? Ativo { get; set; }
         public bool comparativo { get; set; } = false;

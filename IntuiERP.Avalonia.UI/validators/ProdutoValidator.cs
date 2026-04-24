@@ -12,49 +12,49 @@ namespace IntuiERP.Avalonia.UI.Validators
             // Required fields validation
             if (string.IsNullOrWhiteSpace(produto.Descricao))
             {
-                result.AddError("Descrição do produto é obrigatória");
+                result.AddError("Descriï¿½ï¿½o do produto ï¿½ obrigatï¿½ria");
             }
             else if (produto.Descricao.Length > 255)
             {
-                result.AddError("Descrição do produto não pode exceder 255 caracteres");
+                result.AddError("Descriï¿½ï¿½o do produto nï¿½o pode exceder 255 caracteres");
             }
 
             if (string.IsNullOrWhiteSpace(produto.Categoria))
             {
-                result.AddError("Categoria é obrigatória");
+                result.AddError("Categoria ï¿½ obrigatï¿½ria");
             }
             else if (produto.Categoria.Length > 100)
             {
-                result.AddError("Categoria não pode exceder 100 caracteres");
+                result.AddError("Categoria nï¿½o pode exceder 100 caracteres");
             }
 
             if (!produto.PrecoUnitario.HasValue || produto.PrecoUnitario <= 0)
             {
-                result.AddError("Preço unitário é obrigatório e deve ser maior que zero");
+                result.AddError("Preï¿½o unitï¿½rio ï¿½ obrigatï¿½rio e deve ser maior que zero");
             }
             else if (produto.PrecoUnitario > 999999.99m)
             {
-                result.AddError("Preço unitário não pode exceder 999,999.99");
+                result.AddError("Preï¿½o unitï¿½rio nï¿½o pode exceder 999,999.99");
             }
 
             if (produto.EstMinimo.HasValue && produto.EstMinimo < 0)
             {
-                result.AddError("Estoque mínimo não pode ser negativo");
+                result.AddError("Estoque mï¿½nimo nï¿½o pode ser negativo");
             }
 
             if (produto.SaldoEst.HasValue && produto.SaldoEst < 0)
             {
-                result.AddError("Saldo em estoque não pode ser negativo");
+                result.AddError("Saldo em estoque nï¿½o pode ser negativo");
             }
 
-            if (produto.FornecedorP_ID <= 0 && produto.FornecedorP_ID.HasValue)
+            if (produto.FornecedorId <= 0 && produto.FornecedorId.HasValue)
             {
-                result.AddError("Fornecedor inválido");
+                result.AddError("Fornecedor invlido");
             }
 
             if (!string.IsNullOrWhiteSpace(produto.Tipo) && produto.Tipo.Length > 50)
             {
-                result.AddError("Tipo não pode exceder 50 caracteres");
+                result.AddError("Tipo nï¿½o pode exceder 50 caracteres");
             }
 
             return result;

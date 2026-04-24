@@ -9,45 +9,50 @@ namespace IntuiERP.Avalonia.UI.models
     public class FornecedorModel
     {
         [Key]
-        [Column("CodFornecedor")]
+        [Column("cod_fornecedor")]
         public int CodFornecedor { get; set; }
 
-        [Column("CodCidade")]
-        [Required]
-        public int CodCidade { get; set; }
+        [Column("cod_cidade")]
+        public int? CodCidade { get; set; }
 
-        [Column("RazaoSocial")]
+        [Column("razao_social")]
         [StringLength(255)]
         public string? RazaoSocial { get; set; }
 
-        [Column("NomeFantasia")]
+        [Column("nome_fantasia")]
         [StringLength(255)]
         public string? NomeFantasia { get; set; }
 
-        [Column("CNPJ")]
-        [StringLength(18)]
+        [Column("cnpj")]
+        [StringLength(20)]
         public string? CNPJ { get; set; }
 
-        [Column("Email")]
+        [Column("email")]
         [StringLength(255)]
         public string? Email { get; set; }
 
-        [Column("Telefone")]
+        [Column("telefone")]
         [StringLength(20)]
         public string? Telefone { get; set; }
 
-        [Column("Endereco")]
+        [Column("endereco")]
         [StringLength(255)]
         public string? Endereco { get; set; }
 
-        [Column("DataCadastro")]
-        public DateTime? DataCadastro { get; set; }
+        [Column("numero")]
+        [StringLength(50)]
+        public string? Numero { get; set; }
 
-        [Column("DataUltimaCompra")]
-        public DateTime? DataUltimaCompra { get; set; }
+        [Column("bairro")]
+        [StringLength(100)]
+        public string? Bairro { get; set; }
 
-        [Column("Ativo")]
-        public bool? Ativo { get; set; }
+        [Column("cep")]
+        [StringLength(20)]
+        public string? CEP { get; set; }
+
+        [Column("ativo")]
+        public bool? Ativo { get; set; } = true;
 
         // Navigation properties
         [ForeignKey("CodCidade")]

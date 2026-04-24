@@ -10,7 +10,7 @@ namespace IntuiERP.Avalonia.UI.models
     public class VendaModel
     {
         [Key]
-        [Column("CodVenda")]
+        [Column("cod_venda")]
         public int CodVenda { get; set; }
 
         [Column("data_venda")]
@@ -19,17 +19,17 @@ namespace IntuiERP.Avalonia.UI.models
         [Column("hora_venda")]
         public TimeSpan? hora_venda { get; set; }
 
-        [Column("CodCliente")]
+        [Column("cod_cliente")]
         [Required]
         public int CodCliente { get; set; }
 
-        [Column("Desconto", TypeName = "decimal(10,2)")]
+        [Column("desconto", TypeName = "decimal(10,2)")]
         public decimal? Desconto { get; set; }
 
-        [Column("CodVendedor")]
+        [Column("cod_vendedor")]
         public int? CodVendedor { get; set; }
 
-        [Column("OBS")]
+        [Column("obs")]
         public string? OBS { get; set; }
 
         [Column("valor_total", TypeName = "decimal(10,2)")]
@@ -44,10 +44,10 @@ namespace IntuiERP.Avalonia.UI.models
         public byte? status_venda { get; set; }
 
         // Navigation properties
-        [ForeignKey("CodCliente")]
+        [ForeignKey("cod_cliente")]
         public virtual ClienteModel? Cliente { get; set; }
 
-        [ForeignKey("CodVendedor")]
+        [ForeignKey("cod_vendedor")]
         public virtual VendedorModel? Vendedor { get; set; }
 
         public virtual ICollection<ItemVendaModel>? ItensVenda { get; set; }

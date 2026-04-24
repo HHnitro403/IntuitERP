@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Dapper;
 
 namespace IntuiERP.Avalonia.UI
 {
@@ -9,6 +10,9 @@ namespace IntuiERP.Avalonia.UI
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
+            
+            // Enable Dapper to match snake_case database columns to PascalCase properties
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public override void OnFrameworkInitializationCompleted()

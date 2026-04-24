@@ -10,65 +10,45 @@ namespace IntuiERP.Avalonia.UI.Validators
             var result = new ModelValidationResult();
 
             // Required fields validation
-            if (!item.CodCompra.HasValue || item.CodCompra <= 0)
+            if (item.CodCompra <= 0)
             {
-                result.AddError("Compra é obrigatória");
+                result.AddError("Compra  obrigatria");
             }
 
-            if (!item.CodProduto.HasValue || item.CodProduto <= 0)
+            if (item.CodProduto <= 0)
             {
-                result.AddError("Produto é obrigatório");
+                result.AddError("Produto  obrigatrio");
             }
 
-            if (string.IsNullOrWhiteSpace(item.Descricao))
+            if (item.quantidade <= 0)
             {
-                result.AddError("Descrição do item é obrigatória");
-            }
-
-            if (!item.quantidade.HasValue || item.quantidade <= 0)
-            {
-                result.AddError("Quantidade é obrigatória e deve ser maior que zero");
+                result.AddError("Quantidade  obrigatria e deve ser maior que zero");
             }
             else if (item.quantidade > 99999)
             {
-                result.AddError("Quantidade não pode exceder 99,999");
+                result.AddError("Quantidade no pode exceder 99,999");
             }
 
-            if (!item.valor_unitario.HasValue || item.valor_unitario <= 0)
+            if (item.preco_unitario <= 0)
             {
-                result.AddError("Valor unitário é obrigatório e deve ser maior que zero");
+                result.AddError("Preo unitrio  obrigatrio e deve ser maior que zero");
             }
-            else if (item.valor_unitario > 999999.99m)
+            else if (item.preco_unitario > 999999.99m)
             {
-                result.AddError("Valor unitário não pode exceder 999,999.99");
-            }
-
-            // Discount validation
-            if (item.desconto.HasValue && item.desconto < 0)
-            {
-                result.AddError("Desconto não pode ser negativo");
-            }
-            else if (item.desconto.HasValue && item.valor_unitario.HasValue &&
-                     item.quantidade.HasValue &&
-                     item.desconto > (item.valor_unitario * item.quantidade))
-            {
-                result.AddError("Desconto não pode ser maior que o valor total do item");
+                result.AddError("Preo unitrio no pode exceder 999,999.99");
             }
 
-            // Total value validation
-            if (item.valor_total.HasValue && item.valor_total <= 0)
+            // Subtotal value validation
+            if (item.subtotal <= 0)
             {
-                result.AddError("Valor total deve ser maior que zero");
+                result.AddError("Subtotal deve ser maior que zero");
             }
-            else if (item.valor_total.HasValue &&
-                    item.quantidade.HasValue &&
-                    item.valor_unitario.HasValue &&
-                    item.desconto.HasValue)
+            else
             {
-                decimal expectedTotal = (item.quantidade.Value * item.valor_unitario.Value) - item.desconto.Value;
-                if (Math.Abs(item.valor_total.Value - expectedTotal) > 0.01m)
+                decimal expectedTotal = item.quantidade * item.preco_unitario;
+                if (Math.Abs(item.subtotal - expectedTotal) > 0.01m)
                 {
-                    result.AddError("Valor total não corresponde ao cálculo: (quantidade * valor unitário) - desconto");
+                    result.AddError("Subtotal no corresponde ao clculo: quantidade * preo unitrio");
                 }
             }
 
@@ -78,22 +58,8 @@ namespace IntuiERP.Avalonia.UI.Validators
         // Method to sanitize input and calculate values
         public ItemCompraModel Sanitize(ItemCompraModel item)
         {
-            if (item.Descricao != null)
-            {
-                item.Descricao = item.Descricao.Trim();
-            }
-
-            if (!item.desconto.HasValue)
-            {
-                item.desconto = 0;
-            }
-
-            // Calculate total value if not provided or if components have changed
-            if (item.quantidade.HasValue && item.valor_unitario.HasValue)
-            {
-                decimal subtotal = item.quantidade.Value * item.valor_unitario.Value;
-                item.valor_total = item.desconto.HasValue ? subtotal - item.desconto.Value : subtotal;
-            }
+            // Calculate subtotal
+            item.subtotal = item.quantidade * item.preco_unitario;
 
             return item;
         }

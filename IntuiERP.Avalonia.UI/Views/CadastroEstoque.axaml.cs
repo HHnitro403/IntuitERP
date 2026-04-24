@@ -81,7 +81,7 @@ public partial class CadastroEstoque : UserControl
         {
             CodProduto = selectedProduto.CodProduto,
             Tipo = tipo[0],
-            Qtd = qtd,
+            Qtd = (int)qtd,
             Data = DataMovimentacaoPicker.SelectedDate ?? DateTime.Now
         };
 

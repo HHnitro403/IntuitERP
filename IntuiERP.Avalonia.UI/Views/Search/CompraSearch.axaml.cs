@@ -67,14 +67,22 @@ public partial class CompraSearch : UserControl
             var fornecedoresDict = fornecedores.ToDictionary(f => f.CodFornecedor, f => f.NomeFantasia ?? f.RazaoSocial);
             var vendedoresDict = vendedores.ToDictionary(v => v.CodVendedor, v => v.NomeVendedor);
 
-            var displayCompras = compras.Select(c => new CompraDisplayModel
-            {
-                CodCompra = c.CodCompra,
-                DataCompra = c.data_compra,
-                ValorTotal = c.valor_total ?? 0m,
-                Status = c.status_compra == 1 ? "FINALIZADA" : (c.status_compra == 0 ? "PENDENTE" : "CANCELADA"),
-                NomeFornecedor = c.CodFornec.HasValue && fornecedoresDict.TryGetValue(c.CodFornec.Value, out var fNome) ? fNome : "Desconhecido",
-                NomeVendedor = c.CodVendedor.HasValue && vendedoresDict.TryGetValue(c.CodVendedor.Value, out var vNome) ? vNome : "Desconhecido"
+            var displayCompras = compras.Select(c => {
+                string fNome = "Desconhecido";
+                if (c.CodFornecedor.HasValue && fornecedoresDict.TryGetValue(c.CodFornecedor.Value, out var foundFornec))
+                {
+                    fNome = foundFornec;
+                }
+
+                return new CompraDisplayModel
+                {
+                    CodCompra = c.CodCompra,
+                    DataCompra = c.data_compra,
+                    ValorTotal = c.valor_total ?? 0m,
+                    Status = c.status_compra == 1 ? "FINALIZADA" : (c.status_compra == 0 ? "PENDENTE" : "CANCELADA"),
+                    NomeFornecedor = fNome,
+                    NomeVendedor = "N/A"
+                };
             });
 
             _masterListaCompras = displayCompras.OrderByDescending(c => c.DataCompra).ToList();

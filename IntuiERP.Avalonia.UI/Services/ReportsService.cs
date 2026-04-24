@@ -26,17 +26,17 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query = @"
                 SELECT
-                    v.CodVenda,
+                    v.cod_venda,
                     v.data_venda,
-                    c.Nome AS NomeCliente,
-                    vd.NomeVendedor,
+                    c.nome AS NomeCliente,
+                    vd.nome_vendedor AS NomeVendedor,
                     v.valor_total,
                     v.forma_pagamento,
                     v.status_venda
                 FROM venda v
-                INNER JOIN cliente c ON v.CodCliente = c.CodCliente
-                INNER JOIN vendedor vd ON v.CodVendedor = vd.CodVendedor
-                ORDER BY v.CodVenda DESC;";
+                INNER JOIN cliente c ON v.cod_cliente = c.cod_cliente
+                INNER JOIN vendedor vd ON v.cod_vendedor = vd.cod_vendedor
+                ORDER BY v.cod_venda DESC;";
             return await _connection.QueryAsync<VendaReportModel>(query);
         }
 
@@ -48,15 +48,14 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query = @"
                 SELECT
-                    c.CodCompra,
+                    c.cod_compra,
                     c.data_compra,
-                    f.NomeFantasia AS NomeFornecedor,
+                    f.nome_fantasia AS NomeFornecedor,
                     c.valor_total,
-                    c.forma_pagamento,
                     c.status_compra
                 FROM compra c
-                INNER JOIN fornecedor f ON c.CodFornec = f.CodFornecedor
-                ORDER BY c.CodCompra DESC;";
+                INNER JOIN fornecedor f ON c.cod_fornecedor = f.cod_fornecedor
+                ORDER BY c.cod_compra DESC;";
             return await _connection.QueryAsync<CompraReportModel>(query);
         }
 
@@ -68,15 +67,15 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query = @"
                 SELECT
-                    p.CodProduto,
-                    p.Descricao,
-                    p.Categoria,
-                    p.PrecoUnitario,
-                    p.SaldoEst,
-                    f.NomeFantasia AS NomeFornecedor
+                    p.cod_produto,
+                    p.descricao,
+                    p.categoria,
+                    p.preco_unitario,
+                    p.saldo_est,
+                    f.nome_fantasia AS NomeFornecedor
                 FROM produto p
-                INNER JOIN fornecedor f ON p.FornecedorP_ID = f.CodFornecedor
-                ORDER BY p.Descricao;";
+                INNER JOIN fornecedor f ON p.fornecedor_id = f.cod_fornecedor
+                ORDER BY p.descricao;";
             return await _connection.QueryAsync<ProdutoReportModel>(query);
         }
 
@@ -88,16 +87,16 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query = @"
                 SELECT
-                    cl.CodCliente,
-                    cl.Nome,
-                    cl.Email,
-                    cl.Telefone,
-                    cl.CPF,
-                    c.Cidade AS NomeCidade,
-                    c.UF
+                    cl.cod_cliente,
+                    cl.nome,
+                    cl.email,
+                    cl.telefone,
+                    cl.cpf,
+                    c.cidade AS NomeCidade,
+                    c.uf
                 FROM cliente cl
-                INNER JOIN cidade c ON cl.CodCidade = c.CodCIdade
-                ORDER BY cl.Nome;";
+                INNER JOIN cidade c ON cl.cod_cidade = c.cod_cidade
+                ORDER BY cl.nome;";
             return await _connection.QueryAsync<ClienteReportModel>(query);
         }
 
@@ -109,14 +108,14 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query = @"
                 SELECT
-                    e.CodEst,
-                    p.Descricao AS DescricaoProduto,
-                    e.Tipo,
-                    e.Qtd,
-                    e.Data
+                    e.id AS CodEst,
+                    p.descricao AS DescricaoProduto,
+                    e.tipo,
+                    e.qtd,
+                    e.data
                 FROM estoque e
-                INNER JOIN produto p ON e.CodProduto = p.CodProduto
-                ORDER BY e.Data DESC;";
+                INNER JOIN produto p ON e.cod_produto = p.cod_produto
+                ORDER BY e.data DESC;";
             return await _connection.QueryAsync<EstoqueReportModel>(query);
         }
     }

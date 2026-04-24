@@ -20,7 +20,7 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<IEnumerable<VendaModel>> GetAllAsync()
         {
-            const string query = "SELECT * FROM venda Order by CodVenda";
+            const string query = "SELECT * FROM venda Order by cod_venda";
             return await _connection.QueryAsync<VendaModel>(query);
         }
 
@@ -31,17 +31,17 @@ namespace IntuiERP.Avalonia.UI.Services
             var parameters = new DynamicParameters();
             var whereClauses = new List<string>();
 
-            // Filter by CodCliente
+            // Filter by cod_cliente
             if (filters.CodCliente.HasValue)
             {
-                whereClauses.Add("CodCliente = @CodCliente");
+                whereClauses.Add("cod_cliente = @CodCliente");
                 parameters.Add("@CodCliente", filters.CodCliente.Value, DbType.Int32);
             }
 
-            // Filter by CodVendedor
+            // Filter by cod_vendedor
             if (filters.CodVendedor.HasValue)
             {
-                whereClauses.Add("CodVendedor = @CodVendedor");
+                whereClauses.Add("cod_vendedor = @CodVendedor");
                 parameters.Add("@CodVendedor", filters.CodVendedor.Value, DbType.Int32);
             }
 
@@ -96,7 +96,7 @@ namespace IntuiERP.Avalonia.UI.Services
             }
 
             // Always add the ordering at the end
-            sqlBuilder.Append(" ORDER BY CodVenda DESC"); // Order by most recent sales
+            sqlBuilder.Append(" ORDER BY cod_venda DESC"); // Order by most recent sales
 
             // Execute the final, dynamically built query
             string finalQuery = sqlBuilder.ToString();
@@ -105,7 +105,7 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<VendaModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM venda WHERE CodVenda = @Id";
+            const string query = "SELECT * FROM venda WHERE cod_venda = @Id";
             return await _connection.QueryFirstOrDefaultAsync<VendaModel>(query, new { Id = id });
         }
 
@@ -113,11 +113,11 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"INSERT INTO venda 
-                (data_venda, hora_venda, CodCliente, Desconto, CodVendedor, 
-                OBS, valor_total, forma_pagamento, status_venda) 
+                (data_venda, hora_venda, cod_cliente, desconto, cod_vendedor, 
+                obs, valor_total, forma_pagamento, status_venda) 
                 VALUES 
                 (@data_venda, @hora_venda, @CodCliente, @Desconto, @CodVendedor, 
-                @OBS, @valor_total, @forma_pagamento, @status_venda) RETURNING CodVenda;";
+                @OBS, @valor_total, @forma_pagamento, @status_venda) RETURNING cod_venda;";
 
             if (venda.data_venda == null)
                 venda.data_venda = DateTime.Now;
@@ -133,26 +133,26 @@ namespace IntuiERP.Avalonia.UI.Services
                 @"UPDATE venda SET 
                 data_venda = @data_venda, 
                 hora_venda = @hora_venda, 
-                CodCliente = @CodCliente, 
-                Desconto = @Desconto, 
-                CodVendedor = @CodVendedor, 
-                OBS = @OBS, 
+                cod_cliente = @CodCliente, 
+                desconto = @Desconto, 
+                cod_vendedor = @CodVendedor, 
+                obs = @OBS, 
                 valor_total = @valor_total, 
                 forma_pagamento = @forma_pagamento, 
                 status_venda = @status_venda 
-                WHERE CodVenda = @CodVenda";
+                WHERE cod_venda = @CodVenda";
             return await _connection.ExecuteAsync(query, venda);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM venda WHERE CodVenda = @Id";
+            const string query = "DELETE FROM venda WHERE cod_venda = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
 
         public async Task<int> UpdateStatusAsync(int id, byte status)
         {
-            const string query = "UPDATE venda SET status_venda = @Status WHERE CodVenda = @Id";
+            const string query = "UPDATE venda SET status_venda = @Status WHERE cod_venda = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id, Status = status });
         }
 
@@ -167,14 +167,14 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<IEnumerable<VendaModel>> GetByClienteAsync(int clienteId)
         {
-            const string query = "SELECT * FROM venda WHERE CodCliente = @ClienteId";
+            const string query = "SELECT * FROM venda WHERE cod_cliente = @ClienteId";
             return await _connection.QueryAsync<VendaModel>(query,
                 new { ClienteId = clienteId });
         }
 
         public async Task<IEnumerable<VendaModel>> GetByVendedorAsync(int vendedorId)
         {
-            const string query = "SELECT * FROM venda WHERE CodVendedor = @VendedorId";
+            const string query = "SELECT * FROM venda WHERE cod_vendedor = @VendedorId";
             return await _connection.QueryAsync<VendaModel>(query,
                 new { VendedorId = vendedorId });
         }
@@ -183,8 +183,8 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE cliente SET 
-                DataUltimaCompra = @DataUltimaCompra 
-                WHERE CodCliente = @CodCliente";
+                data_ultima_compra = @DataUltimaCompra 
+                WHERE cod_cliente = @CodCliente";
             await _connection.ExecuteAsync(query,
                 new { CodCliente = clienteId, DataUltimaCompra = DateTime.Now });
         }

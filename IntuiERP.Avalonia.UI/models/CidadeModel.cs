@@ -7,14 +7,14 @@ namespace IntuiERP.Avalonia.UI.models
     public class CidadeModel
     {
         [Key]
-        [Column("CodCIdade")]
+        [Column("cod_cidade")]
         public int CodCIdade { get; set; }
 
-        [Column("Cidade")]
+        [Column("cidade")]
         [StringLength(255)]
         public string? Cidade { get; set; }
 
-        [Column("UF")]
+        [Column("uf")]
         [StringLength(2)]
         public string? UF { get; set; }
 

@@ -31,84 +31,84 @@ namespace IntuiERP.Avalonia.UI.Services
 
             if (filter.CodProduto.HasValue)
             {
-                whereClauses.Add("CodProduto = @CodProduto");
+                whereClauses.Add("cod_produto = @CodProduto");
                 parameters.Add("@CodProduto", filter.CodProduto.Value);
             }
 
             if (filter.Descricao != null)
             {
-                whereClauses.Add("Descricao LIKE @Descricao");
+                whereClauses.Add("descricao LIKE @Descricao");
                 parameters.Add("@Descricao", $"%{filter.Descricao}%");
             }
 
             if (filter.Categoria != null)
             {
-                whereClauses.Add("Categoria = @Categoria");
+                whereClauses.Add("categoria = @Categoria");
                 parameters.Add("@Categoria", filter.Categoria);
             }
 
             if (filter.PrecoUnitario.HasValue)
             {
-                whereClauses.Add("PrecoUnitario = @PrecoUnitario");
+                whereClauses.Add("preco_unitario = @PrecoUnitario");
                 parameters.Add("@PrecoUnitario", filter.PrecoUnitario.Value);
             }
 
             if (filter.SaldoEst.HasValue)
             {
-                whereClauses.Add("SaldoEst = @SaldoEst");
+                whereClauses.Add("saldo_est = @SaldoEst");
                 parameters.Add("@SaldoEst", filter.SaldoEst.Value);
             }
 
-            if (filter.FornecedorP_ID.HasValue)
+            if (filter.FornecedorId.HasValue)
             {
-                whereClauses.Add("FornecedorP_ID = @FornecedorP_ID");
-                parameters.Add("@FornecedorP_ID", filter.FornecedorP_ID.Value);
+                whereClauses.Add("fornecedor_id = @FornecedorId");
+                parameters.Add("@FornecedorId", filter.FornecedorId.Value);
             }
 
             if (filter.DataCadastro.HasValue)
             {
-                whereClauses.Add("DataCadastro = @DataCadastro");
+                whereClauses.Add("data_cadastro = @DataCadastro");
                 parameters.Add("@DataCadastro", filter.DataCadastro.Value);
             }
 
             if (filter.EstMinimo.HasValue)
             {
-                whereClauses.Add("EstMinimo = @EstMinimo");
+                whereClauses.Add("est_minimo = @EstMinimo");
                 parameters.Add("@EstMinimo", filter.EstMinimo.Value);
             }
 
             if (filter.comparativo && filter.positivo)
             {
-                whereClauses.Add("SaldoEst > EstMinimo");
+                whereClauses.Add("saldo_est > est_minimo");
             }
             else if (filter.comparativo && !filter.positivo)
             {
-                whereClauses.Add("SaldoEst < EstMinimo");
+                whereClauses.Add("saldo_est < est_minimo");
             }
             else
             {
-                if (filter.EstoqueID.HasValue)
+                if (filter.EstoqueId.HasValue)
                 {
-                    whereClauses.Add("EstoqueID = @EstoqueID");
-                    parameters.Add("@EstoqueID", filter.EstoqueID.Value);
+                    whereClauses.Add("estoque_id = @EstoqueId");
+                    parameters.Add("@EstoqueId", filter.EstoqueId.Value);
                 }
 
-                if (filter.VarianteID.HasValue)
+                if (filter.VarianteId.HasValue)
                 {
-                    whereClauses.Add("VarianteID = @VarianteID");
-                    parameters.Add("@VarianteID", filter.VarianteID.Value);
+                    whereClauses.Add("variante_id = @VarianteId");
+                    parameters.Add("@VarianteId", filter.VarianteId.Value);
                 }
             }
 
             if (filter.Tipo != null)
             {
-                whereClauses.Add("Tipo = @Tipo");
+                whereClauses.Add("tipo = @Tipo");
                 parameters.Add("@Tipo", filter.Tipo);
             }
 
             if (filter.Ativo.HasValue)
             {
-                whereClauses.Add("Ativo = @Ativo");
+                whereClauses.Add("ativo = @Ativo");
                 parameters.Add("@Ativo", filter.Ativo.Value);
             }
 
@@ -125,7 +125,7 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<ProdutoModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM produto WHERE CodProduto = @Id";
+            const string query = "SELECT * FROM produto WHERE cod_produto = @Id";
             return await _connection.QueryFirstOrDefaultAsync<ProdutoModel>(query, new { Id = id });
         }
 
@@ -133,11 +133,11 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"INSERT INTO produto 
-                (Descricao, Categoria, PrecoUnitario, SaldoEst, FornecedorP_ID, 
-                DataCadastro, EstMinimo, EstoqueID, VarianteID, Tipo, Ativo) 
+                (descricao, categoria, preco_unitario, saldo_est, fornecedor_id, 
+                data_cadastro, est_minimo, estoque_id, variante_id, tipo, ativo) 
                 VALUES 
-                (@Descricao, @Categoria, @PrecoUnitario, @SaldoEst, @FornecedorP_ID, 
-                @DataCadastro, @EstMinimo, @EstoqueID, @VarianteID, @Tipo, @Ativo) RETURNING CodProduto;";
+                (@Descricao, @Categoria, @PrecoUnitario, @SaldoEst, @FornecedorId, 
+                @DataCadastro, @EstMinimo, @EstoqueId, @VarianteId, @Tipo, @Ativo) RETURNING cod_produto;";
 
             if (produto.DataCadastro == null)
                 produto.DataCadastro = DateTime.Now;
@@ -153,29 +153,29 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE produto SET 
-                Descricao = @Descricao, 
-                Categoria = @Categoria, 
-                PrecoUnitario = @PrecoUnitario, 
-                SaldoEst = @SaldoEst, 
-                FornecedorP_ID = @FornecedorP_ID, 
-                EstMinimo = @EstMinimo, 
-                EstoqueID = @EstoqueID, 
-                VarianteID = @VarianteID, 
-                Tipo = @Tipo, 
-                Ativo = @Ativo 
-                WHERE CodProduto = @CodProduto";
+                descricao = @Descricao, 
+                categoria = @Categoria, 
+                preco_unitario = @PrecoUnitario, 
+                saldo_est = @SaldoEst, 
+                fornecedor_id = @FornecedorId, 
+                est_minimo = @EstMinimo, 
+                estoque_id = @EstoqueId, 
+                variante_id = @VarianteId, 
+                tipo = @Tipo, 
+                ativo = @Ativo 
+                WHERE cod_produto = @CodProduto";
             return await _connection.ExecuteAsync(query, produto);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM produto WHERE CodProduto = @Id";
+            const string query = "DELETE FROM produto WHERE cod_produto = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
 
         public async Task<IEnumerable<ProdutoModel>> GetByFornecedorAsync(int fornecedorId)
         {
-            const string query = "SELECT * FROM produto WHERE FornecedorP_ID = @FornecedorId";
+            const string query = "SELECT * FROM produto WHERE fornecedor_id = @FornecedorId";
             return await _connection.QueryAsync<ProdutoModel>(query,
                 new { FornecedorId = fornecedorId });
         }
@@ -184,15 +184,15 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"SELECT * FROM produto 
-                WHERE Descricao LIKE @SearchTerm 
-                OR Categoria LIKE @SearchTerm 
-                OR Tipo LIKE @SearchTerm";
+                WHERE descricao LIKE @SearchTerm 
+                OR categoria LIKE @SearchTerm 
+                OR tipo LIKE @SearchTerm";
             return await _connection.QueryAsync<ProdutoModel>(query, new { SearchTerm = $"%{searchTerm}%" });
         }
 
         public async Task<IEnumerable<ProdutoModel>> GetByCategoriaAsync(string categoria)
         {
-            const string query = "SELECT * FROM produto WHERE Categoria = @Categoria";
+            const string query = "SELECT * FROM produto WHERE categoria = @Categoria";
             return await _connection.QueryAsync<ProdutoModel>(query, new { Categoria = categoria });
         }
 
@@ -200,8 +200,8 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE produto SET 
-                SaldoEst = SaldoEst + @Quantidade 
-                WHERE CodProduto = @ProdutoId";
+                saldo_est = saldo_est + @Quantidade 
+                WHERE cod_produto = @ProdutoId";
             return await _connection.ExecuteAsync(query,
                 new { ProdutoId = produtoId, Quantidade = quantidade });
         }

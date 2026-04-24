@@ -56,15 +56,12 @@
                             <Grid ColumnDefinitions="*, *">
                                 <TextBlock Grid.Column="0" FontSize="12" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.7">
                                     <TextBlock.Text>
-                                        <Binding Path="totalvendas" StringFormat="Total Vendas: {0}" />
+                                        <Binding Path="QtdVendas" StringFormat="Total Vendas: {0}" />
                                     </TextBlock.Text>
                                 </TextBlock>
                                 <TextBlock Grid.Column="1" HorizontalAlignment="Right" FontSize="12" Foreground="{DynamicResource FieldLabelColor}" Opacity="0.7">
                                     <TextBlock.Text>
-                                        <MultiBinding StringFormat="Finalizadas: {0} / Canceladas: {1}">
-                                            <Binding Path="vendasfinalizadas" />
-                                            <Binding Path="vendascanceladas" />
-                                        </MultiBinding>
+                                        <Binding Path="QtdVendasFinalizadas" StringFormat="Finalizadas: {0}" />
                                     </TextBlock.Text>
                                 </TextBlock>
                             </Grid>

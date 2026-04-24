@@ -9,20 +9,20 @@ namespace IntuiERP.Avalonia.UI.models
     public class EstoqueModel
     {
         [Key]
-        [Column("CodEst")]
-        public int CodEst { get; set; }
+        [Column("id")]
+        public int Id { get; set; }
 
-        [Column("CodProduto")]
+        [Column("cod_produto")]
         [Required]
         public int CodProduto { get; set; }
 
-        [Column("Tipo")]
+        [Column("tipo")]
         public char? Tipo { get; set; }
 
-        [Column("Qtd")]
-        public decimal? Qtd { get; set; }
+        [Column("qtd")]
+        public int Qtd { get; set; }
 
-        [Column("Data")]
+        [Column("data")]
         [Required]
         public DateTime Data { get; set; }
 

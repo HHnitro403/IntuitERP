@@ -24,7 +24,7 @@ namespace IntuiERP.Avalonia.UI.Services
 
         public async Task<CidadeModel> GetByIdAsync(int id)
         {
-            const string query = "SELECT * FROM cidade WHERE CodCIdade = @Id";
+            const string query = "SELECT * FROM cidade WHERE cod_cidade = @Id";
             return await _connection.QueryFirstOrDefaultAsync<CidadeModel>(query, new { Id = id });
         }
 
@@ -32,9 +32,9 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"INSERT INTO cidade 
-                (Cidade, UF) 
+                (cidade, uf) 
                 VALUES 
-                (@Cidade, @UF) RETURNING CodCIdade;";
+                (@Cidade, @UF) RETURNING cod_cidade;";
             return await _connection.ExecuteScalarAsync<int>(query, cidade);
         }
 
@@ -42,15 +42,15 @@ namespace IntuiERP.Avalonia.UI.Services
         {
             const string query =
                 @"UPDATE cidade SET 
-                Cidade = @Cidade, 
-                UF = @UF 
-                WHERE CodCIdade = @CodCIdade";
+                cidade = @Cidade, 
+                uf = @UF 
+                WHERE cod_cidade = @CodCIdade";
             return await _connection.ExecuteAsync(query, cidade);
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            const string query = "DELETE FROM cidade WHERE CodCIdade = @Id";
+            const string query = "DELETE FROM cidade WHERE cod_cidade = @Id";
             return await _connection.ExecuteAsync(query, new { Id = id });
         }
     }

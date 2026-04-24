@@ -23,7 +23,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                f.razao_social as FornecedorNome,
                                f.cnpj as FornecedorCnpj
                         FROM contas_pagar cp
-                        INNER JOIN fornecedor f ON cp.cod_fornecedor = f.CodFornecedor
+                        JOIN fornecedor f ON cp.cod_fornecedor = f.cod_fornecedor
                         ORDER BY cp.data_emissao DESC";
 
             var contas = await _connection.QueryAsync<ContaPagarModel>(sql);
@@ -36,7 +36,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                f.razao_social as FornecedorNome,
                                f.cnpj as FornecedorCnpj
                         FROM contas_pagar cp
-                        INNER JOIN fornecedor f ON cp.cod_fornecedor = f.CodFornecedor
+                        JOIN fornecedor f ON cp.cod_fornecedor = f.cod_fornecedor
                         WHERE cp.id = @Id";
 
             return await _connection.QueryFirstOrDefaultAsync<ContaPagarModel>(sql, new { Id = id });
@@ -48,7 +48,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                f.razao_social as FornecedorNome,
                                f.cnpj as FornecedorCnpj
                         FROM contas_pagar cp
-                        INNER JOIN fornecedor f ON cp.cod_fornecedor = f.CodFornecedor
+                        JOIN fornecedor f ON cp.cod_fornecedor = f.cod_fornecedor
                         WHERE cp.cod_compra = @CodCompra";
 
             return await _connection.QueryFirstOrDefaultAsync<ContaPagarModel>(sql, new { CodCompra = codCompra });
@@ -60,7 +60,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                f.razao_social as FornecedorNome,
                                f.cnpj as FornecedorCnpj
                         FROM contas_pagar cp
-                        INNER JOIN fornecedor f ON cp.cod_fornecedor = f.CodFornecedor
+                        JOIN fornecedor f ON cp.cod_fornecedor = f.cod_fornecedor
                         WHERE cp.cod_fornecedor = @CodFornecedor
                         ORDER BY cp.data_emissao DESC";
 
@@ -74,7 +74,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                f.razao_social as FornecedorNome,
                                f.cnpj as FornecedorCnpj
                         FROM contas_pagar cp
-                        INNER JOIN fornecedor f ON cp.cod_fornecedor = f.CodFornecedor
+                        JOIN fornecedor f ON cp.cod_fornecedor = f.cod_fornecedor
                         WHERE cp.status = @Status
                         ORDER BY cp.data_emissao DESC";
 
@@ -93,7 +93,7 @@ namespace IntuiERP.Avalonia.UI.Services
                                f.razao_social as FornecedorNome,
                                f.cnpj as FornecedorCnpj
                         FROM contas_pagar cp
-                        INNER JOIN fornecedor f ON cp.cod_fornecedor = f.CodFornecedor
+                        JOIN fornecedor f ON cp.cod_fornecedor = f.cod_fornecedor
                         WHERE cp.data_emissao BETWEEN @DataInicio AND @DataFim
                         ORDER BY cp.data_emissao DESC";
 
@@ -265,7 +265,7 @@ namespace IntuiERP.Avalonia.UI.Services
             var conta = new ContaPagarModel
             {
                 CodCompra = compra.CodCompra,
-                CodFornecedor = compra.CodFornecedor,
+                CodFornecedor = compra.CodFornecedor ?? 0,
                 DataEmissao = compra.data_compra ?? DateTime.Today,
                 ValorTotal = (decimal)compra.valor_total,
                 ValorPago = 0,

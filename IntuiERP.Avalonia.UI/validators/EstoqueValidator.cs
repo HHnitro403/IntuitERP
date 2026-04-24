@@ -12,38 +12,34 @@ namespace IntuiERP.Avalonia.UI.Validators
             // Required fields validation
             if (estoque.CodProduto <= 0)
             {
-                result.AddError("Produto é obrigatório");
+                result.AddError("Produto  obrigatrio");
             }
 
             if (!estoque.Tipo.HasValue)
             {
-                result.AddError("Tipo de movimentação é obrigatório");
+                result.AddError("Tipo de movimentao  obrigatrio");
             }
             else if (estoque.Tipo != 'E' && estoque.Tipo != 'S') // Entry or Exit
             {
-                result.AddError("Tipo de movimentação deve ser 'E' (Entrada) ou 'S' (Saída)");
+                result.AddError("Tipo de movimentao deve ser 'E' (Entrada) ou 'S' (Sada)");
             }
 
-            if (!estoque.Qtd.HasValue)
-            {
-                result.AddError("Quantidade é obrigatória");
-            }
-            else if (estoque.Qtd <= 0)
+            if (estoque.Qtd <= 0)
             {
                 result.AddError("Quantidade deve ser maior que zero");
             }
-            else if (estoque.Qtd > 999999.99m)
+            else if (estoque.Qtd > 999999)
             {
-                result.AddError("Quantidade não pode exceder 999,999.99");
+                result.AddError("Quantidade no pode exceder 999,999");
             }
 
             if (estoque.Data == DateTime.MinValue)
             {
-                result.AddError("Data é obrigatória");
+                result.AddError("Data  obrigatria");
             }
             else if (estoque.Data > DateTime.Now)
             {
-                result.AddError("Data não pode ser no futuro");
+                result.AddError("Data no pode ser no futuro");
             }
 
             return result;
