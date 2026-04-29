@@ -21,15 +21,30 @@ public partial class CadastroProduto : UserControl
     private readonly int _produtoId;
     private List<FornecedorModel> _fornecedores = new();
 
-    public CadastroProduto(int id = 0)
+    public CadastroProduto(
+        int id = 0,
+        ProdutoService? produtoService = null,
+        FornecedorService? fornecedorService = null,
+        PermissionService? permissionService = null)
     {
         InitializeComponent();
-        
-        var factory = new NpgsqlConnectionFactory();
-        var connection = factory.CreateConnection();
-        _produtoService = new ProdutoService(connection);
-        _fornecedorService = new FornecedorService(connection);
-        _permissionService = new PermissionService();
+
+        if (produtoService != null && fornecedorService != null && permissionService != null)
+        {
+            _produtoService = produtoService;
+            _fornecedorService = fornecedorService;
+            _permissionService = permissionService;
+        }
+        else
+        {
+            // Fallback path while other screens are still being migrated to DI.
+            var factory = new NpgsqlConnectionFactory();
+            var connection = factory.CreateConnection();
+            _produtoService = new ProdutoService(connection);
+            _fornecedorService = new FornecedorService(connection);
+            _permissionService = new PermissionService();
+        }
+
         _produtoId = id;
 
         DataCadastroPicker.SelectedDate = DateTime.Today;

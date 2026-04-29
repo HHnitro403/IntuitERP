@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IntuiERP.Avalonia.UI.Views.Search;
 
@@ -95,14 +96,14 @@ public partial class ProdutoSearch : UserControl
 
     private void NovoProdutoButton_Clicked(object? sender, RoutedEventArgs e)
     {
-        NavigationHelper.NavigateTo(new CadastroProduto());
+        NavigationHelper.NavigateTo(CreateCadastroProduto(0));
     }
 
     private void EditarProdutoButton_Clicked(object? sender, RoutedEventArgs e)
     {
         if (_produtoSelecionado != null)
         {
-            NavigationHelper.NavigateTo(new CadastroProduto(_produtoSelecionado.CodProduto));
+            NavigationHelper.NavigateTo(CreateCadastroProduto(_produtoSelecionado.CodProduto));
         }
     }
 
@@ -131,5 +132,23 @@ public partial class ProdutoSearch : UserControl
     private void BtnBack_Clicked(object? sender, RoutedEventArgs e)
     {
         NavigationHelper.NavigateTo(new MenuPage());
+    }
+
+    private static CadastroProduto CreateCadastroProduto(int id)
+    {
+        try
+        {
+            var services = App.Services;
+            var produtoService = services.GetRequiredService<ProdutoService>();
+            var fornecedorService = services.GetRequiredService<FornecedorService>();
+            var permissionService = services.GetRequiredService<PermissionService>();
+
+            return new CadastroProduto(id, produtoService, fornecedorService, permissionService);
+        }
+        catch
+        {
+            // Safe fallback while migration is in progress
+            return new CadastroProduto(id);
+        }
     }
 }
