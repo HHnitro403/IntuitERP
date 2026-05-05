@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="using:IntuiERP.Avalonia.UI"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="IntuiERP.Avalonia.UI.MainWindow"
@@ -32,7 +33,23 @@
 
 					<!-- Form Fields -->
 					<StackPanel Orientation="Vertical" Spacing="15">
-
+						<!-- Database Selector -->
+						<StackPanel Orientation="Vertical" Spacing="8">
+							<TextBlock Text="Database" Classes="FieldLabel" />
+							<Border CornerRadius="8"
+									BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1"
+									Padding="15,0" Height="50">
+								<ComboBox x:Name="DatabaseComboBox"
+										  PlaceholderText="Select a database"
+										  Classes="InputField"
+										  x:DataType="local:DatabaseOption"
+										  HorizontalAlignment="Stretch"
+										  HorizontalContentAlignment="Stretch"
+										  BorderThickness="0"
+										  Background="Transparent"
+										  DisplayMemberBinding="{Binding DisplayName}"/>
+							</Border>
+						</StackPanel>
 						<!-- Username Input -->
 						<StackPanel Orientation="Vertical" Spacing="8">
 							<TextBlock Text="Usuario" Classes="FieldLabel" />

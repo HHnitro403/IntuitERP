@@ -1,20 +1,34 @@
-using System;
-using System.Data;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
-using IntuiERP.Avalonia.UI.Services;
-using IntuiERP.Avalonia.UI.models;
-using IntuiERP.Avalonia.UI.Helpers;
+using Dapper;
 using IntuiERP.Avalonia.UI.Config;
+using IntuiERP.Avalonia.UI.Helpers;
+using IntuiERP.Avalonia.UI.models;
+using IntuiERP.Avalonia.UI.Services;
+using Microsoft.Data.Sqlite;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace IntuiERP.Avalonia.UI
 {
+    public class DatabaseOption
+    {
+        public int Id { get; set; }
+        public string Server { get; set; } = string.Empty;
+        public int Port { get; set; } = 5432;
+        public string DataBase { get; set; } = string.Empty;
+        public string User { get; set; } = string.Empty;
+        public string DisplayName => DataBase;
+    }
+
     public partial class MainWindow : Window
     {
         private bool _isUserValid = false;
@@ -22,24 +36,30 @@ namespace IntuiERP.Avalonia.UI
         private UsuarioService? _usuarioService;
         private readonly UserContext _userContext;
         private bool _isLoggingIn = false;
+        private List<DatabaseOption> _databaseOptions = new();
+        private DatabaseOption? _selectedDatabase;
 
         public MainWindow()
         {
             InitializeComponent();
             _userContext = UserContext.Instance;
-            
+
+            LoginButton.Click += LoginButton_Clicked;
             UserEntry.TextChanged += OnUserTextChanged;
             PasswordEntry.TextChanged += OnPasswordTextChanged;
             LoginButton.Click += LoginButton_Clicked;
-            
+            DatabaseComboBox.SelectionChanged += DatabaseComboBox_SelectionChanged;
+
             var toggleThemeButton = this.FindControl<Button>("ToggleThemeButton");
             if (toggleThemeButton != null)
             {
                 toggleThemeButton.Click += (s, e) => ToggleTheme();
             }
-            
+
             this.Opened += MainWindow_Opened;
         }
+
+
 
         private void ToggleTheme()
         {
@@ -47,20 +67,21 @@ namespace IntuiERP.Avalonia.UI
             if (app != null)
             {
                 var currentTheme = app.ActualThemeVariant;
-                app.RequestedThemeVariant = currentTheme == global::Avalonia.Styling.ThemeVariant.Dark 
-                    ? global::Avalonia.Styling.ThemeVariant.Light 
+                app.RequestedThemeVariant = currentTheme == global::Avalonia.Styling.ThemeVariant.Dark
+                    ? global::Avalonia.Styling.ThemeVariant.Light
                     : global::Avalonia.Styling.ThemeVariant.Dark;
             }
         }
 
         private async void MainWindow_Opened(object? sender, EventArgs e)
         {
-            this.Opened -= MainWindow_Opened; 
-            
+            this.Opened -= MainWindow_Opened;
+
             UserEntry.Text = string.Empty;
             PasswordEntry.Text = string.Empty;
             LoginButton.IsEnabled = false;
 
+            await LoadDatabaseOptionsAsync();
             await InitializeServicesAsync();
         }
 
@@ -70,10 +91,10 @@ namespace IntuiERP.Avalonia.UI
             {
                 // Use the factory for better lifecycle management
                 var factory = new NpgsqlConnectionFactory();
-                
+
                 // Optional: Verify connection string exists
                 var configurator = new Configurator();
-                
+
                 _usuarioService = new UsuarioService(factory);
                 LoginGrid.IsEnabled = true;
             }
@@ -90,7 +111,7 @@ namespace IntuiERP.Avalonia.UI
         private async void LoginButton_Clicked(object? sender, RoutedEventArgs e)
         {
             if (_isLoggingIn) return;
-            
+
             if (_usuarioService == null)
             {
                 await MessageBox.Show(this, "The application is not connected to the database. Please restart.", "Error");
@@ -100,12 +121,12 @@ namespace IntuiERP.Avalonia.UI
             try
             {
                 SetLoginState(true);
-                
+
                 var result = await LoginAsync();
                 if (result)
                 {
                     // Swap the content of the current window to the MenuPage
-                    this.Content = new Views.MenuPage(); 
+                    this.Content = new Views.MenuPage();
                 }
             }
             catch (Exception ex)
@@ -122,7 +143,7 @@ namespace IntuiERP.Avalonia.UI
             LoginButton.IsEnabled = !isLoggingIn && _isUserValid && _isPasswordValid;
             UserEntry.IsEnabled = !isLoggingIn;
             PasswordEntry.IsEnabled = !isLoggingIn;
-            
+
             if (isLoggingIn)
                 LoginButton.Content = "ENTRANDO...";
             else
@@ -241,7 +262,57 @@ namespace IntuiERP.Avalonia.UI
         private void UpdateLoginButtonState()
         {
             if (!_isLoggingIn)
-                LoginButton.IsEnabled = _isUserValid && _isPasswordValid;
+                LoginButton.IsEnabled = _isUserValid && _isPasswordValid && _selectedDatabase != null;
+        }
+        private async Task LoadDatabaseOptionsAsync()
+        {
+            try
+            {
+                // Shell only: implement SQLite read from ConfigsDB.db here.
+                _databaseOptions = new List<DatabaseOption>();
+                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string folderPath = Path.Combine(appDataPath, "IntuitERP", "Config");
+                string databasepath = Path.Combine(folderPath, "ConfigsDB.db");
+                var sqliteconn = new SqliteConnection($"Data Source={databasepath}");
+                var rcon = sqliteconn.OpenAsync();
+                const string sql = @"
+                    SELECT ID, Server, Port, DataBase, User
+                    FROM Connection
+                    ORDER BY ID DESC;";
+
+                var rows = await sqliteconn.QueryAsync<DatabaseOption>(sql);
+                _databaseOptions = rows.AsList();
+                DatabaseComboBox.ItemsSource = _databaseOptions;
+
+            }
+            catch (Exception Ex)
+            {
+
+            }
+
+
+
+            DatabaseComboBox.ItemsSource = _databaseOptions;
+
+            if (_databaseOptions.Count > 0)
+            {
+                DatabaseComboBox.SelectedIndex = 0;
+                _selectedDatabase = _databaseOptions[0];
+            }
+            else
+            {
+                _selectedDatabase = null;
+            }
+
+            await Task.CompletedTask;
+        }
+
+
+
+        private void DatabaseComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            _selectedDatabase = DatabaseComboBox.SelectedItem as DatabaseOption;
+            UpdateLoginButtonState();
         }
     }
 }
